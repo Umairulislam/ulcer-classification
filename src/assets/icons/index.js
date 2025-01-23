@@ -1,0 +1,7 @@
+export { default as Edit } from "@mui/icons-material/Edit"
+export { default as Person } from "@mui/icons-material/Person"
+export { default as People } from "@mui/icons-material/People"
+export { default as Schedule } from "@mui/icons-material/Schedule"
+export { default as Dashboard } from "@mui/icons-material/Dashboard"
+export { default as Delete } from "@mui/icons-material/Delete"
+export { default as Add } from "@mui/icons-material/Add"

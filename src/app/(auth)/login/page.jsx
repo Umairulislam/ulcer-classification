@@ -60,11 +60,13 @@ const LoginPage = () => {
     }
 
     try {
-      const { data } = await AxiosInstance.post("doctor/login", payload)
+      const { data } = await AxiosInstance.post("auth/login", payload)
       console.log("🚀 ~ onSubmit ~ data:", data)
 
       const accessToken = data?.response?.extra?.access_token
+      const role = data?.response?.details?.role
       localStorage.setItem("accessToken", accessToken)
+      localStorage.setItem("role", role)
       dispatch(setUser(data?.response?.details))
 
       setToast({
@@ -73,7 +75,6 @@ const LoginPage = () => {
         severity: "success",
       })
 
-      const role = data?.response?.details?.role
       if (role === "admin") {
         return router.push("/admin/dashboard")
       }
@@ -103,7 +104,7 @@ const LoginPage = () => {
         justifyContent: "center",
         minHeight: "100vh",
         bgcolor: "background.default",
-        color: "#00A9FF",
+        color: "primary.main",
         padding: 2,
       }}
       onSubmit={handleSubmit(onSubmit)}
@@ -129,7 +130,7 @@ const LoginPage = () => {
             variant="h5"
             sx={{
               fontWeight: "bold",
-              color: "#00A9FF",
+              color: "primary.main",
               mb: 1,
             }}
           >
@@ -219,7 +220,7 @@ const LoginPage = () => {
           {/* Submit Button */}
           <Button
             variant="contained"
-            color="#00A9FF"
+            color="primary.main"
             size="large"
             fullWidth
             type="submit"
@@ -231,7 +232,7 @@ const LoginPage = () => {
               paddingY: 1.5,
               borderRadius: 2,
               boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
-              backgroundColor: "#00A9FF",
+              backgroundColor: "primary.main",
             }}
           >
             Log In
@@ -245,7 +246,7 @@ const LoginPage = () => {
               component="span"
               variant="body2"
               sx={{
-                color: "#00A9FF",
+                color: "primary.main",
                 fontWeight: "bold",
                 cursor: "pointer",
               }}

@@ -1,20 +1,19 @@
-"use client";
+"use client"
 
-import React from "react";
-import { Button, Container, Typography, Box, Grid } from "@mui/material";
-import { useRouter } from "next/navigation";
+import React from "react"
+import { Button, Container, Typography, Box, Grid2 } from "@mui/material"
+import { useRouter } from "next/navigation"
 
 const LandingPage = () => {
-  const router = useRouter();
+  const router = useRouter()
 
   const handleAdminLogin = () => {
-    router.push("/login");
-  };
-  
+    router.push("/login")
+  }
 
   const handleDoctorLogin = () => {
-    router.push("/login");
-  };
+    router.push("/login")
+  }
 
   return (
     <Container maxWidth="md">
@@ -35,8 +34,8 @@ const LandingPage = () => {
           Efficiently manage your hospital with easy-to-use tools.
         </Typography>
 
-        <Grid container spacing={2} justifyContent="center">
-          <Grid item>
+        <Grid2 container spacing={2} justifyContent="center">
+          <Grid2 item>
             <Button
               variant="contained"
               color="primary"
@@ -45,8 +44,8 @@ const LandingPage = () => {
             >
               Login as Admin
             </Button>
-          </Grid>
-          <Grid item>
+          </Grid2>
+          <Grid2 item>
             <Button
               variant="contained"
               color="secondary"
@@ -55,11 +54,11 @@ const LandingPage = () => {
             >
               Login as Doctor
             </Button>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Box>
     </Container>
-  );
-};
+  )
+}
 
-export default LandingPage;
+export default LandingPage

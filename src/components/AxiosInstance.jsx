@@ -1,18 +1,18 @@
-import axios from 'axios'
+import axios from "axios"
 
 const AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 5000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 })
 
 AxiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+    const accessToken = localStorage.getItem("accessToken")
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`
     }
     return config
   },
@@ -26,10 +26,10 @@ AxiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response.status === 401) {
-      localStorage.removeItem('token')
+      localStorage.removeItem("accessToken")
     }
 
-    console.error('API Error:', error.response?.data || error.message)
+    console.error("API Error:", error.response?.data || error.message)
     return Promise.reject(error)
   },
 )

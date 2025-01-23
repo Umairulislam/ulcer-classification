@@ -34,6 +34,7 @@ const Header = ({ isSmallScreen, handleDrawerToggle }) => {
     setLoading(true)
     try {
       localStorage.removeItem("accessToken")
+      localStorage.removeItem("role")
       dispatch(clearUser())
       router.push("/login")
     } catch (error) {

@@ -10,6 +10,7 @@ const Layout = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false)
   const theme = useTheme()
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"))
+  const role = user?.role || localStorage.getItem("role")
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
@@ -23,7 +24,7 @@ const Layout = ({ children }) => {
         handleDrawerToggle={handleDrawerToggle}
       />
       <Sidenav
-        role={user?.role}
+        role={role}
         isSmallScreen={isSmallScreen}
         mobileOpen={mobileOpen}
         handleDrawerToggle={handleDrawerToggle}
