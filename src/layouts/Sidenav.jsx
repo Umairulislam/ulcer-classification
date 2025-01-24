@@ -70,7 +70,7 @@ const Sidenav = ({ role, isSmallScreen, mobileOpen, handleDrawerToggle }) => {
                 pathname === menu.path ? "primary.main" : "inherit",
               color: pathname === menu.path ? "white" : "inherit",
               "&:hover": {
-                backgroundColor: "#80D4FF",
+                backgroundColor: "primary.light",
               },
             }}
           >

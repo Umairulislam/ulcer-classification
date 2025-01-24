@@ -11,7 +11,7 @@ import {
   InputAdornment,
   IconButton,
 } from "@mui/material"
-import { Email, Visibility, VisibilityOff, Lock } from "@mui/icons-material"
+import { Email, Visibility, VisibilityOff, Lock } from "@/assets/icons"
 import { useForm, Controller } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { loginSchema } from "./loginSchema"

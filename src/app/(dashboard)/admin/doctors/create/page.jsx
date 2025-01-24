@@ -1,64 +1,246 @@
-import { Box, Container, Grid2, TextField, Typography } from "@mui/material"
-import React from "react"
+"use client"
+
+import {
+  Box,
+  Container,
+  Grid2,
+  TextField,
+  Typography,
+  InputAdornment,
+  IconButton,
+  MenuItem,
+} from "@mui/material"
+import React, { useState } from "react"
+import { Visibility, VisibilityOff } from "@mui/icons-material"
+import { AxiosInstance, CustomButton, Toast } from "@/components"
+import { useForm, Controller } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import createDoctorSchema from "./createDoctorSchema"
+import { useRouter } from "next/navigation"
 
 const page = () => {
+  const router = useRouter()
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    severity: "error",
+  })
+
+  const handleCloseToast = () => {
+    setToast({ ...toast, open: false })
+  }
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev)
+  }
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(createDoctorSchema),
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      email: "",
+      password: "",
+      phone_no: "",
+      gender: "",
+    },
+  })
+
+  const onSubmit = async (data) => {
+    const payload = {
+      first_name: data.first_name,
+      last_name: data.last_name,
+      email: data.email,
+      password: data.password,
+      phone_no: data.phone_no,
+      gender: data.gender,
+    }
+
+    setLoading(true)
+    try {
+      const { data } = await AxiosInstance.post("doctor/create", payload)
+      console.log("🚀 ~ onSubmit ~ data:", data)
+      setToast({
+        open: true,
+        message: data.message,
+        severity: "success",
+      })
+      router.push("/admin/doctors")
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <Container>
       <Typography variant="h4" fontWeight="bold">
         Create Doctor
       </Typography>
-      <Box component="form" sx={{ width: "100%", marginTop: 4 }}>
+      <Box
+        component="form"
+        sx={{ width: "100%", marginTop: 4 }}
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Grid2 container spacing={2}>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
-            <TextField
-              id="outlined-basic"
-              label="First Name"
-              variant="outlined"
-              fullWidth
+            <Typography variant="body1" fontWeight="bold" mb={1}>
+              First Name
+            </Typography>
+            <Controller
+              name="first_name"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  placeholder="Enter first name (only alphabets)"
+                  variant="outlined"
+                  fullWidth
+                  error={errors.first_name}
+                  helperText={errors.first_name?.message}
+                />
+              )}
             />
           </Grid2>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
-            <TextField
-              id="outlined-basic"
-              label="Last Name"
-              variant="outlined"
-              fullWidth
+            <Typography variant="body1" fontWeight="bold" mb={1}>
+              Last Name
+            </Typography>
+            <Controller
+              name="last_name"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  placeholder="Enter last name (only alphabets)"
+                  variant="outlined"
+                  fullWidth
+                  error={errors.last_name}
+                  helperText={errors.last_name?.message}
+                />
+              )}
             />
           </Grid2>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
-            <TextField
-              id="outlined-basic"
-              label="Email"
-              variant="outlined"
-              fullWidth
+            <Typography variant="body1" fontWeight="bold" mb={1}>
+              Email
+            </Typography>
+            <Controller
+              name="email"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  placeholder="e.g., example@domain.com"
+                  variant="outlined"
+                  type="email"
+                  fullWidth
+                  error={errors.email}
+                  helperText={errors.email?.message}
+                />
+              )}
             />
           </Grid2>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
-            <TextField
-              id="outlined-basic"
-              label="Password"
-              variant="outlined"
-              fullWidth
+            <Typography variant="body1" fontWeight="bold" mb={1}>
+              Password
+            </Typography>
+            <Controller
+              name="password"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  placeholder="At least 6 characters"
+                  variant="outlined"
+                  type={showPassword ? "text" : "password"}
+                  fullWidth
+                  error={errors.password}
+                  helperText={errors.password?.message}
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={togglePasswordVisibility}
+                            edge="end"
+                            aria-label="toggle password visibility"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+              )}
             />
           </Grid2>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
-            <TextField
-              id="outlined-basic"
-              label="Phone Number"
-              variant="outlined"
-              fullWidth
+            <Typography variant="body1" fontWeight="bold" mb={1}>
+              Phone Number
+            </Typography>
+            <Controller
+              name="phone_no"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  placeholder="e.g., +1234567890"
+                  variant="outlined"
+                  fullWidth
+                  error={errors.phone_no}
+                  helperText={errors.phone_no?.message}
+                />
+              )}
             />
           </Grid2>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
-            <TextField
-              id="outlined-basic"
-              label="Gendar"
-              variant="outlined"
-              fullWidth
+            <Typography variant="body1" fontWeight="bold" mb={1}>
+              Gender
+            </Typography>
+            <Controller
+              name="gender"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  select
+                  label="Gender"
+                  variant="outlined"
+                  fullWidth
+                  error={errors.gender}
+                  helperText={errors.gender?.message}
+                >
+                  <MenuItem value="male">Male</MenuItem>
+                  <MenuItem value="female">Female</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
+                </TextField>
+              )}
             />
           </Grid2>
+          <CustomButton
+            text={!loading ? "Submit" : "Submitting"}
+            disabled={loading}
+            type="submit"
+          />
         </Grid2>
       </Box>
+
+      {/* Toast */}
+      <Toast
+        open={toast.open}
+        message={toast.message}
+        severity={toast.severity}
+        onClose={handleCloseToast}
+      />
     </Container>
   )
 }
