@@ -10,21 +10,25 @@ import {
   IconButton,
   MenuItem,
 } from "@mui/material"
-import React, { useState } from "react"
 import { Visibility, VisibilityOff } from "@/assets/icons"
-import { AxiosInstance, CustomButton } from "@/components"
-import { useForm, Controller } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-import doctorSchema from "./doctorSchema"
+import { useForm, Controller } from "react-hook-form"
+import doctorSchema from "../../create/doctorSchema"
+import { useEffect, useState } from "react"
+import { AxiosInstance, CustomButton } from "@/components"
+import { useParams } from "next/navigation"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 
 const page = () => {
+  const params = useParams()
   const router = useRouter()
   const dispatch = useDispatch()
-  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const { id } = params
+  const isUpdate = Boolean(id)
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev)
@@ -33,18 +37,24 @@ const page = () => {
   const {
     handleSubmit,
     control,
+    reset,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(doctorSchema),
-    defaultValues: {
-      first_name: "",
-      last_name: "",
-      email: "",
-      password: "",
-      phone_no: "",
-      gender: "",
-    },
+    resolver: yupResolver(doctorSchema(isUpdate)),
   })
+
+  const fetchDoctor = async () => {
+    setLoading(true)
+    try {
+      const { data } = await AxiosInstance.get(`doctor/${id}`)
+      // Populate form fields with the fetched data
+      reset(data?.response?.details)
+    } catch (error) {
+      console.error("Error fetching doctor details:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const onSubmit = async (data) => {
     const payload = {
@@ -58,20 +68,24 @@ const page = () => {
 
     setLoading(true)
     try {
-      const { data } = await AxiosInstance.post("doctor/create", payload)
+      const { data } = await AxiosInstance.patch(`doctor/update/${id}`, payload)
       dispatch(showToast({ message: data.message, type: "success" }))
       router.push("/admin/doctors")
     } catch (error) {
-      console.error("Error ceating doctor details:", error)
+      console.error("Error updating doctor details:", error)
     } finally {
       setLoading(false)
     }
   }
 
+  useEffect(() => {
+    fetchDoctor()
+  }, [id, reset])
+
   return (
     <Container>
       <Typography variant="h4" fontWeight="bold">
-        Create Doctor
+        Update Doctor
       </Typography>
       <Box
         component="form"
@@ -133,6 +147,7 @@ const page = () => {
                   fullWidth
                   error={errors.email}
                   helperText={errors.email?.message}
+                  disabled
                 />
               )}
             />
@@ -216,7 +231,7 @@ const page = () => {
             />
           </Grid2>
           <CustomButton
-            text={!loading ? "Submit" : "Submitting"}
+            text={!loading ? "Update" : "Updating"}
             disabled={loading}
             type="submit"
           />

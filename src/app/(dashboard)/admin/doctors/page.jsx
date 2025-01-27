@@ -16,7 +16,6 @@ import {
   IconButton,
   Tooltip,
   CircularProgress,
-  Chip,
 } from "@mui/material"
 import Link from "next/link"
 import { Edit, Delete, Add } from "@/assets/icons"
@@ -25,8 +24,11 @@ import {
   NoRecordsFound,
   CustomButton,
   StatusChip,
+  AlertDialog,
 } from "@/components"
 import moment from "moment"
+import { useDispatch } from "react-redux"
+import { showToast } from "@/store/toastSlice"
 
 // Dummy data array
 const dummyData = Array.from({ length: 20 }, (_, index) => ({
@@ -50,15 +52,19 @@ const tableHead = [
 ]
 
 const page = () => {
+  const dispatch = useDispatch()
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [loading, setLoading] = useState(true)
   const [doctors, setDoctors] = useState([])
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [selectedDoctor, setSelectedDoctor] = useState(null)
 
   const getDoctors = async () => {
     setLoading(true)
     try {
-      const { data } = await AxiosInstance.get("doctor/all")
+      let path = `doctor/all?page=${page + 1}&perPage=${rowsPerPage}`
+      const { data } = await AxiosInstance.get(path)
       setDoctors(data?.response)
     } catch (error) {
       console.log(error)
@@ -76,9 +82,37 @@ const page = () => {
     setPage(0)
   }
 
+  const handleDeleteClick = (doctor) => {
+    setSelectedDoctor(doctor)
+    setDialogOpen(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    try {
+      const { data } = await AxiosInstance.delete(
+        `doctor/delete/${selectedDoctor?.id}`,
+      )
+      setDoctors((prev) => {
+        prev.details.filter((doc) => {
+          return doc?.id !== selectedDoctor?.id
+        })
+      })
+      dispatch(showToast({ message: data?.message, type: "success" }))
+      getDoctors()
+    } catch (error) {
+      dispatch(
+        showToast({ message: error.response.data.message, type: "error" }),
+      )
+      console.error("Failed to delete doctor:", error)
+    } finally {
+      setDialogOpen(false)
+      setSelectedDoctor(null)
+    }
+  }
+
   useEffect(() => {
     getDoctors()
-  }, [])
+  }, [page, rowsPerPage])
 
   return (
     <Container>
@@ -145,22 +179,23 @@ const page = () => {
                       <TableCell>
                         <Stack direction="row" spacing={1}>
                           <Tooltip title="Edit" arrow>
-                            <IconButton
-                              onClick={() => console.log("clicked")}
-                              sx={{
-                                backgroundColor: "secondary.light",
-                                "&:hover": {
-                                  backgroundColor: "primary.light",
-                                  color: "white",
-                                },
-                              }}
-                            >
-                              <Edit />
-                            </IconButton>
+                            <Link href={`doctors/update/${row.id}`}>
+                              <IconButton
+                                sx={{
+                                  backgroundColor: "secondary.light",
+                                  "&:hover": {
+                                    backgroundColor: "primary.light",
+                                    color: "white",
+                                  },
+                                }}
+                              >
+                                <Edit />
+                              </IconButton>
+                            </Link>
                           </Tooltip>
                           <Tooltip title="Delete" arrow>
                             <IconButton
-                              onClick={() => console.log("clicked")}
+                              onClick={() => handleDeleteClick(row)}
                               sx={{
                                 backgroundColor: "secondary.light",
                                 "&:hover": {
@@ -181,10 +216,11 @@ const page = () => {
             </Table>
           </TableContainer>
 
+          {/* Pagination section */}
           <TablePagination
             rowsPerPageOptions={[5, 10, 20]}
             component="div"
-            count={dummyData.length}
+            count={doctors?.extra?.totalItems}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -192,6 +228,15 @@ const page = () => {
           />
         </Paper>
       )}
+
+      {/* Alert Dialog */}
+      <AlertDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Doctor"
+        content={`Are you sure you want to delete Dr. ${selectedDoctor?.first_name} ${selectedDoctor?.last_name}?`}
+      />
     </Container>
   )
 }

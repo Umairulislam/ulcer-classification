@@ -15,6 +15,8 @@ import { Menu as MenuIcon } from "@mui/icons-material"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { clearUser } from "@/store/userSlice"
+import { showToast } from "@/store/toastSlice"
+import { AxiosInstance } from "@/components"
 
 const Header = ({ isSmallScreen, handleDrawerToggle }) => {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -33,11 +35,16 @@ const Header = ({ isSmallScreen, handleDrawerToggle }) => {
   const handleLogout = async () => {
     setLoading(true)
     try {
+      const { data } = await AxiosInstance.post("auth/logout")
       localStorage.removeItem("accessToken")
       localStorage.removeItem("role")
       dispatch(clearUser())
+      dispatch(showToast({ message: data.message, type: "success" }))
       router.push("/login")
     } catch (error) {
+      dispatch(
+        showToast({ message: error.response.data.message, type: "error" }),
+      )
       console.error(error)
     } finally {
       setLoading(false)

@@ -15,29 +15,21 @@ import { Email, Visibility, VisibilityOff, Lock } from "@/assets/icons"
 import { useForm, Controller } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { loginSchema } from "./loginSchema"
-import { AxiosInstance, Toast } from "@/components"
+import { AxiosInstance } from "@/components"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { setUser } from "@/store/userSlice"
 import Link from "next/link"
+import { showToast } from "@/store/toastSlice"
 
 const LoginPage = () => {
   const router = useRouter()
   const dispatch = useDispatch()
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [toast, setToast] = useState({
-    open: false,
-    message: "",
-    severity: "error",
-  })
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev)
-  }
-
-  const handleCloseToast = () => {
-    setToast({ ...toast, open: false })
   }
 
   const {
@@ -68,13 +60,7 @@ const LoginPage = () => {
       localStorage.setItem("accessToken", accessToken)
       localStorage.setItem("role", role)
       dispatch(setUser(data?.response?.details))
-
-      setToast({
-        open: true,
-        message: data.message,
-        severity: "success",
-      })
-
+      dispatch(showToast({ message: data.message, type: "success" }))
       if (role === "admin") {
         return router.push("/admin/dashboard")
       }
@@ -83,11 +69,9 @@ const LoginPage = () => {
       }
     } catch (error) {
       if (error.status === 400) {
-        setToast({
-          open: true,
-          message: error.response.data.message,
-          severity: "error",
-        })
+        dispatch(
+          showToast({ message: error.response.data.message, type: "error" }),
+        )
       }
       console.log("🚀 ~ onSubmit ~ error:", error)
     } finally {
@@ -109,12 +93,6 @@ const LoginPage = () => {
       }}
       onSubmit={handleSubmit(onSubmit)}
     >
-      <Toast
-        open={toast.open}
-        message={toast.message}
-        severity={toast.severity}
-        onClose={handleCloseToast}
-      />
       <Paper
         elevation={6}
         sx={{
