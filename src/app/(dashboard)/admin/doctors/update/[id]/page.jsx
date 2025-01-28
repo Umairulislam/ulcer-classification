@@ -28,6 +28,7 @@ const page = () => {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const { id } = params
+  console.log("🚀 ~ page ~ id:", id)
   const isUpdate = Boolean(id)
 
   const togglePasswordVisibility = () => {
@@ -57,6 +58,7 @@ const page = () => {
   }
 
   const onSubmit = async (data) => {
+    console.log("🚀 ~ onSubmit ~ data:", data)
     const payload = {
       first_name: data.first_name,
       last_name: data.last_name,

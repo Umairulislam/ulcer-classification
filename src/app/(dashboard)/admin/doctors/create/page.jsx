@@ -35,7 +35,7 @@ const page = () => {
     control,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(doctorSchema),
+    resolver: yupResolver(doctorSchema(false)),
     defaultValues: {
       first_name: "",
       last_name: "",

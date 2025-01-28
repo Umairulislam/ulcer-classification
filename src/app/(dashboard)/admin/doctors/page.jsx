@@ -16,6 +16,12 @@ import {
   IconButton,
   Tooltip,
   CircularProgress,
+  Grid2,
+  TextField,
+  FormControl,
+  Select,
+  InputLabel,
+  MenuItem,
 } from "@mui/material"
 import Link from "next/link"
 import { Edit, Delete, Add } from "@/assets/icons"
@@ -30,27 +36,6 @@ import moment from "moment"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 
-// Dummy data array
-const dummyData = Array.from({ length: 20 }, (_, index) => ({
-  id: index + 1,
-  firstName: `First${index + 1}`,
-  lastName: `Last${index + 1}`,
-  email: `user${index + 1}@example.com`,
-  phone: `123-456-789${index}`,
-  createdAt: new Date().toLocaleDateString(),
-  status: index % 2 === 0 ? "Active" : "Inactive",
-}))
-
-const tableHead = [
-  "First Name",
-  "Last Name",
-  "Email",
-  "Phone Number",
-  "Create At",
-  "Status",
-  "Actions",
-]
-
 const page = () => {
   const dispatch = useDispatch()
   const [page, setPage] = useState(0)
@@ -59,11 +44,15 @@ const page = () => {
   const [doctors, setDoctors] = useState([])
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedDoctor, setSelectedDoctor] = useState(null)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [filterStatus, setFilterStatus] = useState("all")
 
   const getDoctors = async () => {
     setLoading(true)
     try {
       let path = `doctor/all?page=${page + 1}&perPage=${rowsPerPage}`
+      if (searchQuery) path += `&search=${searchQuery}`
+      if (filterStatus !== "all") path += `&status=${filterStatus}`
       const { data } = await AxiosInstance.get(path)
       setDoctors(data?.response)
     } catch (error) {
@@ -111,8 +100,11 @@ const page = () => {
   }
 
   useEffect(() => {
-    getDoctors()
-  }, [page, rowsPerPage])
+    const handler = setTimeout(getDoctors, 500)
+    return () => {
+      clearTimeout(handler)
+    }
+  }, [page, rowsPerPage, searchQuery, filterStatus])
 
   return (
     <Container>
@@ -125,77 +117,98 @@ const page = () => {
         </Link>
       </Stack>
 
-      {!loading && doctors?.details?.length === 0 ? (
+      <Grid2
+        container
+        spacing={2}
+        mt={2}
+        justifyContent="flex-start"
+        alignItems="flex-start"
+      >
+        <TextField
+          label="Search doctor"
+          variant="outlined"
+          size="small"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <FormControl variant="outlined" size="small" sx={{ minWidth: 210 }}>
+          <InputLabel id="demo-simple-select-label">Status</InputLabel>
+          <Select
+            label="Status"
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
+            <MenuItem value="all">All</MenuItem>
+            <MenuItem value="active">Active</MenuItem>
+            <MenuItem value="deactive">Deactive</MenuItem>
+          </Select>
+        </FormControl>
+      </Grid2>
+
+      {/* {!loading && doctors?.details?.length === 0 ? (
         <NoRecordsFound title="There is no doctor to display" />
-      ) : (
-        <Paper
-          sx={{
-            width: "100%",
-            overflow: "hidden",
-            boxShadow: "none",
-            marginTop: 4,
-            border: "1px solid lightgray",
-          }}
-        >
-          <TableContainer sx={{ height: "calc(100vh - 230px)" }}>
-            <Table stickyHeader>
-              <TableHead>
+      ) : ( */}
+      <Paper
+        sx={{
+          width: "100%",
+          overflow: "hidden",
+          boxShadow: "none",
+          marginTop: 4,
+          border: "1px solid lightgray",
+        }}
+      >
+        <TableContainer sx={{ height: "calc(100vh - 280px)" }}>
+          <Table stickyHeader>
+            <TableHead>
+              <TableRow>
+                {tableHead.map((head, index) => (
+                  <TableCell
+                    key={index}
+                    sx={{
+                      color: "white",
+                      backgroundColor: "primary.main",
+                      fontWeight: "bold",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {head}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {loading ? (
                 <TableRow>
-                  {tableHead.map((head, index) => (
-                    <TableCell
-                      key={index}
-                      sx={{
-                        color: "white",
-                        backgroundColor: "primary.main",
-                        fontWeight: "bold",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {head}
-                    </TableCell>
-                  ))}
+                  <TableCell colSpan={tableHead.length} align="center">
+                    <CircularProgress />
+                  </TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={7} align="center">
-                      <CircularProgress />
+              ) : doctors?.details?.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={tableHead.length} align="center">
+                    <Typography variant="body1" color="textSecondary">
+                      No Doctors found.
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                doctors?.details?.map((row) => (
+                  <TableRow key={row.id}>
+                    <TableCell>{row.first_name}</TableCell>
+                    <TableCell>{row.last_name}</TableCell>
+                    <TableCell>{row.email}</TableCell>
+                    <TableCell>{row.phone_no}</TableCell>
+                    <TableCell sx={{ whiteSpace: "nowrap" }}>
+                      {moment(row.created_at).format("DD-MM-YYYY")}
                     </TableCell>
-                  </TableRow>
-                ) : (
-                  doctors?.details?.map((row) => (
-                    <TableRow key={row.id}>
-                      <TableCell>{row.first_name}</TableCell>
-                      <TableCell>{row.last_name}</TableCell>
-                      <TableCell>{row.email}</TableCell>
-                      <TableCell>{row.phone_no}</TableCell>
-                      <TableCell sx={{ whiteSpace: "nowrap" }}>
-                        {moment(row.created_at).format("DD-MM-YYYY")}
-                      </TableCell>
-                      <TableCell>
-                        <StatusChip status={row.status} />
-                      </TableCell>
-                      <TableCell>
-                        <Stack direction="row" spacing={1}>
-                          <Tooltip title="Edit" arrow>
-                            <Link href={`doctors/update/${row.id}`}>
-                              <IconButton
-                                sx={{
-                                  backgroundColor: "secondary.light",
-                                  "&:hover": {
-                                    backgroundColor: "primary.light",
-                                    color: "white",
-                                  },
-                                }}
-                              >
-                                <Edit />
-                              </IconButton>
-                            </Link>
-                          </Tooltip>
-                          <Tooltip title="Delete" arrow>
+                    <TableCell>
+                      <StatusChip status={row.status} />
+                    </TableCell>
+                    <TableCell>
+                      <Stack direction="row" spacing={1}>
+                        <Tooltip title="Edit" arrow>
+                          <Link href={`doctors/update/${row.id}`}>
                             <IconButton
-                              onClick={() => handleDeleteClick(row)}
                               sx={{
                                 backgroundColor: "secondary.light",
                                 "&:hover": {
@@ -204,30 +217,45 @@ const page = () => {
                                 },
                               }}
                             >
-                              <Delete />
+                              <Edit />
                             </IconButton>
-                          </Tooltip>
-                        </Stack>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                          </Link>
+                        </Tooltip>
+                        <Tooltip title="Delete" arrow>
+                          <IconButton
+                            onClick={() => handleDeleteClick(row)}
+                            sx={{
+                              backgroundColor: "secondary.light",
+                              "&:hover": {
+                                backgroundColor: "primary.light",
+                                color: "white",
+                              },
+                            }}
+                          >
+                            <Delete />
+                          </IconButton>
+                        </Tooltip>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
-          {/* Pagination section */}
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 20]}
-            component="div"
-            count={doctors?.extra?.totalItems}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Paper>
-      )}
+        {/* Pagination section */}
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 20]}
+          component="div"
+          count={doctors?.extra?.totalItems}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
+      {/* )} */}
 
       {/* Alert Dialog */}
       <AlertDialog
@@ -242,3 +270,13 @@ const page = () => {
 }
 
 export default page
+
+const tableHead = [
+  "First Name",
+  "Last Name",
+  "Email",
+  "Phone Number",
+  "Create At",
+  "Status",
+  "Actions",
+]
