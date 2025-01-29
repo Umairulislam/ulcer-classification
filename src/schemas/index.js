@@ -1,0 +1,5 @@
+export { default as loginSchema } from "./loginSchema"
+export { default as resetSchema } from "./resetSchema"
+export { default as doctorSchema } from "./doctorSchema"
+export { default as updateProfileSchema } from "./updateProfileSchema"
+export { default as updatePassSchema } from "./updatePassSchema"
