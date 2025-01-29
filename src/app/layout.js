@@ -6,7 +6,7 @@ import { Provider } from "react-redux"
 import store from "@/store/store"
 import { ThemeProvider } from "@mui/material/styles"
 import theme from "@/styles/theme"
-import Toast from "@/components/Toast"
+import AppProvider from "@/hoc/AppProvider"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,8 +31,9 @@ export default function RootLayout({ children }) {
           <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
-            {children}
-            <Toast />
+            <AppProvider >
+              {children}
+            </AppProvider>
           </body>
         </ThemeProvider>
       </Provider>
