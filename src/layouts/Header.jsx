@@ -12,17 +12,21 @@ import {
   Divider,
 } from "@mui/material"
 import { Menu as MenuIcon } from "@mui/icons-material"
-import { useRouter } from "next/navigation"
-import { useDispatch } from "react-redux"
+import { usePathname, useRouter } from "next/navigation"
+import { useDispatch, useSelector } from "react-redux"
 import { clearUser } from "@/store/userSlice"
 import { showToast } from "@/store/toastSlice"
 import { AxiosInstance } from "@/components"
+import Link from "next/link"
 
 const Header = ({ isSmallScreen, handleDrawerToggle }) => {
-  const [anchorEl, setAnchorEl] = useState(null)
-  const [loading, setLoading] = useState(false)
   const dispatch = useDispatch()
   const router = useRouter()
+  const { user } = useSelector((state) => state.user)
+  const pathname = usePathname()
+  const basePath = pathname.split("/")[1]
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget)
@@ -91,14 +95,24 @@ const Header = ({ isSmallScreen, handleDrawerToggle }) => {
             horizontal: "right",
           }}
         >
-          <MenuItem
-            onClick={() => {
-              router.push("profile")
-              handleCloseMenu()
-            }}
-          >
-            Profile
-          </MenuItem>
+          <Link href={`/${basePath}/profile/${user?.id}/update-profile`}>
+            <MenuItem
+              onClick={() => {
+                handleCloseMenu()
+              }}
+            >
+              Profile
+            </MenuItem>
+          </Link>
+          <Link href={`/${basePath}/profile/${user?.id}/update-password`}>
+            <MenuItem
+              onClick={() => {
+                handleCloseMenu()
+              }}
+            >
+              Change Password
+            </MenuItem>
+          </Link>
           <MenuItem
             onClick={() => {
               handleLogout()
