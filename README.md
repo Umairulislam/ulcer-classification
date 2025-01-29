@@ -37,6 +37,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## file structure
 
+- public
 - src
   - app
     - (auth)
@@ -45,6 +46,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
       - login
         - loginSchema.jsx
         - page.jsx
+      - reset-password
     - (dashboard)
       - admin
         - page.jsx
@@ -53,4 +55,24 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
     - layout.js
     - page.js
     - globals.css
+  - assets
+    - icons
+    - images
   - components
+  - layouts
+    - Header.jsx
+    - Sidenav.jsx
+    - index.js
+  - schemas
+  - store
+    - store.js
+    - toastSlice.js
+    - userSlice.js
+  - styles
+- .env
+- .gitignore
+- .eslint.config.mjs
+- jsconfig.json
+- next.config.mjs
+- package-lock.json
+- package.json
