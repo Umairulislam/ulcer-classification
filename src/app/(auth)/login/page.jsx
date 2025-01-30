@@ -14,7 +14,7 @@ import {
 import { Email, Visibility, VisibilityOff, Lock } from "@/assets/icons"
 import { useForm, Controller } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { loginSchema } from "./loginSchema"
+import { loginSchema } from "@/schemas"
 import { AxiosInstance } from "@/components"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
