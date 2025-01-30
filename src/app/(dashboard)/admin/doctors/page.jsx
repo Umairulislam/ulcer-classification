@@ -22,6 +22,7 @@ import {
   Select,
   InputLabel,
   MenuItem,
+  Switch,
 } from "@mui/material"
 import Link from "next/link"
 import { Edit, Delete, Add } from "@/assets/icons"
@@ -62,20 +63,6 @@ const page = () => {
     }
   }
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage)
-  }
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10))
-    setPage(0)
-  }
-
-  const handleDeleteClick = (doctor) => {
-    setSelectedDoctor(doctor)
-    setDialogOpen(true)
-  }
-
   const handleConfirmDelete = async () => {
     try {
       const { data } = await AxiosInstance.delete(
@@ -97,6 +84,39 @@ const page = () => {
       setDialogOpen(false)
       setSelectedDoctor(null)
     }
+  }
+
+  const handleToggleStatus = async (doctor) => {
+    console.log("doctor", doctor)
+    setLoading(true)
+    try {
+      const { data } = await AxiosInstance.patch(
+        `doctor/update/status/${doctor.id}`,
+        {
+          status: doctor.status === "active" ? "deactive" : "active",
+        },
+      )
+      dispatch(showToast({ message: data.message, type: "success" }))
+      getDoctors()
+    } catch (error) {
+      console.error("Error toggling doctor status:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage)
+  }
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
+
+  const handleDeleteClick = (doctor) => {
+    setSelectedDoctor(doctor)
+    setDialogOpen(true)
   }
 
   useEffect(() => {
@@ -202,7 +222,13 @@ const page = () => {
                       {moment(row.created_at).format("DD-MM-YYYY")}
                     </TableCell>
                     <TableCell>
-                      <StatusChip status={row.status} />
+                      {/* <StatusChip status={row.status} /> */}
+                      <Tooltip title={row.status} arrow>
+                        <Switch
+                          checked={row.status === "active"}
+                          onChange={() => handleToggleStatus(row)}
+                        />
+                      </Tooltip>
                     </TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={1}>

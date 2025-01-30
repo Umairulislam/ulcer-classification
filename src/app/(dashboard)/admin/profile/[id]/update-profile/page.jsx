@@ -6,34 +6,25 @@ import {
   Grid2,
   TextField,
   Typography,
-  InputAdornment,
-  IconButton,
   MenuItem,
 } from "@mui/material"
-import { Visibility, VisibilityOff } from "@/assets/icons"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useForm, Controller } from "react-hook-form"
-import { doctorSchema } from "@/schemas"
+import { updateProfileSchema } from "@/schemas"
 import { useEffect, useState } from "react"
 import { AxiosInstance, CustomButton } from "@/components"
 import { useParams } from "next/navigation"
 import { useRouter } from "next/navigation"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 
 const page = () => {
   const params = useParams()
   const router = useRouter()
   const dispatch = useDispatch()
-  const [loading, setLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
   const { id } = params
-  console.log("🚀 ~ page ~ id:", id)
-  const isUpdate = Boolean(id)
-
-  const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev)
-  }
+  const { user } = useSelector((state) => state.user)
+  const [loading, setLoading] = useState(false)
 
   const {
     handleSubmit,
@@ -41,13 +32,13 @@ const page = () => {
     reset,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(doctorSchema(isUpdate)),
+    resolver: yupResolver(updateProfileSchema),
   })
 
   const fetchDoctor = async () => {
     setLoading(true)
     try {
-      const { data } = await AxiosInstance.get(`doctor/${id}`)
+      const { data } = await AxiosInstance.get(`doctor/${user?.id}`)
       // Populate form fields with the fetched data
       reset(data?.response?.details)
     } catch (error) {
@@ -63,18 +54,18 @@ const page = () => {
       first_name: data.first_name,
       last_name: data.last_name,
       email: data.email,
-      password: data.password,
       phone_no: data.phone_no,
       gender: data.gender,
     }
 
     setLoading(true)
     try {
+      // link to be change
       const { data } = await AxiosInstance.patch(`doctor/update/${id}`, payload)
       dispatch(showToast({ message: data.message, type: "success" }))
-      router.push("/admin/doctors")
+      router.push("/admin/dashboard")
     } catch (error) {
-      console.error("Error updating doctor details:", error)
+      console.error("Error updating admin profile", error)
     } finally {
       setLoading(false)
     }
@@ -87,14 +78,14 @@ const page = () => {
   return (
     <Container>
       <Typography variant="h4" fontWeight="bold">
-        Update Doctor
+        Update Profile
       </Typography>
       <Box
         component="form"
         sx={{ width: "100%", marginTop: 4 }}
         onSubmit={handleSubmit(onSubmit)}
       >
-        <Grid2 container spacing={2}>
+        <Grid2 container spacing={2} mb={2}>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               First Name
@@ -156,41 +147,6 @@ const page = () => {
           </Grid2>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
-              Password
-            </Typography>
-            <Controller
-              name="password"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  placeholder="At least 6 characters"
-                  variant="outlined"
-                  type={showPassword ? "text" : "password"}
-                  fullWidth
-                  error={errors.password}
-                  helperText={errors.password?.message}
-                  slotProps={{
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={togglePasswordVisibility}
-                            edge="end"
-                            aria-label="toggle password visibility"
-                          >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                />
-              )}
-            />
-          </Grid2>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
-            <Typography variant="body1" fontWeight="bold" mb={1}>
               Phone Number
             </Typography>
             <Controller
@@ -232,12 +188,12 @@ const page = () => {
               )}
             />
           </Grid2>
-          <CustomButton
-            text={!loading ? "Update" : "Updating"}
-            disabled={loading}
-            type="submit"
-          />
         </Grid2>
+        <CustomButton
+          text={!loading ? "Update" : "Updating"}
+          disabled={loading}
+          type="submit"
+        />
       </Box>
     </Container>
   )

@@ -15,7 +15,7 @@ import { Visibility, VisibilityOff } from "@/assets/icons"
 import { AxiosInstance, CustomButton } from "@/components"
 import { useForm, Controller } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-import doctorSchema from "./doctorSchema"
+import { doctorSchema } from "@/schemas"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
@@ -78,7 +78,7 @@ const page = () => {
         sx={{ width: "100%", marginTop: 4 }}
         onSubmit={handleSubmit(onSubmit)}
       >
-        <Grid2 container spacing={2}>
+        <Grid2 container spacing={2} mb={2}>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               First Name
@@ -215,12 +215,12 @@ const page = () => {
               )}
             />
           </Grid2>
-          <CustomButton
-            text={!loading ? "Submit" : "Submitting"}
-            disabled={loading}
-            type="submit"
-          />
         </Grid2>
+        <CustomButton
+          text={!loading ? "Submit" : "Submitting"}
+          disabled={loading}
+          type="submit"
+        />
       </Box>
     </Container>
   )
