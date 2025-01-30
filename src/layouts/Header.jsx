@@ -10,8 +10,10 @@ import {
   MenuItem,
   Avatar,
   Divider,
+  ListItemIcon,
 } from "@mui/material"
 import { Menu as MenuIcon } from "@mui/icons-material"
+import { AccountCircle, Lock, ExitToApp } from "@/assets/icons"
 import { usePathname, useRouter } from "next/navigation"
 import { useDispatch, useSelector } from "react-redux"
 import { clearUser } from "@/store/userSlice"
@@ -41,7 +43,6 @@ const Header = ({ isSmallScreen, handleDrawerToggle }) => {
     try {
       const { data } = await AxiosInstance.post("auth/logout")
       localStorage.removeItem("accessToken")
-      localStorage.removeItem("role")
       dispatch(clearUser())
       dispatch(showToast({ message: data.message, type: "success" }))
       router.push("/login")
@@ -96,30 +97,25 @@ const Header = ({ isSmallScreen, handleDrawerToggle }) => {
           }}
         >
           <Link href={`/${basePath}/profile/${user?.id}/update-profile`}>
-            <MenuItem
-              onClick={() => {
-                handleCloseMenu()
-              }}
-            >
+            <MenuItem onClick={handleCloseMenu}>
+              <ListItemIcon>
+                <AccountCircle fontSize="small" />
+              </ListItemIcon>
               Profile
             </MenuItem>
           </Link>
           <Link href={`/${basePath}/profile/${user?.id}/update-password`}>
-            <MenuItem
-              onClick={() => {
-                handleCloseMenu()
-              }}
-            >
+            <MenuItem onClick={handleCloseMenu}>
+              <ListItemIcon>
+                <Lock fontSize="small" />
+              </ListItemIcon>
               Change Password
             </MenuItem>
           </Link>
-          <MenuItem
-            onClick={() => {
-              handleLogout()
-              handleCloseMenu()
-            }}
-            disabled={loading}
-          >
+          <MenuItem onClick={handleLogout} disabled={loading}>
+            <ListItemIcon>
+              <ExitToApp fontSize="small" />
+            </ListItemIcon>
             Logout
           </MenuItem>
         </Menu>

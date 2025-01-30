@@ -53,14 +53,19 @@ const LoginPage = () => {
 
     try {
       const { data } = await AxiosInstance.post("auth/login", payload)
-      console.log("🚀 ~ onSubmit ~ data:", data)
+
+      const createCookie =
+        (document.cookie = `accessToken=${data?.response?.extra?.access_token}; path=/`)
+
+      console.log("🚀 ~ onSubmit ~ createCookie:", createCookie)
 
       const accessToken = data?.response?.extra?.access_token
       const role = data?.response?.details?.role
       localStorage.setItem("accessToken", accessToken)
-      localStorage.setItem("role", role)
+
       dispatch(setUser(data?.response?.details))
       dispatch(showToast({ message: data.message, type: "success" }))
+
       if (role === "admin") {
         return router.push("/admin/dashboard")
       }

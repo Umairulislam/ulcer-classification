@@ -44,9 +44,9 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
       - forget-password
         - page.jsx
       - login
-        - loginSchema.jsx
         - page.jsx
       - reset-password
+        - page.jsx
     - (dashboard)
       - admin
         - page.jsx
@@ -59,6 +59,8 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
     - icons
     - images
   - components
+  - hoc
+    - AppProvider.js
   - layouts
     - Header.jsx
     - Sidenav.jsx
@@ -69,6 +71,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
     - toastSlice.js
     - userSlice.js
   - styles
+    - theme.js
 - .env
 - .gitignore
 - .eslint.config.mjs
@@ -76,3 +79,5 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 - next.config.mjs
 - package-lock.json
 - package.json
+- postcss.config.mjs
+- tailwind.config.mjs

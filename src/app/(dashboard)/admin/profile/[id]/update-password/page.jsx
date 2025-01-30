@@ -1,8 +1,9 @@
 "use client"
 
 import { Lock, VisibilityOff, Visibility } from "@/assets/icons"
-import { CustomButton } from "@/components"
+import { AxiosInstance, CustomButton } from "@/components"
 import { updatePassSchema } from "@/schemas"
+import { showToast } from "@/store/toastSlice"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
   Box,
@@ -13,10 +14,16 @@ import {
   TextField,
   Typography,
 } from "@mui/material"
+import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
+import { useDispatch } from "react-redux"
 
 const page = () => {
+  const dispatch = useDispatch()
+  const router = useRouter()
+  const pathname = usePathname()
+  const basePath = pathname.split("/")[1]
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -35,9 +42,20 @@ const page = () => {
 
   const onSubmit = async (data) => {
     const payload = {
-      old_password: data.old_password,
-      password: data.password,
+      current_password: data.current_password,
+      new_password: data.new_password,
       confirm_password: data.confirm_password,
+    }
+
+    setLoading(true)
+    try {
+      const { data } = await AxiosInstance.post("auth/change-password", payload)
+      dispatch(showToast({ message: data?.message, type: "success" }))
+      router.push(`/${basePath}/dashboard`)
+    } catch (error) {
+      console.error("Error updating password:", error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -57,7 +75,7 @@ const page = () => {
               Old Password
             </Typography>
             <Controller
-              name="old_password"
+              name="current_password"
               control={control}
               render={({ field }) => (
                 <TextField
@@ -67,8 +85,8 @@ const page = () => {
                   type={showPassword ? "text" : "password"}
                   fullWidth
                   {...field}
-                  error={errors.old_password}
-                  helperText={errors.old_password?.message}
+                  error={errors.current_password}
+                  helperText={errors.current_password?.message}
                   slotProps={{
                     input: {
                       startAdornment: (
@@ -98,18 +116,18 @@ const page = () => {
               New Password
             </Typography>
             <Controller
-              name="password"
+              name="new_password"
               control={control}
               render={({ field }) => (
                 <TextField
-                  label="Password"
-                  placeholder="Enter your password"
+                  label="New Password"
+                  placeholder="Enter your new password"
                   variant="outlined"
                   type={showPassword ? "text" : "password"}
                   fullWidth
                   {...field}
-                  error={errors.password}
-                  helperText={errors.password?.message}
+                  error={errors.new_password}
+                  helperText={errors.new_password?.message}
                   slotProps={{
                     input: {
                       startAdornment: (
