@@ -23,13 +23,12 @@ import { showToast } from "@/store/toastSlice"
 
 const page = () => {
   const params = useParams()
+  const { id } = params
+  const isUpdate = Boolean(id)
   const router = useRouter()
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const { id } = params
-  console.log("🚀 ~ page ~ id:", id)
-  const isUpdate = Boolean(id)
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev)
@@ -44,7 +43,7 @@ const page = () => {
     resolver: yupResolver(doctorSchema(isUpdate)),
   })
 
-  const fetchDoctor = async () => {
+  const getDoctor = async () => {
     setLoading(true)
     try {
       const { data } = await AxiosInstance.get(`doctor/${id}`)
@@ -81,7 +80,7 @@ const page = () => {
   }
 
   useEffect(() => {
-    fetchDoctor()
+    getDoctor()
   }, [id, reset])
 
   return (

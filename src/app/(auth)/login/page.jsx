@@ -23,22 +23,22 @@ import Link from "next/link"
 import { showToast } from "@/store/toastSlice"
 import { createCookie } from "@/helpers/cookie"
 
-// Utility function to decode a JWT token
-function decodeJwt(token) {
-  try {
-    // Split the token into its three parts
-    const [header, payload, signature] = token.split(".")
+// // Utility function to decode a JWT token
+// function decodeJwt(token) {
+//   try {
+//     // Split the token into its three parts
+//     const [header, payload, signature] = token.split(".")
 
-    // Decode the payload (Base64 URL decode)
-    const decodedPayload = atob(payload.replace(/-/g, "+").replace(/_/g, "/"))
+//     // Decode the payload (Base64 URL decode)
+//     const decodedPayload = atob(payload.replace(/-/g, "+").replace(/_/g, "/"))
 
-    // Parse the decoded payload as JSON
-    return JSON.parse(decodedPayload)
-  } catch (error) {
-    console.error("Failed to decode JWT:", error)
-    return null
-  }
-}
+//     // Parse the decoded payload as JSON
+//     return JSON.parse(decodedPayload)
+//   } catch (error) {
+//     console.error("Failed to decode JWT:", error)
+//     return null
+//   }
+// }
 
 const LoginPage = () => {
   const router = useRouter()
@@ -74,13 +74,7 @@ const LoginPage = () => {
       const accessToken = data?.response?.extra?.access_token
       const role = data?.response?.details?.role
 
-      // Decode the JWT token to extract user data
-      const decodedToken = decodeJwt(accessToken)
-      console.log("🚀 ~ Decoded Token:", decodedToken)
-
-      const newCookie = await createCookie("accessToken", accessToken)
-      console.log("🚀 ~ onSubmit ~ newCookie:", newCookie)
-
+      await createCookie(JSON.stringify(accessToken))
       localStorage.setItem("accessToken", accessToken)
 
       dispatch(setUser(data?.response?.details))

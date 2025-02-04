@@ -6,25 +6,25 @@ import {
   Grid2,
   TextField,
   Typography,
-  MenuItem,
+  Autocomplete,
 } from "@mui/material"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { useForm, Controller } from "react-hook-form"
-import { updateProfileSchema } from "@/schemas"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { AxiosInstance, CustomButton } from "@/components"
-import { useParams } from "next/navigation"
-import { useRouter } from "next/navigation"
-import { useDispatch, useSelector } from "react-redux"
+import { useForm, Controller } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { patientSchema } from "@/schemas"
+import { useParams, useRouter } from "next/navigation"
+import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 
 const page = () => {
   const params = useParams()
+  const { id } = params
+  const isUpdate = Boolean(id)
   const router = useRouter()
   const dispatch = useDispatch()
-  const { id } = params
-  const { user } = useSelector((state) => state.user)
   const [loading, setLoading] = useState(false)
+  const [doctors, setDoctors] = useState([])
 
   const {
     handleSubmit,
@@ -32,17 +32,30 @@ const page = () => {
     reset,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(updateProfileSchema),
+    resolver: yupResolver(patientSchema(false)),
   })
 
-  const fetchDoctor = async () => {
+  const getPatient = async () => {
     setLoading(true)
     try {
-      const { data } = await AxiosInstance.get(`doctor/${user?.id}`)
+      const { data } = await AxiosInstance.get(`patient/${id}`)
       // Populate form fields with the fetched data
       reset(data?.response?.details)
     } catch (error) {
-      console.error("Error fetching doctor details:", error)
+      console.error("Error fetching patient details:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const getDoctors = async () => {
+    setLoading(true)
+    try {
+      let path = `doctor/all?page=1&perPage=100`
+      const { data } = await AxiosInstance.get(path)
+      setDoctors(data?.response?.details)
+    } catch (error) {
+      console.log(error)
     } finally {
       setLoading(false)
     }
@@ -51,34 +64,38 @@ const page = () => {
   const onSubmit = async (data) => {
     console.log("🚀 ~ onSubmit ~ data:", data)
     const payload = {
-      first_name: data.first_name,
-      last_name: data.last_name,
+      name: data.name,
       email: data.email,
       phone_no: data.phone_no,
-      gender: data.gender,
+      doctor_id: data.doctor_id,
     }
 
     setLoading(true)
     try {
-      // API to be change
-      const { data } = await AxiosInstance.patch(`doctor/update/${id}`, payload)
+      const { data } = await AxiosInstance.patch(`patient/${id}`, payload)
       dispatch(showToast({ message: data.message, type: "success" }))
-      router.push("/admin/dashboard")
+      router.push("/admin/patients")
     } catch (error) {
-      console.error("Error updating admin profile", error)
+      console.error("Error updating patient details:", error)
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchDoctor()
+    getDoctors()
+  }, [])
+
+  useEffect(() => {
+    if (isUpdate) {
+      getPatient()
+    }
   }, [id, reset])
 
   return (
     <Container>
       <Typography variant="h4" fontWeight="bold">
-        Update Profile
+        Update Patient
       </Typography>
       <Box
         component="form"
@@ -88,38 +105,19 @@ const page = () => {
         <Grid2 container spacing={2} mb={2}>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
-              First Name
+              Name
             </Typography>
             <Controller
-              name="first_name"
+              name="name"
               control={control}
               render={({ field }) => (
                 <TextField
                   {...field}
-                  placeholder="Enter first name (only alphabets)"
+                  placeholder="Enter Name (only alphabets)"
                   variant="outlined"
                   fullWidth
-                  error={errors.first_name}
-                  helperText={errors.first_name?.message}
-                />
-              )}
-            />
-          </Grid2>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
-            <Typography variant="body1" fontWeight="bold" mb={1}>
-              Last Name
-            </Typography>
-            <Controller
-              name="last_name"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  placeholder="Enter last name (only alphabets)"
-                  variant="outlined"
-                  fullWidth
-                  error={errors.last_name}
-                  helperText={errors.last_name?.message}
+                  error={errors.name}
+                  helperText={errors.name?.message}
                 />
               )}
             />
@@ -137,10 +135,10 @@ const page = () => {
                   placeholder="e.g., example@domain.com"
                   variant="outlined"
                   type="email"
+                  disabled
                   fullWidth
                   error={errors.email}
                   helperText={errors.email?.message}
-                  disabled
                 />
               )}
             />
@@ -166,31 +164,36 @@ const page = () => {
           </Grid2>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
-              Gender
+              Doctor
             </Typography>
             <Controller
-              name="gender"
+              name="doctor_id"
               control={control}
               render={({ field }) => (
-                <TextField
-                  {...field}
-                  select
-                  label="Gender"
-                  variant="outlined"
-                  fullWidth
-                  error={errors.gender}
-                  helperText={errors.gender?.message}
-                >
-                  <MenuItem value="male">Male</MenuItem>
-                  <MenuItem value="female">Female</MenuItem>
-                  <MenuItem value="other">Other</MenuItem>
-                </TextField>
+                <Autocomplete
+                  options={doctors}
+                  getOptionLabel={(option) => option.first_name}
+                  isOptionEqualToValue={(option, value) =>
+                    option.id === value.id
+                  }
+                  onChange={(event, value) => field.onChange(value?.id || "")}
+                  value={doctors.find((doc) => doc.id === field.value) || null}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      placeholder="Select Doctor"
+                      error={errors.doctor_id}
+                      helperText={errors.doctor_id?.message}
+                    />
+                  )}
+                />
               )}
             />
           </Grid2>
         </Grid2>
         <CustomButton
-          text={!loading ? "Update" : "Updating"}
+          text={!loading ? "Submit" : "Submitting"}
           disabled={loading}
           type="submit"
         />
