@@ -20,6 +20,7 @@ import { clearUser } from "@/store/userSlice"
 import { showToast } from "@/store/toastSlice"
 import { AxiosInstance } from "@/components"
 import Link from "next/link"
+import { deleteCookie } from "@/helpers/cookie"
 
 const Header = ({ isSmallScreen, handleDrawerToggle }) => {
   const dispatch = useDispatch()
@@ -43,6 +44,7 @@ const Header = ({ isSmallScreen, handleDrawerToggle }) => {
     try {
       const { data } = await AxiosInstance.post("auth/logout")
       localStorage.removeItem("accessToken")
+      await deleteCookie()
       dispatch(clearUser())
       dispatch(showToast({ message: data.message, type: "success" }))
       router.push("/login")
