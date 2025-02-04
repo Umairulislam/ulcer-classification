@@ -80,7 +80,7 @@ const Header = ({ isSmallScreen, handleDrawerToggle }) => {
           component="div"
           sx={{ flexGrow: 1, color: "black" }}
         >
-          Admin Panel
+          {user?.role === "admin" ? "Admin Panel" : "Doctor Panel"}
         </Typography>
         <IconButton onClick={handleOpenMenu}>
           <Avatar alt="Profile" src="" />

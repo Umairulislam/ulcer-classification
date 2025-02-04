@@ -3,6 +3,7 @@
 import React from "react"
 import {
   Box,
+  CircularProgress,
   Drawer,
   List,
   ListItem,
@@ -10,20 +11,24 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material"
-import { Person, People, Schedule, Dashboard } from "@/assets/icons"
+import { Dashboard, LocalHospital, Groups, Science } from "@/assets/icons"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 
 const menus = {
   admin: [
     { label: "Dashboard", path: "/admin/dashboard", icon: <Dashboard /> },
-    { label: "Doctors", path: "/admin/doctors", icon: <Person /> },
-    { label: "Patients", path: "/admin/patients", icon: <People /> },
+    { label: "Doctors", path: "/admin/doctors", icon: <LocalHospital /> },
+    { label: "Patients", path: "/admin/patients", icon: <Groups /> },
   ],
   doctor: [
     { label: "Dashboard", path: "/doctor/dashboard", icon: <Dashboard /> },
-    { label: "Appointments", path: "/doctor/appointments", icon: <Schedule /> },
-    { label: "Reports", path: "/doctor/reports", icon: <Person /> },
+    { label: "Patients", path: "/doctor/patients", icon: <Groups /> },
+    {
+      label: "Classification",
+      path: "/doctor/classification",
+      icon: <Science />,
+    },
   ],
 }
 
@@ -56,34 +61,48 @@ const Sidenav = ({ role, isSmallScreen, mobileOpen, handleDrawerToggle }) => {
         </Typography>
       </Box>
       <List sx={{ padding: "10px", borderRadius: "10px" }}>
-        {menus[role]?.map((menu) => (
-          <ListItem
-            key={menu.label}
-            // component={Link}
-            // href={menu.path}
-            onClick={() => handleMenuClick(menu.path)}
-            sx={{
-              cursor: "pointer",
-              borderRadius: "10px",
-              marginY: "2px",
-              backgroundColor:
-                pathname === menu.path ? "primary.main" : "inherit",
-              color: pathname === menu.path ? "white" : "inherit",
-              "&:hover": {
-                backgroundColor: "primary.light",
-              },
-            }}
-          >
-            <ListItemIcon
+        {role ? (
+          menus[role]?.map((menu) => (
+            <ListItem
+              key={menu.label}
+              component={Link}
+              href={menu.path}
+              onClick={() => handleMenuClick(menu.path)}
               sx={{
+                cursor: "pointer",
+                borderRadius: "10px",
+                marginY: "2px",
+                backgroundColor:
+                  pathname === menu.path ? "primary.main" : "inherit",
                 color: pathname === menu.path ? "white" : "inherit",
+                "&:hover": {
+                  backgroundColor: "primary.light",
+                },
               }}
             >
-              {menu.icon}
-            </ListItemIcon>
-            <ListItemText primary={menu.label} />
-          </ListItem>
-        ))}
+              <ListItemIcon
+                sx={{
+                  color: pathname === menu.path ? "white" : "inherit",
+                }}
+              >
+                {menu.icon}
+              </ListItemIcon>
+              <ListItemText primary={menu.label} />
+            </ListItem>
+          ))
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "70vh",
+            }}
+          >
+            <CircularProgress color="primary" />
+          </Box>
+        )}
+        {/* {} */}
       </List>
     </Box>
   )

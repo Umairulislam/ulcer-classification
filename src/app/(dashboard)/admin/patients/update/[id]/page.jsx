@@ -30,6 +30,7 @@ const page = () => {
     handleSubmit,
     control,
     reset,
+    setError,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(patientSchema(false)),
@@ -67,7 +68,7 @@ const page = () => {
       name: data.name,
       email: data.email,
       phone_no: data.phone_no,
-      doctor_id: data.doctor_id,
+      doctor_id: data.doctor_id?.id,
     }
 
     setLoading(true)
@@ -76,7 +77,32 @@ const page = () => {
       dispatch(showToast({ message: data.message, type: "success" }))
       router.push("/admin/patients")
     } catch (error) {
-      console.error("Error updating patient details:", error)
+      const { data, status } = error?.response || {}
+
+      if (status === 400 || status === 404) {
+        dispatch(showToast({ message: data.message, type: "error" }))
+      } else if (status === 422) {
+        Object.keys(data).forEach((field) => {
+          setError(field, {
+            type: "manual",
+            message: data[field],
+          })
+        })
+      } else if (status === 500) {
+        dispatch(
+          showToast({
+            message: "Server error. Please try again later.",
+            type: "error",
+          }),
+        )
+      } else {
+        dispatch(
+          showToast({
+            message: "Something went wrong. Please try again.",
+            type: "error",
+          }),
+        )
+      }
     } finally {
       setLoading(false)
     }
@@ -172,12 +198,14 @@ const page = () => {
               render={({ field }) => (
                 <Autocomplete
                   options={doctors}
-                  getOptionLabel={(option) => option.first_name}
+                  getOptionLabel={(option) =>
+                    `${option.first_name} ${option.last_name}`
+                  }
                   isOptionEqualToValue={(option, value) =>
                     option.id === value.id
                   }
-                  onChange={(event, value) => field.onChange(value?.id || "")}
-                  value={doctors.find((doc) => doc.id === field.value) || null}
+                  onChange={(event, value) => field.onChange(value)}
+                  value={field.value}
                   renderInput={(params) => (
                     <TextField
                       {...params}

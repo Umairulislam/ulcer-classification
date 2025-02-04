@@ -2,18 +2,15 @@ import * as yup from "yup"
 
 const doctorSchema = (isUpdate = false) => {
   // Default to false
-  console.log("🚀 ~ doctorSchema ~ isUpdate:", isUpdate)
   return yup.object({
     first_name: yup
       .string()
       .required("First Name is required")
-      .matches(/^[a-zA-Z]+$/, "First Name must contain only alphabets")
       .min(2, "First Name must be at least 2 characters")
       .max(50, "First Name must be at most 50 characters"),
     last_name: yup
       .string()
       .required("Last Name is required")
-      .matches(/^[a-zA-Z]+$/, "Last Name must contain only alphabets")
       .min(2, "Last Name must be at least 2 characters")
       .max(50, "Last Name must be at most 50 characters"),
     email: yup
@@ -23,9 +20,9 @@ const doctorSchema = (isUpdate = false) => {
     password: isUpdate
       ? yup.string().notRequired()
       : yup
-          .string()
-          .required("Password is required")
-          .min(6, "Password must be at least 6 characters"),
+        .string()
+        .required("Password is required")
+        .min(6, "Password must be at least 6 characters"),
     phone_no: yup
       .string()
       .required("Phone Number is required")
