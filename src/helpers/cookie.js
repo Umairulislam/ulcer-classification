@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers"
 
-const createCookie = (value) => {
+const createCookie = async (value) => {
     cookies().set({
         name: "accessToken",
         value: value,
@@ -12,7 +12,7 @@ const createCookie = (value) => {
     })
 }
 
-const deleteCookie = () => {
+const deleteCookie = async () => {
     cookies().delete("accessToken")
 }
 
