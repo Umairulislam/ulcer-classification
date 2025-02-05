@@ -53,6 +53,7 @@ const LoginPage = () => {
   const {
     handleSubmit,
     control,
+    setError,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(loginSchema),
@@ -87,12 +88,32 @@ const LoginPage = () => {
         return router.push("/doctor/dashboard")
       }
     } catch (error) {
-      if (error.status === 400) {
+      const { data, status } = error?.response || {}
+
+      if (status === 400 || status === 404) {
+        dispatch(showToast({ message: data.message, type: "error" }))
+      } else if (status === 422) {
+        Object.keys(data).forEach((field) => {
+          setError(field, {
+            type: "manual",
+            message: data[field],
+          })
+        })
+      } else if (status === 500) {
         dispatch(
-          showToast({ message: error.response.data.message, type: "error" }),
+          showToast({
+            message: "Server error. Please try again later.",
+            type: "error",
+          }),
+        )
+      } else {
+        dispatch(
+          showToast({
+            message: "Something went wrong. Please try again.",
+            type: "error",
+          }),
         )
       }
-      console.log("🚀 ~ onSubmit ~ error:", error)
     } finally {
       setLoading(false)
     }
