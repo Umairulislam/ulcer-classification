@@ -1,5 +1,6 @@
 "use client"
 
+import { AxiosInstance, DashboardCard } from "@/components"
 import {
   Box,
   Container,
@@ -15,6 +16,7 @@ import {
   TableRow,
   Paper,
 } from "@mui/material"
+import { useEffect, useState } from "react"
 import {
   BarChart,
   Bar,
@@ -26,6 +28,26 @@ import {
 } from "recharts"
 
 const AdminDashboard = () => {
+  const [adminStats, setAdminStats] = useState({})
+  const [loading, setLoading] = useState(false)
+
+  const getStats = async () => {
+    setLoading(true)
+    try {
+      const { data } = await AxiosInstance.get("dashboard/admin")
+      setAdminStats(data?.response?.details)
+      console.log("🚀 ~ getStats ~ data:", data)
+    } catch (error) {
+      console.log("Error fetching stats:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    getStats()
+  }, [])
+
   // Hard-coded data
   const quickStats = [
     { title: "Total Doctors", value: 25 },
@@ -56,19 +78,14 @@ const AdminDashboard = () => {
 
       {/* Quick Stats */}
       <Grid2 container spacing={3} mb={4}>
-        {quickStats.map((stat, index) => (
-          <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={index}>
-            <Card sx={{ border: "1px solid lightgray", boxShadow: "none" }}>
-              <CardContent>
-                <Typography variant="h6" color="textSecondary">
-                  {stat.title}
-                </Typography>
-                <Typography variant="h4" fontWeight="bold">
-                  {stat.value}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid2>
+        {Object.entries(adminStats).map(([key, value]) => (
+          <DashboardCard
+            key={key}
+            title={key
+              .replace(/_/g, " ")
+              .replace(/\b\w/g, (char) => char.toUpperCase())}
+            value={value}
+          />
         ))}
       </Grid2>
 
