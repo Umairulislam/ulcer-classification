@@ -1,34 +1,66 @@
 "use client"
 
+import { AxiosInstance, DashboardCard, StatusChip } from "@/components"
 import {
   Box,
   Container,
   Grid2,
   Typography,
-  Card,
-  CardContent,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
 } from "@mui/material"
+import { useEffect, useState } from "react"
 import { PieChart, Pie, Tooltip, Legend, ResponsiveContainer } from "recharts"
 
 const DoctorDashboard = () => {
+  const [doctorStats, setDoctorStats] = useState({})
+  const [loading, setLoading] = useState(false)
+
+  const getStats = async () => {
+    setLoading(true)
+    try {
+      const { data } = await AxiosInstance.get("dashboard/doctor")
+      setDoctorStats(data?.response?.details)
+      console.log("🚀 ~ getStats ~ data:", data)
+    } catch (error) {
+      console.log("Error fetching stats:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    getStats()
+  }, [])
+
   // Hard-coded data
-  const quickStats = [
-    { title: "Total Patients", value: 50 },
-    { title: "Pending Classifications", value: 10 },
-    { title: "Completed Classifications", value: 40 },
-  ]
 
   const upcomingAppointments = [
-    { id: 1, patient: "John Doe", date: "2024-03-15", time: "10:00 AM" },
-    { id: 2, patient: "Jane Smith", date: "2024-03-16", time: "11:00 AM" },
-    { id: 3, patient: "Alice Johnson", date: "2024-03-17", time: "12:00 PM" },
+    {
+      id: 1,
+      patient: "John Doe",
+      age: 31,
+      classified: true,
+      date: "2024-03-15",
+    },
+    {
+      id: 2,
+      patient: "Jane Smith",
+      age: 32,
+      classified: false,
+      date: "2024-03-16",
+    },
+    {
+      id: 3,
+      patient: "Alice Johnson",
+      age: 35,
+      classified: true,
+      date: "2024-03-17",
+    },
   ]
 
   const classificationData = [
@@ -44,42 +76,50 @@ const DoctorDashboard = () => {
 
       {/* Quick Stats */}
       <Grid2 container spacing={3} mb={4}>
-        {quickStats.map((stat, index) => (
-          <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={index}>
-            <Card sx={{ border: "1px solid lightgray", boxShadow: "none" }}>
-              <CardContent>
-                <Typography variant="h6" color="textSecondary">
-                  {stat.title}
-                </Typography>
-                <Typography variant="h4" fontWeight="bold">
-                  {stat.value}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid2>
+        {Object.entries(doctorStats).map(([key, value]) => (
+          <DashboardCard
+            key={key}
+            title={key
+              .replace(/_/g, " ")
+              .replace(/\b\w/g, (char) => char.toUpperCase())}
+            value={value}
+          />
         ))}
       </Grid2>
 
-      {/* Upcoming Appointments */}
+      {/* Classification table */}
       <Box mb={4}>
         <Typography variant="h6" fontWeight="bold" mb={2}>
-          Upcoming Appointments
+          Patient Classification Overview
         </Typography>
-        <TableContainer sx={{ border: "1px solid lightgray" }}>
+        <TableContainer>
           <Table>
-            <TableHead>
+            <TableHead sx={{ border: "1px solid lightgray" }}>
               <TableRow>
-                <TableCell>Patient</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell>Time</TableCell>
+                {tableHead.map((head, index) => (
+                  <TableCell
+                    key={index}
+                    sx={{
+                      color: "white",
+                      backgroundColor: "primary.main",
+                      fontWeight: "bold",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {head}
+                  </TableCell>
+                ))}
               </TableRow>
             </TableHead>
-            <TableBody>
+            <TableBody sx={{ border: "1px solid lightgray" }}>
               {upcomingAppointments.map((appointment) => (
                 <TableRow key={appointment.id}>
                   <TableCell>{appointment.patient}</TableCell>
+                  <TableCell>{appointment.age}</TableCell>
+                  <TableCell>
+                    <StatusChip status={appointment.classified} />
+                  </TableCell>
                   <TableCell>{appointment.date}</TableCell>
-                  <TableCell>{appointment.time}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -114,3 +154,5 @@ const DoctorDashboard = () => {
 }
 
 export default DoctorDashboard
+
+const tableHead = ["Patient", "Age", "Classification Status", "Date Classified"]
