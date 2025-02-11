@@ -7,6 +7,7 @@ import {
   TextField,
   Typography,
   Autocomplete,
+  MenuItem,
 } from "@mui/material"
 import React, { useEffect, useState } from "react"
 import { AxiosInstance, CustomButton } from "@/components"
@@ -185,6 +186,50 @@ const page = () => {
                   error={errors.phone_no}
                   helperText={errors.phone_no?.message}
                 />
+              )}
+            />
+          </Grid2>
+          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+            <Typography variant="body1" fontWeight="bold" mb={1}>
+              Age
+            </Typography>
+            <Controller
+              name="age"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  type="number"
+                  placeholder="e.g., 20"
+                  variant="outlined"
+                  fullWidth
+                  error={errors.age}
+                  helperText={errors.age?.message}
+                />
+              )}
+            />
+          </Grid2>
+          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+            <Typography variant="body1" fontWeight="bold" mb={1}>
+              Gender
+            </Typography>
+            <Controller
+              name="gender"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  select
+                  label="Gender"
+                  variant="outlined"
+                  fullWidth
+                  error={errors.gender}
+                  helperText={errors.gender?.message}
+                >
+                  <MenuItem value="male">Male</MenuItem>
+                  <MenuItem value="female">Female</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
+                </TextField>
               )}
             />
           </Grid2>

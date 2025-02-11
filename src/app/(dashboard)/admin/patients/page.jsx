@@ -18,21 +18,11 @@ import {
   CircularProgress,
   Grid2,
   TextField,
-  FormControl,
-  Select,
-  InputLabel,
-  MenuItem,
-  Switch,
+  Autocomplete,
 } from "@mui/material"
 import Link from "next/link"
 import { Edit, Delete, Add } from "@/assets/icons"
-import {
-  AxiosInstance,
-  NoRecordsFound,
-  CustomButton,
-  StatusChip,
-  AlertDialog,
-} from "@/components"
+import { AxiosInstance, CustomButton, AlertDialog } from "@/components"
 import moment from "moment"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
@@ -46,18 +36,32 @@ const page = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedPatient, setSelectedPatient] = useState(null)
   const [searchQuery, setSearchQuery] = useState("")
-  const [filterStatus, setFilterStatus] = useState("all")
+  const [filterDoctor, setFilterDoctor] = useState(null)
+  const [doctors, setDoctors] = useState([])
 
   const getPatients = async () => {
     setLoading(true)
     try {
-      let path = `patient?page=${page + 1}&perPage=${rowsPerPage}`
+      let path = `patient/all?page=${page + 1}&perPage=${rowsPerPage}`
       if (searchQuery) path += `&search=${searchQuery}`
-      if (filterStatus !== "all") path += `&status=${filterStatus}`
+      if (filterDoctor) path += `&doctor_id=${filterDoctor?.id}`
       const { data } = await AxiosInstance.get(path)
       setPatients(data?.response)
     } catch (error) {
       console.log(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const getDoctors = async () => {
+    setLoading(true)
+    try {
+      let path = `doctor/all?page=1&perPage=100`
+      const { data } = await AxiosInstance.get(path)
+      setDoctors(data?.response?.details)
+    } catch (error) {
+      console.log("Error fetching doctor", error)
     } finally {
       setLoading(false)
     }
@@ -101,11 +105,15 @@ const page = () => {
   }
 
   useEffect(() => {
+    getDoctors()
+  }, [])
+
+  useEffect(() => {
     const handler = setTimeout(getPatients, 500)
     return () => {
       clearTimeout(handler)
     }
-  }, [page, rowsPerPage, searchQuery, filterStatus])
+  }, [page, rowsPerPage, searchQuery, filterDoctor])
 
   return (
     <Container>
@@ -126,24 +134,26 @@ const page = () => {
         alignItems="flex-start"
       >
         <TextField
-          label="Search doctor"
+          label="Search patient"
           variant="outlined"
           size="small"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <FormControl variant="outlined" size="small" sx={{ minWidth: 210 }}>
-          <InputLabel id="demo-simple-select-label">Status</InputLabel>
-          <Select
-            label="Status"
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-          >
-            <MenuItem value="all">All</MenuItem>
-            <MenuItem value="active">Active</MenuItem>
-            <MenuItem value="deactive">Deactive</MenuItem>
-          </Select>
-        </FormControl>
+        <Autocomplete
+          variant="outlined"
+          size="small"
+          sx={{ minWidth: 210 }}
+          options={doctors}
+          getOptionLabel={(option) =>
+            `${option.first_name} ${option.last_name}`
+          }
+          value={filterDoctor}
+          onChange={(e, value) => setFilterDoctor(value)}
+          renderInput={(params) => (
+            <TextField {...params} label="Select Doctor" />
+          )}
+        />
       </Grid2>
 
       <Paper
@@ -194,6 +204,8 @@ const page = () => {
                   <TableRow key={row.id}>
                     <TableCell>{row.name}</TableCell>
                     <TableCell>{row.email}</TableCell>
+                    <TableCell>{row.gender}</TableCell>
+                    <TableCell>{row.age}</TableCell>
                     <TableCell>{row.phone_no}</TableCell>
                     <TableCell sx={{ whiteSpace: "nowrap" }}>
                       {moment(row.created_at).format("DD-MM-YYYY")}
@@ -264,4 +276,12 @@ const page = () => {
 
 export default page
 
-const tableHead = ["Name", "Email", "Phone Number", "Create At", "Actions"]
+const tableHead = [
+  "Name",
+  "Email",
+  "Gender",
+  "Age",
+  "Phone Number",
+  "Create At",
+  "Actions",
+]
