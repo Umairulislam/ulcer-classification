@@ -24,11 +24,11 @@ const menus = {
   doctor: [
     { label: "Dashboard", path: "/doctor/dashboard", icon: <Dashboard /> },
     { label: "Patients", path: "/doctor/patients", icon: <Groups /> },
-    {
-      label: "Classification",
-      path: "/doctor/classification",
-      icon: <Science />,
-    },
+    // {
+    //   label: "Classification",
+    //   path: "/doctor/classification",
+    //   icon: <Science />,
+    // },
   ],
 }
 

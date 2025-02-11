@@ -16,13 +16,23 @@ const patientSchema = (isUpdate = false) => {
             .string()
             .required("Phone Number is required")
             .min(10, "Phone Number must be at least 10 digits"),
-        doctor_id: yup
-            .object()
-            .required("Doctor is required")
-            .shape({
-                id: yup.string().required("Doctor ID is required"),
-                first_name: yup.string().required()
-            })
+        age: yup
+            .number()
+            .typeError("Age must be a number")
+            .required("Age is required"),
+        // doctor_id: yup
+        //     .object()
+        //     .required("Doctor is required")
+        //     .shape({
+        //         id: yup.string().required("Doctor ID is required"),
+        //         first_name: yup.string().required()
+        //     }),
+
+        gender: yup
+            .string()
+            .required("Gender is required")
+            .oneOf(["male", "female", "other"], "Invalid gender"),
+
     })
 }
 
