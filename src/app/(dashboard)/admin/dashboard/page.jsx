@@ -94,15 +94,26 @@ const AdminDashboard = () => {
         <Typography variant="h6" fontWeight="bold" mb={2}>
           Recent Activity
         </Typography>
-        <TableContainer sx={{ border: "1px solid lightgray" }}>
+        <TableContainer>
           <Table>
-            <TableHead>
+            <TableHead sx={{ border: "1px solid lightgray" }}>
               <TableRow>
-                <TableCell>Action</TableCell>
-                <TableCell>Date</TableCell>
+                {tableHead.map((head, index) => (
+                  <TableCell
+                    key={index}
+                    sx={{
+                      color: "white",
+                      backgroundColor: "primary.main",
+                      fontWeight: "bold",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {head}
+                  </TableCell>
+                ))}
               </TableRow>
             </TableHead>
-            <TableBody>
+            <TableBody sx={{ border: "1px solid lightgray" }}>
               {recentActivity.map((activity) => (
                 <TableRow key={activity.id}>
                   <TableCell>{activity.action}</TableCell>
@@ -125,7 +136,7 @@ const AdminDashboard = () => {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="patients" fill="#00A9FF" />
+            <Bar dataKey="patients" fill="#009689" />
           </BarChart>
         </ResponsiveContainer>
       </Box>
@@ -134,3 +145,5 @@ const AdminDashboard = () => {
 }
 
 export default AdminDashboard
+
+const tableHead = ["Action", "Date"]

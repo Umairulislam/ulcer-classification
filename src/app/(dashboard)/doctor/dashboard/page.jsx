@@ -141,7 +141,7 @@ const DoctorDashboard = () => {
               cx="50%"
               cy="50%"
               outerRadius={100}
-              fill="#00A9FF"
+              fill="#009689"
               label
             />
             <Tooltip />

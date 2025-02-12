@@ -15,6 +15,9 @@ const CustomButton = ({ text, icon: Icon, onClick, ...props }) => {
         display: "flex",
         alignItems: "center",
         gap: "8px",
+        "&:hover": {
+          backgroundColor: "primary.light", // Change color on hover
+        },
       }}
       {...props} // Allow overriding or extending styles
     >

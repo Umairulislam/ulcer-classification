@@ -21,15 +21,16 @@ import {
 import { AxiosInstance } from "@/components"
 import moment from "moment"
 import { useDispatch } from "react-redux"
-import { Science } from "@/assets/icons"
+import { Download, Science } from "@/assets/icons"
 import Link from "next/link"
+import { showToast } from "@/store/toastSlice"
 
 const page = () => {
+  const dispatch = useDispatch()
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [loading, setLoading] = useState(true)
   const [patients, setPatients] = useState([])
-  const [filterPatient, setFilterPatient] = useState(null)
 
   const getPatients = async () => {
     setLoading(true)
@@ -37,6 +38,23 @@ const page = () => {
       let path = `patient/all?page=${page + 1}&perPage=${rowsPerPage}`
       const { data } = await AxiosInstance.get(path)
       setPatients(data?.response)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const getReports = async (id) => {
+    console.log("🚀 ~ getReports ~ id:", id)
+    setLoading(true)
+    try {
+      const { data } = await AxiosInstance.post(`patient/get-all/reports/${id}`)
+      dispatch(showToast({ message: data.message, type: "success" }))
+      const pdfUrl = data?.response?.details?.report_url
+      if (pdfUrl) {
+        window.open(pdfUrl, "_blank") // Opens the PDF in a new tab
+      }
     } catch (error) {
       console.log(error)
     } finally {
@@ -121,7 +139,7 @@ const page = () => {
                     </TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={1}>
-                        <Tooltip title="classify" arrow>
+                        <Tooltip title="Classify" arrow>
                           <Link href={`patients/classify/${row.id}`}>
                             <IconButton
                               sx={{
@@ -135,6 +153,20 @@ const page = () => {
                               <Science />
                             </IconButton>
                           </Link>
+                        </Tooltip>
+                        <Tooltip title="Downloada all reports" arrow>
+                          <IconButton
+                            onClick={() => getReports(row.id)}
+                            sx={{
+                              backgroundColor: "secondary.light",
+                              "&:hover": {
+                                backgroundColor: "primary.light",
+                                color: "white",
+                              },
+                            }}
+                          >
+                            <Download />
+                          </IconButton>
                         </Tooltip>
                       </Stack>
                     </TableCell>

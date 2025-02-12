@@ -21,6 +21,9 @@ import { showToast } from "@/store/toastSlice"
 import { AxiosInstance } from "@/components"
 import Link from "next/link"
 import { deleteCookie } from "@/helpers/cookie"
+import { ProfileAvatar } from "@/assets/images"
+import Image from "next/image"
+console.log("🚀 ~ ProfileAvatar:", ProfileAvatar)
 
 const Header = ({ isSmallScreen, handleDrawerToggle }) => {
   const dispatch = useDispatch()
@@ -83,7 +86,7 @@ const Header = ({ isSmallScreen, handleDrawerToggle }) => {
           {user?.role === "admin" ? "Admin Panel" : "Doctor Panel"}
         </Typography>
         <IconButton onClick={handleOpenMenu}>
-          <Avatar alt="Profile" src="" />
+          <Avatar alt="Profile" src={ProfileAvatar.src} />
         </IconButton>
         <Menu
           anchorEl={anchorEl}
