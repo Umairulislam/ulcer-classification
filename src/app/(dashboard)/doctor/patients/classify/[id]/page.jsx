@@ -64,6 +64,7 @@ const page = () => {
         payload,
         { headers: { "Content-Type": "multipart/form-data" } },
       )
+
       dispatch(showToast({ message: data.message, type: "success" }))
       const pdfUrl = data?.response?.details?.report_url
       if (pdfUrl) {
