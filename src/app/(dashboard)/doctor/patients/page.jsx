@@ -129,8 +129,9 @@ const page = () => {
               ) : (
                 patients?.details?.map((row) => (
                   <TableRow key={row.id}>
+                    <TableCell>{row.patient_id}</TableCell>
                     <TableCell>{row.name}</TableCell>
-                    <TableCell>{row.email}</TableCell>
+                    <TableCell>{row.email || "N/A"}</TableCell>
                     <TableCell>{row.phone_no}</TableCell>
                     <TableCell>{row.gender}</TableCell>
                     <TableCell>{row.age}</TableCell>
@@ -195,6 +196,7 @@ const page = () => {
 export default page
 
 const tableHead = [
+  "Patient ID",
   "Name",
   "Email",
   "Phone Number",

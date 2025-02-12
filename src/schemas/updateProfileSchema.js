@@ -4,13 +4,11 @@ const adminProfileSchema = yup.object({
     first_name: yup
         .string()
         .required("First Name is required")
-        .matches(/^[a-zA-Z]+$/, "First Name must contain only alphabets")
         .min(2, "First Name must be at least 2 characters")
         .max(50, "First Name must be at most 50 characters"),
     last_name: yup
         .string()
         .required("Last Name is required")
-        .matches(/^[a-zA-Z]+$/, "Last Name must contain only alphabets")
         .min(2, "Last Name must be at least 2 characters")
         .max(50, "Last Name must be at most 50 characters"),
     email: yup

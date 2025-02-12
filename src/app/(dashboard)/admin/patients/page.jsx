@@ -203,7 +203,7 @@ const page = () => {
                 patients?.details?.map((row) => (
                   <TableRow key={row.id}>
                     <TableCell>{row.name}</TableCell>
-                    <TableCell>{row.email}</TableCell>
+                    <TableCell>{row.email || "N/A"}</TableCell>
                     <TableCell>{row.gender}</TableCell>
                     <TableCell>{row.age}</TableCell>
                     <TableCell>{row.phone_no}</TableCell>

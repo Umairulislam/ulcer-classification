@@ -55,11 +55,14 @@ const page = () => {
   const onSubmit = async (data) => {
     const payload = {
       name: data.name,
-      email: data.email,
       phone_no: data.phone_no,
       age: data.age,
       gender: data.gender,
       doctor_id: data.doctor_id?.id,
+    }
+
+    if (data.email) {
+      payload.email = data.email
     }
 
     setLoading(true)
