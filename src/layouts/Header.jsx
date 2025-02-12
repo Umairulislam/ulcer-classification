@@ -81,7 +81,9 @@ const Header = ({ isSmallScreen, handleDrawerToggle }) => {
           component="div"
           sx={{ flexGrow: 1, color: "black" }}
         >
-          {user?.role === "admin" ? "Admin Panel" : "Doctor Panel"}
+          {user?.role === "admin"
+            ? `${user?.first_name} ${user?.last_name}`
+            : `${user?.first_name} ${user?.last_name}`}
         </Typography>
         <IconButton onClick={handleOpenMenu}>
           <Avatar alt="Profile" src={ProfileAvatar.src} />
