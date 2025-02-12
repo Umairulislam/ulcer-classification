@@ -34,7 +34,7 @@ const page = () => {
     setError,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(patientSchema(false)),
+    resolver: yupResolver(patientSchema(isUpdate)),
   })
 
   const getPatient = async () => {
