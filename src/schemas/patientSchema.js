@@ -19,15 +19,13 @@ const patientSchema = (isUpdate = false) => {
             .number()
             .typeError("Age must be a number")
             .required("Age is required"),
-        doctor_id: isUpdate
-            ? yup.object().nullable()
-            : yup
-                .object()
-                .required("Doctor is required")
-                .shape({
-                    id: yup.string().required("Doctor ID is required"),
-                    first_name: yup.string().required(),
-                }),
+        doctor_id: yup
+            .object()
+            .required("Doctor is required")
+            .shape({
+                id: yup.string().required("Doctor ID is required"),
+                first_name: yup.string().required(),
+            }),
         gender: yup
             .string()
             .required("Gender is required")
