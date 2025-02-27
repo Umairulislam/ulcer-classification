@@ -1,3 +1,4 @@
+import { deleteCookie } from "@/helpers/cookie"
 import axios from "axios"
 
 const AxiosInstance = axios.create({
@@ -24,8 +25,9 @@ AxiosInstance.interceptors.request.use(
 
 AxiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (error.response.status === 401) {
+      await deleteCookie()
       localStorage.removeItem("accessToken")
     }
 
