@@ -42,6 +42,13 @@ const page = () => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(doctorSchema(isUpdate)),
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      email: "",
+      phone_no: "",
+      gender: "",
+    },
   })
 
   const getDoctor = async () => {

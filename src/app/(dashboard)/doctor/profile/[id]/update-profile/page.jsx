@@ -33,6 +33,13 @@ const page = () => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(updateProfileSchema),
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      email: "",
+      phone_no: "",
+      gender: "",
+    },
   })
 
   const fetchDoctor = async () => {

@@ -31,18 +31,39 @@ const page = () => {
     handleSubmit,
     control,
     reset,
+    setValue,
     setError,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(patientSchema(isUpdate)),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone_no: "",
+      age: "",
+      gender: "",
+      doctor_id: null,
+    },
   })
 
   const getPatient = async () => {
     setLoading(true)
     try {
       const { data } = await AxiosInstance.get(`patient/${id}`)
+      const patientData = data?.response?.details
+
       // Populate form fields with the fetched data
-      reset(data?.response?.details)
+      Object.keys(patientData).forEach((key) => {
+        if (key === "user") {
+          setValue("doctor_id", {
+            id: patientData.user.id,
+            first_name: patientData.user.first_name,
+            last_name: patientData.user.last_name,
+          })
+        } else {
+          setValue(key, patientData[key])
+        }
+      })
     } catch (error) {
       console.error("Error fetching patient details:", error)
     } finally {
@@ -221,21 +242,23 @@ const page = () => {
             <Controller
               name="gender"
               control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  select
-                  label="Gender"
-                  variant="outlined"
-                  fullWidth
-                  error={errors.gender}
-                  helperText={errors.gender?.message}
-                >
-                  <MenuItem value="male">Male</MenuItem>
-                  <MenuItem value="female">Female</MenuItem>
-                  <MenuItem value="other">Other</MenuItem>
-                </TextField>
-              )}
+              render={({ field }) => {
+                return (
+                  <TextField
+                    {...field}
+                    select
+                    label="Gender"
+                    variant="outlined"
+                    fullWidth
+                    error={errors.gender}
+                    helperText={errors.gender?.message}
+                  >
+                    <MenuItem value="male">Male</MenuItem>
+                    <MenuItem value="female">Female</MenuItem>
+                    <MenuItem value="other">Other</MenuItem>
+                  </TextField>
+                )
+              }}
             />
           </Grid2>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
