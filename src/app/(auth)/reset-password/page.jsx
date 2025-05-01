@@ -23,9 +23,14 @@ const page = () => {
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev)
+  }
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword((prev) => !prev)
   }
 
   const {
@@ -206,7 +211,7 @@ const page = () => {
             label="Confirm Password"
             placeholder="Confirm your password"
             variant="outlined"
-            type={showPassword ? "text" : "password"}
+            type={showConfirmPassword ? "text" : "password"}
             fullWidth
             {...field}
             error={errors.confirm_password}
@@ -222,11 +227,11 @@ const page = () => {
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
-                      onClick={togglePasswordVisibility}
+                      onClick={toggleConfirmPasswordVisibility}
                       edge="end"
                       aria-label="toggle password visibility"
                     >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 ),
