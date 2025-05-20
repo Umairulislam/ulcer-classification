@@ -1,83 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🧠 Ulcer Classification System
 
-## Getting Started
+A modern frontend application for classifying ulcer images. The system consists of two main panels: **Admin** and **Doctor**. Admins manage users and patients, while doctors classify ulcer images and generate reports. Built with **Next.js**, **Material UI**, **Redux Toolkit**, and **Recharts**.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 📈 Demo
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+![Demo](/src/assets/images/gif.gif)
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🏢 Project Highlights
 
-## Learn More
+### 📄 Admin Panel
 
-To learn more about Next.js, take a look at the following resources:
+- 📊 Access to a statistics dashboard with recent activity.
+- 📅 Manage doctors (create, update, delete, activate/deactivate).
+- 📅 Manage patients (create, update, delete).
+- 🔄 Filter doctors by status (Active, Inactive, All).
+- 🔄 Filter patients by doctor using a dropdown.
+- 🔑 Update own profile and password.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 💼 Doctor Panel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- 📊 Dashboard with latest statistics.
+- 📄 View and classify patients.
+- 📷 Upload ulcer images and auto-generate detailed reports.
+- 🔹 Download and view classification reports.
+- 🔑 Update personal profile and password.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 💡 Features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 📧 Password reset with OTP (for both admin and doctor).
+- 💻 Fully responsive design.
+- 🎉 Rich user experience using **MUI Toasts**.
+- 🔢 Real-time form validations with **Yup**.
+- 🧰 Central state management using **Redux Toolkit**.
+- 🔐 Role-based route protection using middleware.
+- 🔢 Pagination support in tables for better navigation.
 
-## file structure
+---
 
-- public
-- src
-  - app
-    - (auth)
-      - forget-password
-        - page.jsx
-      - login
-        - page.jsx
-      - reset-password
-        - page.jsx
-    - (dashboard)
-      - admin
-        - page.jsx
-      - doctor
-        - page.jsx
-    - layout.js
-    - page.js
-    - globals.css
-  - assets
-    - icons
-    - images
-  - components
-  - hoc
-    - AppProvider.js
-  - layouts
-    - Header.jsx
-    - Sidenav.jsx
-    - index.js
-  - schemas
-  - store
-    - store.js
-    - toastSlice.js
-    - userSlice.js
-  - styles
-    - theme.js
-- .env
-- .gitignore
-- .eslint.config.mjs
-- jsconfig.json
-- next.config.mjs
-- package-lock.json
-- package.json
-- postcss.config.mjs
-- tailwind.config.mjs
+## 🚀 Tech Stack
+
+![Next.js](https://img.shields.io/badge/Next.js-000?logo=next.js&logoColor=white)  
+![Material UI](https://img.shields.io/badge/MUI-007FFF?logo=mui&logoColor=white)  
+![Redux Toolkit](https://img.shields.io/badge/Redux_Toolkit-593D88?logo=redux&logoColor=white)  
+![Recharts](https://img.shields.io/badge/Recharts-FC4445?logo=chart.js&logoColor=white)  
+![Yup](https://img.shields.io/badge/Yup-29B6F6?logo=javascript&logoColor=white)
+
+---
+
+## 👨‍💼 Author
+
+Crafted with care by **Engr. Umair Ul Islam** ✨
