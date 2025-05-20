@@ -254,7 +254,7 @@ const page = () => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 20]}
           component="div"
-          count={patients?.extra?.totalItems}
+          count={patients?.extra?.totalItems ?? 0}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

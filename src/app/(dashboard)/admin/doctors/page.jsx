@@ -87,7 +87,6 @@ const page = () => {
   }
 
   const handleToggleStatus = async (doctor) => {
-    console.log("doctor", doctor)
     setLoading(true)
     try {
       const { data } = await AxiosInstance.patch(
@@ -274,7 +273,7 @@ const page = () => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 20]}
           component="div"
-          count={doctors?.extra?.totalItems}
+          count={doctors?.extra?.totalItems ?? 0}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

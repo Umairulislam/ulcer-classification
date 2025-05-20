@@ -76,7 +76,7 @@ const DoctorDashboard = () => {
 
       {/* Quick Stats */}
       <Grid2 container spacing={3} mb={4}>
-        {Object.entries(doctorStats).map(([key, value]) => (
+        {Object.entries(doctorStats ?? {}).map(([key, value]) => (
           <DashboardCard
             key={key}
             title={key
@@ -112,7 +112,7 @@ const DoctorDashboard = () => {
               </TableRow>
             </TableHead>
             <TableBody sx={{ border: "1px solid lightgray" }}>
-              {upcomingAppointments.map((appointment) => (
+              {upcomingAppointments?.map((appointment) => (
                 <TableRow key={appointment.id}>
                   <TableCell>{appointment.patient}</TableCell>
                   <TableCell>{appointment.age}</TableCell>

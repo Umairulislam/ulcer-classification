@@ -36,7 +36,6 @@ const AdminDashboard = () => {
     try {
       const { data } = await AxiosInstance.get("dashboard/admin")
       setAdminStats(data?.response?.details)
-      console.log("🚀 ~ getStats ~ data:", data)
     } catch (error) {
       console.log("Error fetching stats:", error)
     } finally {
@@ -78,7 +77,7 @@ const AdminDashboard = () => {
 
       {/* Quick Stats */}
       <Grid2 container spacing={3} mb={4}>
-        {Object.entries(adminStats).map(([key, value]) => (
+        {Object.entries(adminStats ?? {}).map(([key, value]) => (
           <DashboardCard
             key={key}
             title={key
