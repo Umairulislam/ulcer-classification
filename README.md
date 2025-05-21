@@ -48,8 +48,9 @@ A modern frontend application for classifying ulcer images. The system consists 
 ![Next.js](https://img.shields.io/badge/Next.js-000?logo=next.js&logoColor=white)  
 ![Material UI](https://img.shields.io/badge/MUI-007FFF?logo=mui&logoColor=white)  
 ![Redux Toolkit](https://img.shields.io/badge/Redux_Toolkit-593D88?logo=redux&logoColor=white)  
-![Recharts](https://img.shields.io/badge/Recharts-FC4445?logo=chart.js&logoColor=white)  
-![Yup](https://img.shields.io/badge/Yup-29B6F6?logo=javascript&logoColor=white)
+![Yup](https://img.shields.io/badge/Yup-29B6F6?logo=javascript&logoColor=white)  
+![React Hook Form](https://img.shields.io/badge/React_Hook_Form-EC5990?logo=reacthookform&logoColor=white)  
+![Recharts](https://img.shields.io/badge/Recharts-FC4445?logo=chart.js&logoColor=white)
 
 ---
 
