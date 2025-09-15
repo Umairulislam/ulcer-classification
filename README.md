@@ -4,7 +4,7 @@ A modern frontend application for classifying ulcer images. The system consists 
 
 ---
 
-## 📈 Demo
+## 🎥 Demo
 
 ![Demo](/src/assets/images/gif.gif)
 
