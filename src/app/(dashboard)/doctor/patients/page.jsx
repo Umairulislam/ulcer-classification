@@ -18,12 +18,12 @@ import {
   IconButton,
 } from "@mui/material"
 
-import { AxiosInstance } from "@/components"
 import moment from "moment"
 import { useDispatch } from "react-redux"
 import { Download, Science } from "@/assets/icons"
 import Link from "next/link"
 import { showToast } from "@/store/toastSlice"
+import { apiManager } from "@/helpers/apiManager"
 
 const page = () => {
   const dispatch = useDispatch()
@@ -36,7 +36,7 @@ const page = () => {
     setLoading(true)
     try {
       let path = `patient/all?page=${page + 1}&perPage=${rowsPerPage}`
-      const { data } = await AxiosInstance.get(path)
+      const { data } = await apiManager.get(path)
       setPatients(data?.response)
     } catch (error) {
       console.log(error)
@@ -49,7 +49,7 @@ const page = () => {
     console.log("🚀 ~ getReports ~ id:", id)
     setLoading(true)
     try {
-      const { data } = await AxiosInstance.post(`patient/get-all/reports/${id}`)
+      const { data } = await apiManager.post(`patient/get-all/reports/${id}`)
       dispatch(showToast({ message: data.message, type: "success" }))
       const pdfUrl = data?.response?.details?.report_url
       if (pdfUrl) {
@@ -73,14 +73,14 @@ const page = () => {
           showToast({
             message: "Server error. Please try again later.",
             type: "error",
-          }),
+          })
         )
       } else {
         dispatch(
           showToast({
             message: "Something went wrong. Please try again.",
             type: "error",
-          }),
+          })
         )
       }
     } finally {

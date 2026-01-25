@@ -22,10 +22,11 @@ import {
 } from "@mui/material"
 import Link from "next/link"
 import { Edit, Delete, Add } from "@/assets/icons"
-import { AxiosInstance, CustomButton, AlertDialog } from "@/components"
+import { CustomButton, AlertDialog } from "@/components"
 import moment from "moment"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
+import { apiManager } from "@/helpers/apiManager"
 
 const page = () => {
   const dispatch = useDispatch()
@@ -45,7 +46,7 @@ const page = () => {
       let path = `patient/all?page=${page + 1}&perPage=${rowsPerPage}`
       if (searchQuery) path += `&search=${searchQuery}`
       if (filterDoctor) path += `&doctor_id=${filterDoctor?.id}`
-      const { data } = await AxiosInstance.get(path)
+      const { data } = await apiManager.get(path)
       setPatients(data?.response)
     } catch (error) {
       console.log(error)
@@ -58,7 +59,7 @@ const page = () => {
     setLoading(true)
     try {
       let path = `doctor/all?page=1&perPage=100`
-      const { data } = await AxiosInstance.get(path)
+      const { data } = await apiManager.get(path)
       setDoctors(data?.response?.details)
     } catch (error) {
       console.log("Error fetching doctor", error)
@@ -69,9 +70,7 @@ const page = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      const { data } = await AxiosInstance.delete(
-        `patient/${selectedPatient?.id}`,
-      )
+      const { data } = await apiManager.delete(`patient/${selectedPatient?.id}`)
       setPatients((prev) => {
         prev.details.filter((pat) => {
           return pat?.id !== selectedPatient?.id
@@ -80,9 +79,7 @@ const page = () => {
       dispatch(showToast({ message: data?.message, type: "success" }))
       getPatients()
     } catch (error) {
-      dispatch(
-        showToast({ message: error.response.data.message, type: "error" }),
-      )
+      dispatch(showToast({ message: error.response.data.message, type: "error" }))
       console.error("Failed to delete patient:", error)
     } finally {
       setDialogOpen(false)
@@ -126,13 +123,7 @@ const page = () => {
         </Link>
       </Stack>
 
-      <Grid2
-        container
-        spacing={2}
-        mt={2}
-        justifyContent="flex-start"
-        alignItems="flex-start"
-      >
+      <Grid2 container spacing={2} mt={2} justifyContent="flex-start" alignItems="flex-start">
         <TextField
           label="Search patient"
           variant="outlined"
@@ -145,14 +136,10 @@ const page = () => {
           size="small"
           sx={{ minWidth: 210 }}
           options={doctors}
-          getOptionLabel={(option) =>
-            `${option.first_name} ${option.last_name}`
-          }
+          getOptionLabel={(option) => `${option.first_name} ${option.last_name}`}
           value={filterDoctor}
           onChange={(e, value) => setFilterDoctor(value)}
-          renderInput={(params) => (
-            <TextField {...params} label="Select Doctor" />
-          )}
+          renderInput={(params) => <TextField {...params} label="Select Doctor" />}
         />
       </Grid2>
 
@@ -276,12 +263,4 @@ const page = () => {
 
 export default page
 
-const tableHead = [
-  "Name",
-  "Email",
-  "Gender",
-  "Age",
-  "Phone Number",
-  "Create At",
-  "Actions",
-]
+const tableHead = ["Name", "Email", "Gender", "Age", "Phone Number", "Create At", "Actions"]

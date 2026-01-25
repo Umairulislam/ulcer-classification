@@ -1,22 +1,15 @@
 "use client"
 
-import {
-  Box,
-  Container,
-  Grid2,
-  TextField,
-  Typography,
-  Button,
-  Avatar,
-} from "@mui/material"
+import { Box, Container, Grid2, TextField, Typography, Button, Avatar } from "@mui/material"
 import React, { useEffect, useState } from "react"
-import { AxiosInstance, CustomButton } from "@/components"
+import { CustomButton } from "@/components"
 import { useForm, Controller } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { classificationSchema } from "@/schemas"
 import { useParams, useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
+import { apiManager } from "@/helpers/apiManager"
 
 const page = () => {
   const params = useParams()
@@ -41,7 +34,7 @@ const page = () => {
   const getPatient = async () => {
     setLoading(true)
     try {
-      const { data } = await AxiosInstance.get(`patient/${id}`)
+      const { data } = await apiManager.get(`patient/${id}`)
       setPatient(data?.response?.details)
     } catch (error) {
       console.error("Error fetching patient details:", error)
@@ -59,11 +52,9 @@ const page = () => {
 
     setLoading(true)
     try {
-      const { data } = await AxiosInstance.post(
-        `patient/classify/upload/${id}`,
-        payload,
-        { headers: { "Content-Type": "multipart/form-data" } },
-      )
+      const { data } = await apiManager.post(`patient/classify/upload/${id}`, payload, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
 
       dispatch(showToast({ message: data.message, type: "success" }))
       const pdfUrl = data?.response?.details?.report_url
@@ -89,14 +80,14 @@ const page = () => {
           showToast({
             message: "Server error. Please try again later.",
             type: "error",
-          }),
+          })
         )
       } else {
         dispatch(
           showToast({
             message: "Something went wrong. Please try again.",
             type: "error",
-          }),
+          })
         )
       }
     } finally {
@@ -125,68 +116,37 @@ const page = () => {
       <Typography variant="h4" fontWeight="bold">
         Patient Classification
       </Typography>
-      <Box
-        component="form"
-        sx={{ width: "100%", marginTop: 4 }}
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <Box component="form" sx={{ width: "100%", marginTop: 4 }} onSubmit={handleSubmit(onSubmit)}>
         <Grid2 container spacing={2} mb={2}>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Name
             </Typography>
-            <TextField
-              value={patient?.name}
-              variant="outlined"
-              fullWidth
-              disabled
-            />
+            <TextField value={patient?.name} variant="outlined" fullWidth disabled />
           </Grid2>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Email
             </Typography>
-            <TextField
-              value={patient?.email}
-              variant="outlined"
-              type="email"
-              disabled
-              fullWidth
-            />
+            <TextField value={patient?.email} variant="outlined" type="email" disabled fullWidth />
           </Grid2>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Phone Number
             </Typography>
-            <TextField
-              value={patient?.phone_no}
-              variant="outlined"
-              fullWidth
-              disabled
-            />
+            <TextField value={patient?.phone_no} variant="outlined" fullWidth disabled />
           </Grid2>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Age
             </Typography>
-            <TextField
-              value={patient?.age}
-              type="number"
-              variant="outlined"
-              fullWidth
-              disabled
-            />
+            <TextField value={patient?.age} type="number" variant="outlined" fullWidth disabled />
           </Grid2>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Gender
             </Typography>
-            <TextField
-              value={patient?.gender}
-              variant="outlined"
-              fullWidth
-              disabled
-            ></TextField>
+            <TextField value={patient?.gender} variant="outlined" fullWidth disabled></TextField>
           </Grid2>
           {/* Image Upload Field */}
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
@@ -230,11 +190,7 @@ const page = () => {
           </Grid2>
         </Grid2>
 
-        <CustomButton
-          text={!loading ? "Submit" : "Submitting"}
-          disabled={loading}
-          type="submit"
-        />
+        <CustomButton text={!loading ? "Submit" : "Submitting"} disabled={loading} type="submit" />
       </Box>
     </Container>
   )

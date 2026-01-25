@@ -18,10 +18,10 @@ import { usePathname, useRouter } from "next/navigation"
 import { useDispatch, useSelector } from "react-redux"
 import { clearUser } from "@/store/userSlice"
 import { showToast } from "@/store/toastSlice"
-import { AxiosInstance } from "@/components"
 import Link from "next/link"
 import { deleteCookie } from "@/helpers/cookie"
 import { ProfileAvatar } from "@/assets/images"
+import { apiManager } from "@/helpers/apiManager"
 
 const Header = ({ isSmallScreen, handleDrawerToggle }) => {
   const dispatch = useDispatch()
@@ -43,19 +43,28 @@ const Header = ({ isSmallScreen, handleDrawerToggle }) => {
   const handleLogout = async () => {
     setLoading(true)
     try {
-      const { data } = await AxiosInstance.post("auth/logout")
-      localStorage.removeItem("accessToken")
+      // 1. Call API to invalidate session on server
+      const { data } = await apiManager.post("auth/logout")
+
+      // 2. Remove Cookie (Server Action)
       await deleteCookie()
+
+      // 3. Optional: Manually clear client cookie to be instant
+      document.cookie = "accessToken=; Max-Age=0; path=/;"
+
+      // 5. Redirect
+      router.push("/login")
+
+      // 4. Clear Redux
       dispatch(clearUser())
       dispatch(showToast({ message: data.message, type: "success" }))
-      router.push("/login")
     } catch (error) {
-      dispatch(
-        showToast({ message: error.response.data.message, type: "error" }),
-      )
+      const errorMessage = error?.response?.data?.message || "Logout failed"
+      dispatch(showToast({ message: errorMessage, type: "error" }))
       console.error(error)
     } finally {
       setLoading(false)
+      handleCloseMenu()
     }
   }
 
@@ -75,18 +84,11 @@ const Header = ({ isSmallScreen, handleDrawerToggle }) => {
             <MenuIcon />
           </IconButton>
         )}
-        <Typography
-          variant="h6"
-          noWrap
-          component="div"
-          sx={{ flexGrow: 1, color: "black" }}
-        >
-          {user?.role === "admin"
-            ? `${user?.first_name} ${user?.last_name}`
-            : `${user?.first_name} ${user?.last_name}`}
+        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, color: "black" }}>
+          {`${user?.first_name || ""} ${user?.last_name || ""}`}
         </Typography>
         <IconButton onClick={handleOpenMenu}>
-          <Avatar alt="Profile" src={ProfileAvatar.src} />
+          <Avatar alt="Profile" src={ProfileAvatar.src || ""} />
         </IconButton>
         <Menu
           anchorEl={anchorEl}
@@ -117,6 +119,7 @@ const Header = ({ isSmallScreen, handleDrawerToggle }) => {
               Change Password
             </MenuItem>
           </Link>
+
           <MenuItem onClick={handleLogout} disabled={loading}>
             <ListItemIcon>
               <ExitToApp fontSize="small" />

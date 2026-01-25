@@ -1,6 +1,7 @@
 "use client"
 
-import { AxiosInstance, DashboardCard, StatusChip } from "@/components"
+import { DashboardCard, StatusChip } from "@/components"
+import { apiManager } from "@/helpers/apiManager"
 import {
   Box,
   Container,
@@ -23,7 +24,7 @@ const DoctorDashboard = () => {
   const getStats = async () => {
     setLoading(true)
     try {
-      const { data } = await AxiosInstance.get("dashboard/doctor")
+      const { data } = await apiManager.get("dashboard/doctor")
       setDoctorStats(data?.response?.details)
       console.log("🚀 ~ getStats ~ data:", data)
     } catch (error) {
@@ -79,9 +80,7 @@ const DoctorDashboard = () => {
         {Object.entries(doctorStats ?? {}).map(([key, value]) => (
           <DashboardCard
             key={key}
-            title={key
-              .replace(/_/g, " ")
-              .replace(/\b\w/g, (char) => char.toUpperCase())}
+            title={key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
             value={value}
           />
         ))}

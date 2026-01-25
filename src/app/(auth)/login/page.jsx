@@ -15,13 +15,13 @@ import { Email, Visibility, VisibilityOff, Lock } from "@/assets/icons"
 import { useForm, Controller } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { loginSchema } from "@/schemas"
-import { AxiosInstance } from "@/components"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { setUser } from "@/store/userSlice"
 import Link from "next/link"
 import { showToast } from "@/store/toastSlice"
 import { createCookie } from "@/helpers/cookie"
+import { apiManager } from "@/helpers/apiManager"
 
 const LoginPage = () => {
   const router = useRouter()
@@ -46,56 +46,58 @@ const LoginPage = () => {
     },
   })
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (formData) => {
     setLoading(true)
-    const payload = {
-      email: data.email,
-      password: data.password,
-    }
-
     try {
-      const { data } = await AxiosInstance.post("auth/login", payload)
+      // 1. Send login request using apiManager
+      const { data } = await apiManager.post("auth/login", formData)
+
+      // 2. Extract token and user details
       const accessToken = data?.response?.extra?.access_token
-      const role = data?.response?.details?.role
+      const userDetails = data?.response?.details
+      const role = userDetails?.role
 
-      await createCookie(JSON.stringify(accessToken))
-      localStorage.setItem("accessToken", accessToken)
+      // 3. Set the cookie (Server-side helper)
+      await createCookie(accessToken)
 
-      dispatch(setUser(data?.response?.details))
+      // 4. Update Redux state and show success message
+      dispatch(setUser(userDetails))
       dispatch(showToast({ message: data.message, type: "success" }))
 
+      // 5. Navigate based on user role
       if (role === "admin") {
-        return router.push("/admin/dashboard")
-      }
-      if (role === "doctor") {
-        return router.push("/doctor/dashboard")
+        router.push("/admin/dashboard")
+      } else if (role === "doctor") {
+        router.push("/doctor/dashboard")
       }
     } catch (error) {
       const { data, status } = error?.response || {}
 
-      if (status === 400 || status === 404) {
-        dispatch(showToast({ message: data.message, type: "error" }))
-      } else if (status === 422) {
-        Object.keys(data).forEach((field) => {
-          setError(field, {
-            type: "manual",
-            message: data[field],
+      switch (status) {
+        // Validation Errors: loop through them
+        case 422:
+          Object.keys(data).forEach((field) => {
+            setError(field, {
+              type: "manual",
+              message: data[field],
+            })
           })
-        })
-      } else if (status === 500) {
-        dispatch(
-          showToast({
-            message: "Server error. Please try again later.",
-            type: "error",
-          }),
-        )
-      } else {
-        dispatch(
-          showToast({
-            message: "Something went wrong. Please try again.",
-            type: "error",
-          }),
-        )
+          break
+
+        case 400:
+        case 404:
+          // Client Errors
+          dispatch(showToast({ message: data.message, type: "error" }))
+          break
+
+        case 500:
+          // Server Errors
+          dispatch(showToast({ message: "Server error. Please try again later.", type: "error" }))
+          break
+
+        default:
+          // Unknown Errors
+          dispatch(showToast({ message: "Something went wrong.", type: "error" }))
       }
     } finally {
       setLoading(false)
@@ -158,12 +160,11 @@ const LoginPage = () => {
             control={control}
             render={({ field }) => (
               <TextField
+                {...field}
                 label="Email"
+                fullWidth
                 placeholder="Enter your email"
                 variant="outlined"
-                type="email"
-                fullWidth
-                {...field}
                 error={errors.email}
                 helperText={errors.email?.message}
                 slotProps={{
@@ -185,12 +186,12 @@ const LoginPage = () => {
             control={control}
             render={({ field }) => (
               <TextField
+                {...field}
                 label="Password"
                 placeholder="Enter your password"
                 variant="outlined"
                 type={showPassword ? "text" : "password"}
                 fullWidth
-                {...field}
                 error={errors.password}
                 helperText={errors.password?.message}
                 slotProps={{
@@ -251,7 +252,7 @@ const LoginPage = () => {
                 cursor: "pointer",
               }}
             >
-              <Link href="forget-password">Reset it here</Link>
+              <Link href="/forget-password">Reset it here</Link>
             </Typography>
           </Typography>
         </Box>

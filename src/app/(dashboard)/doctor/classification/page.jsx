@@ -14,7 +14,7 @@ import {
 import { useForm, Controller } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-import { AxiosInstance } from "@/components"
+import { apiManager } from "@/helpers/apiManager"
 
 // Yup schema for classification form
 const classificationSchema = yup.object({
@@ -25,7 +25,7 @@ const classificationSchema = yup.object({
     .test(
       "is-valid-patient",
       "Please select a valid patient",
-      (value) => !!value && typeof value === "object" && !!value.id,
+      (value) => !!value && typeof value === "object" && !!value.id
     ),
 
   image: yup
@@ -62,7 +62,7 @@ const ClassificationPage = () => {
     setLoading(true)
     try {
       let path = `patient/all?page=1&perPage=100`
-      const { data } = await AxiosInstance.get(path)
+      const { data } = await apiManager.get(path)
       setPatients(data?.response?.details)
     } catch (error) {
       console.log(error)
@@ -94,10 +94,7 @@ const ClassificationPage = () => {
 
     setLoading(true)
     try {
-      const response = AxiosInstance.post(
-        `patient/classify/upload/${data.patient_id.id}`,
-        payload,
-      )
+      const response = apiManager.post(`patient/classify/upload/${data.patient_id.id}`, payload)
     } catch (error) {
       console.log(error)
     } finally {
@@ -136,9 +133,7 @@ const ClassificationPage = () => {
                 <Autocomplete
                   options={patients}
                   getOptionLabel={(option) => option.name}
-                  isOptionEqualToValue={(option, value) =>
-                    option.id === value.id
-                  }
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
                   onChange={(event, value) => field.onChange(value)}
                   value={field.value || null}
                   renderInput={(params) => (

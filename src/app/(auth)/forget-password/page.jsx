@@ -2,7 +2,7 @@
 
 import React, { useState } from "react"
 import { TextField, Typography, Box, InputAdornment } from "@mui/material"
-import { AxiosInstance, CustomButton } from "@/components"
+import { CustomButton } from "@/components"
 import { useForm, Controller } from "react-hook-form"
 import { Email } from "@/assets/icons"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -10,12 +10,10 @@ import * as yup from "yup"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 import { useRouter } from "next/navigation"
+import { apiManager } from "@/helpers/apiManager"
 
 const forgetSchema = yup.object({
-  email: yup
-    .string()
-    .email("Invalid email format")
-    .required("Email is required"),
+  email: yup.string().email("Invalid email format").required("Email is required"),
 })
 
 const page = () => {
@@ -39,10 +37,7 @@ const page = () => {
     setLoading(true)
     const payload = { email: data.email }
     try {
-      const { data } = await AxiosInstance.post(
-        "/auth/forgot-password",
-        payload,
-      )
+      const { data } = await apiManager.post("/auth/forgot-password", payload)
       dispatch(showToast({ message: data.message, type: "success" }))
       console.log("🚀 ~ onSubmit ~ data:", data)
       router.push("/reset-password")
@@ -63,14 +58,14 @@ const page = () => {
           showToast({
             message: "Server error. Please try again later.",
             type: "error",
-          }),
+          })
         )
       } else {
         dispatch(
           showToast({
             message: "Something went wrong. Please try again.",
             type: "error",
-          }),
+          })
         )
       }
     } finally {
@@ -93,12 +88,7 @@ const page = () => {
         backgroundColor: "background.paper",
       }}
     >
-      <Typography
-        variant="h5"
-        fontWeight="bold"
-        gutterBottom
-        textAlign="center"
-      >
+      <Typography variant="h5" fontWeight="bold" gutterBottom textAlign="center">
         Forget Password
       </Typography>
       <Typography variant="body2" textAlign="center" mb={2}>
@@ -129,12 +119,7 @@ const page = () => {
           />
         )}
       />
-      <CustomButton
-        text="Send OTP"
-        fullWidth
-        type="submit"
-        disabled={loading}
-      />
+      <CustomButton text="Send OTP" fullWidth type="submit" disabled={loading} />
     </Box>
   )
 }

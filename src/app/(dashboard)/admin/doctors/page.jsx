@@ -26,16 +26,11 @@ import {
 } from "@mui/material"
 import Link from "next/link"
 import { Edit, Delete, Add } from "@/assets/icons"
-import {
-  AxiosInstance,
-  NoRecordsFound,
-  CustomButton,
-  StatusChip,
-  AlertDialog,
-} from "@/components"
+import { CustomButton, AlertDialog } from "@/components"
 import moment from "moment"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
+import { apiManager } from "@/helpers/apiManager"
 
 const page = () => {
   const dispatch = useDispatch()
@@ -54,7 +49,7 @@ const page = () => {
       let path = `doctor/all?page=${page + 1}&perPage=${rowsPerPage}`
       if (searchQuery) path += `&search=${searchQuery}`
       if (filterStatus !== "all") path += `&status=${filterStatus}`
-      const { data } = await AxiosInstance.get(path)
+      const { data } = await apiManager.get(path)
       setDoctors(data?.response)
     } catch (error) {
       console.log(error)
@@ -65,9 +60,7 @@ const page = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      const { data } = await AxiosInstance.delete(
-        `doctor/delete/${selectedDoctor?.id}`,
-      )
+      const { data } = await apiManager.delete(`doctor/delete/${selectedDoctor?.id}`)
       setDoctors((prev) => {
         prev.details.filter((doc) => {
           return doc?.id !== selectedDoctor?.id
@@ -76,9 +69,7 @@ const page = () => {
       dispatch(showToast({ message: data?.message, type: "success" }))
       getDoctors()
     } catch (error) {
-      dispatch(
-        showToast({ message: error.response.data.message, type: "error" }),
-      )
+      dispatch(showToast({ message: error.response.data.message, type: "error" }))
       console.error("Failed to delete doctor:", error)
     } finally {
       setDialogOpen(false)
@@ -89,12 +80,9 @@ const page = () => {
   const handleToggleStatus = async (doctor) => {
     setLoading(true)
     try {
-      const { data } = await AxiosInstance.patch(
-        `doctor/update/status/${doctor.id}`,
-        {
-          status: doctor.status === "active" ? "deactive" : "active",
-        },
-      )
+      const { data } = await apiManager.patch(`doctor/update/status/${doctor.id}`, {
+        status: doctor.status === "active" ? "deactive" : "active",
+      })
       dispatch(showToast({ message: data.message, type: "success" }))
       getDoctors()
     } catch (error) {
@@ -136,13 +124,7 @@ const page = () => {
         </Link>
       </Stack>
 
-      <Grid2
-        container
-        spacing={2}
-        mt={2}
-        justifyContent="flex-start"
-        alignItems="flex-start"
-      >
+      <Grid2 container spacing={2} mt={2} justifyContent="flex-start" alignItems="flex-start">
         <TextField
           label="Search doctor"
           variant="outlined"
@@ -189,6 +171,7 @@ const page = () => {
                       fontWeight: "bold",
                       whiteSpace: "nowrap",
                     }}
+                    align={head === "Actions" ? "center" : "left"}
                   >
                     {head}
                   </TableCell>
@@ -230,7 +213,7 @@ const page = () => {
                       </Tooltip>
                     </TableCell>
                     <TableCell>
-                      <Stack direction="row" spacing={1}>
+                      <Stack direction="row" spacing={1} justifyContent="center">
                         <Tooltip title="Edit" arrow>
                           <Link href={`doctors/update/${row.id}`}>
                             <IconButton

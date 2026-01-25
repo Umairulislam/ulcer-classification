@@ -1,19 +1,21 @@
-"use server";
+"use server"
 
 import { cookies } from "next/headers"
 
-const createCookie = async (value) => {
-    cookies().set({
-        name: "accessToken",
-        value: value,
-        httpOnly: true,
-        path: "/",
-        maxAge: 7 * 24 * 60 * 60,
-    })
+// Create a cookie (Used during Login)
+export const createCookie = async (value) => {
+  const cookiesStore = await cookies()
+  cookiesStore.set({
+    name: "accessToken",
+    value: value,
+    httpOnly: false,
+    path: "/",
+    maxAge: 7 * 24 * 60 * 60,
+  })
 }
 
-const deleteCookie = async () => {
-    cookies().delete("accessToken")
+// Delete a cookie (Used during Logout)
+export const deleteCookie = async () => {
+  const cookieStore = await cookies()
+  cookieStore.delete("accessToken")
 }
-
-export { createCookie, deleteCookie }

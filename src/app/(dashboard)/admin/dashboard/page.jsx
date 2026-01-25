@@ -1,13 +1,12 @@
 "use client"
 
-import { AxiosInstance, DashboardCard } from "@/components"
+import { DashboardCard } from "@/components"
+import { apiManager } from "@/helpers/apiManager"
 import {
   Box,
   Container,
   Grid2,
   Typography,
-  Card,
-  CardContent,
   Table,
   TableBody,
   TableCell,
@@ -17,15 +16,7 @@ import {
   Paper,
 } from "@mui/material"
 import { useEffect, useState } from "react"
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts"
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts"
 
 const AdminDashboard = () => {
   const [adminStats, setAdminStats] = useState({})
@@ -34,7 +25,7 @@ const AdminDashboard = () => {
   const getStats = async () => {
     setLoading(true)
     try {
-      const { data } = await AxiosInstance.get("dashboard/admin")
+      const { data } = await apiManager.get("dashboard/admin")
       setAdminStats(data?.response?.details)
     } catch (error) {
       console.log("Error fetching stats:", error)
@@ -80,9 +71,7 @@ const AdminDashboard = () => {
         {Object.entries(adminStats ?? {}).map(([key, value]) => (
           <DashboardCard
             key={key}
-            title={key
-              .replace(/_/g, " ")
-              .replace(/\b\w/g, (char) => char.toUpperCase())}
+            title={key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
             value={value}
           />
         ))}

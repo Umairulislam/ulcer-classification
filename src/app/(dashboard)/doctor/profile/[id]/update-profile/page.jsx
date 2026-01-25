@@ -1,22 +1,16 @@
 "use client"
 
-import {
-  Box,
-  Container,
-  Grid2,
-  TextField,
-  Typography,
-  MenuItem,
-} from "@mui/material"
+import { Box, Container, Grid2, TextField, Typography, MenuItem } from "@mui/material"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useForm, Controller } from "react-hook-form"
 import { updateProfileSchema } from "@/schemas"
 import { useEffect, useState } from "react"
-import { AxiosInstance, CustomButton } from "@/components"
+import { CustomButton } from "@/components"
 import { useParams } from "next/navigation"
 import { useRouter } from "next/navigation"
 import { useDispatch, useSelector } from "react-redux"
 import { showToast } from "@/store/toastSlice"
+import { apiManager } from "@/helpers/apiManager"
 
 const page = () => {
   const params = useParams()
@@ -45,7 +39,7 @@ const page = () => {
   const fetchDoctor = async () => {
     setLoading(true)
     try {
-      const { data } = await AxiosInstance.get(`doctor/${user?.id}`)
+      const { data } = await apiManager.get(`doctor/${user?.id}`)
       // Populate form fields with the fetched data
       reset(data?.response?.details)
     } catch (error) {
@@ -68,7 +62,7 @@ const page = () => {
     setLoading(true)
     try {
       // API to be change
-      const { data } = await AxiosInstance.patch(`doctor/update/${id}`, payload)
+      const { data } = await apiManager.patch(`doctor/update/${id}`, payload)
       dispatch(showToast({ message: data.message, type: "success" }))
       router.push("/admin/dashboard")
     } catch (error) {
@@ -87,11 +81,7 @@ const page = () => {
       <Typography variant="h4" fontWeight="bold">
         Update Profile
       </Typography>
-      <Box
-        component="form"
-        sx={{ width: "100%", marginTop: 4 }}
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <Box component="form" sx={{ width: "100%", marginTop: 4 }} onSubmit={handleSubmit(onSubmit)}>
         <Grid2 container spacing={2} mb={2}>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
@@ -196,11 +186,7 @@ const page = () => {
             />
           </Grid2>
         </Grid2>
-        <CustomButton
-          text={!loading ? "Update" : "Updating"}
-          disabled={loading}
-          type="submit"
-        />
+        <CustomButton text={!loading ? "Update" : "Updating"} disabled={loading} type="submit" />
       </Box>
     </Container>
   )

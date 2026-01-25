@@ -1,22 +1,15 @@
 "use client"
 
-import {
-  Box,
-  Container,
-  Grid2,
-  TextField,
-  Typography,
-  Autocomplete,
-  MenuItem,
-} from "@mui/material"
+import { Box, Container, Grid2, TextField, Typography, Autocomplete, MenuItem } from "@mui/material"
 import React, { useEffect, useState } from "react"
-import { AxiosInstance, CustomButton } from "@/components"
+import { CustomButton } from "@/components"
 import { useForm, Controller } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { patientSchema } from "@/schemas"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
+import { apiManager } from "@/helpers/apiManager"
 
 const page = () => {
   const router = useRouter()
@@ -43,7 +36,7 @@ const page = () => {
     setLoading(true)
     try {
       let path = `doctor/all?page=1&perPage=100`
-      const { data } = await AxiosInstance.get(path)
+      const { data } = await apiManager.get(path)
       setDoctors(data?.response?.details)
     } catch (error) {
       console.log(error)
@@ -67,7 +60,7 @@ const page = () => {
 
     setLoading(true)
     try {
-      const { data } = await AxiosInstance.post("patient/add", payload)
+      const { data } = await apiManager.post("patient/add", payload)
       dispatch(showToast({ message: data.message, type: "success" }))
       router.push("/admin/patients")
     } catch (error) {
@@ -87,14 +80,14 @@ const page = () => {
           showToast({
             message: "Server error. Please try again later.",
             type: "error",
-          }),
+          })
         )
       } else {
         dispatch(
           showToast({
             message: "Something went wrong. Please try again.",
             type: "error",
-          }),
+          })
         )
       }
     } finally {
@@ -111,11 +104,7 @@ const page = () => {
       <Typography variant="h4" fontWeight="bold">
         Create Patient
       </Typography>
-      <Box
-        component="form"
-        sx={{ width: "100%", marginTop: 4 }}
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <Box component="form" sx={{ width: "100%", marginTop: 4 }} onSubmit={handleSubmit(onSubmit)}>
         <Grid2 container spacing={2} mb={2}>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
@@ -229,12 +218,8 @@ const page = () => {
               render={({ field }) => (
                 <Autocomplete
                   options={doctors}
-                  getOptionLabel={(option) =>
-                    `${option.first_name} ${option.last_name}`
-                  }
-                  isOptionEqualToValue={(option, value) =>
-                    option.id === value.id
-                  }
+                  getOptionLabel={(option) => `${option.first_name} ${option.last_name}`}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
                   onChange={(event, value) => field.onChange(value)}
                   value={field.value}
                   renderInput={(params) => (
@@ -251,11 +236,7 @@ const page = () => {
             />
           </Grid2>
         </Grid2>
-        <CustomButton
-          text={!loading ? "Submit" : "Submitting"}
-          disabled={loading}
-          type="submit"
-        />
+        <CustomButton text={!loading ? "Submit" : "Submitting"} disabled={loading} type="submit" />
       </Box>
     </Container>
   )

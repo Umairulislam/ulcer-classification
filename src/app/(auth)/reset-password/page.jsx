@@ -1,15 +1,8 @@
 "use client"
 
 import React, { useState } from "react"
-import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  InputAdornment,
-  IconButton,
-} from "@mui/material"
-import { AxiosInstance, CustomButton } from "@/components"
+import { Box, TextField, Button, Typography, InputAdornment, IconButton } from "@mui/material"
+import { CustomButton } from "@/components"
 import { useForm, Controller } from "react-hook-form"
 import { Email, Lock, Visibility, VisibilityOff, VpnKey } from "@/assets/icons"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -17,6 +10,7 @@ import { resetSchema } from "@/schemas"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 import { useRouter } from "next/navigation"
+import { apiManager } from "@/helpers/apiManager"
 
 const page = () => {
   const router = useRouter()
@@ -55,7 +49,7 @@ const page = () => {
       password: data.password,
     }
     try {
-      const { data } = await AxiosInstance.post("/auth/reset-password", payload)
+      const { data } = await apiManager.post("/auth/reset-password", payload)
       dispatch(showToast({ message: data.message, type: "success" }))
       router.push("/login")
     } catch (error) {
@@ -75,14 +69,14 @@ const page = () => {
           showToast({
             message: "Server error. Please try again later.",
             type: "error",
-          }),
+          })
         )
       } else {
         dispatch(
           showToast({
             message: "Something went wrong. Please try again.",
             type: "error",
-          }),
+          })
         )
       }
     } finally {
@@ -105,12 +99,7 @@ const page = () => {
         backgroundColor: "background.paper",
       }}
     >
-      <Typography
-        variant="h5"
-        fontWeight="bold"
-        gutterBottom
-        textAlign="center"
-      >
+      <Typography variant="h5" fontWeight="bold" gutterBottom textAlign="center">
         Reset Password
       </Typography>
       <Typography variant="body2" textAlign="center" mb={2}>

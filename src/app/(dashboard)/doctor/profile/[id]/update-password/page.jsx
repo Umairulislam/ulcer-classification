@@ -1,7 +1,8 @@
 "use client"
 
 import { Lock, VisibilityOff, Visibility } from "@/assets/icons"
-import { AxiosInstance, CustomButton } from "@/components"
+import { CustomButton } from "@/components"
+import { apiManager } from "@/helpers/apiManager"
 import { updatePassSchema } from "@/schemas"
 import { showToast } from "@/store/toastSlice"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -49,7 +50,7 @@ const page = () => {
 
     setLoading(true)
     try {
-      const { data } = await AxiosInstance.post("auth/change-password", payload)
+      const { data } = await apiManager.post("auth/change-password", payload)
       dispatch(showToast({ message: data?.message, type: "success" }))
       router.push(`/${basePath}/dashboard`)
     } catch (error) {
@@ -57,7 +58,7 @@ const page = () => {
         showToast({
           message: error?.response?.data?.current_password,
           type: "error",
-        }),
+        })
       )
       console.error("Error updating password:", error)
     } finally {
@@ -70,11 +71,7 @@ const page = () => {
       <Typography variant="h4" fontWeight="bold">
         Update Password
       </Typography>
-      <Box
-        component="form"
-        sx={{ width: "100%", marginTop: 4 }}
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <Box component="form" sx={{ width: "100%", marginTop: 4 }} onSubmit={handleSubmit(onSubmit)}>
         <Grid2 container spacing={2} mb={2}>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
@@ -200,11 +197,7 @@ const page = () => {
             />
           </Grid2>
         </Grid2>
-        <CustomButton
-          text={!loading ? "Update" : "Updating"}
-          disabled={loading}
-          type="submit"
-        />
+        <CustomButton text={!loading ? "Update" : "Updating"} disabled={loading} type="submit" />
       </Box>
     </Container>
   )

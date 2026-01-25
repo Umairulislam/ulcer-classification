@@ -15,11 +15,12 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { useForm, Controller } from "react-hook-form"
 import { doctorSchema } from "@/schemas"
 import { useEffect, useState } from "react"
-import { AxiosInstance, CustomButton } from "@/components"
+import { CustomButton } from "@/components"
 import { useParams } from "next/navigation"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
+import { apiManager } from "@/helpers/apiManager"
 
 const page = () => {
   const params = useParams()
@@ -54,7 +55,7 @@ const page = () => {
   const getDoctor = async () => {
     setLoading(true)
     try {
-      const { data } = await AxiosInstance.get(`doctor/${id}`)
+      const { data } = await apiManager.get(`doctor/${id}`)
       // Populate form fields with the fetched data
       reset(data?.response?.details)
     } catch (error) {
@@ -77,7 +78,7 @@ const page = () => {
 
     setLoading(true)
     try {
-      const { data } = await AxiosInstance.patch(`doctor/update/${id}`, payload)
+      const { data } = await apiManager.patch(`doctor/update/${id}`, payload)
       dispatch(showToast({ message: data.message, type: "success" }))
       router.push("/admin/doctors")
     } catch (error) {
@@ -97,14 +98,14 @@ const page = () => {
           showToast({
             message: "Server error. Please try again later.",
             type: "error",
-          }),
+          })
         )
       } else {
         dispatch(
           showToast({
             message: "Something went wrong. Please try again.",
             type: "error",
-          }),
+          })
         )
       }
     } finally {
@@ -121,11 +122,7 @@ const page = () => {
       <Typography variant="h4" fontWeight="bold">
         Update Doctor
       </Typography>
-      <Box
-        component="form"
-        sx={{ width: "100%", marginTop: 4 }}
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <Box component="form" sx={{ width: "100%", marginTop: 4 }} onSubmit={handleSubmit(onSubmit)}>
         <Grid2 container spacing={2}>
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
@@ -264,11 +261,7 @@ const page = () => {
               )}
             />
           </Grid2>
-          <CustomButton
-            text={!loading ? "Update" : "Updating"}
-            disabled={loading}
-            type="submit"
-          />
+          <CustomButton text={!loading ? "Update" : "Updating"} disabled={loading} type="submit" />
         </Grid2>
       </Box>
     </Container>
