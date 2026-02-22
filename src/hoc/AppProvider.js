@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { useDispatch, useSelector } from "react-redux"
 import { apiManager } from "@/helpers/apiManager"
 import { setUser, clearUser } from "@/store/userSlice"
-import { getCookieOnClient } from "@/helpers/clientCookis"
+import { getCookieOnClient } from "@/helpers/clientCookies"
 import { deleteCookie } from "@/helpers/cookie"
 import { Loader, Toast } from "@/components"
 

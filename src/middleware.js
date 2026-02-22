@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { decodeJwt } from "@/utils/utils"
+import { decodeJwt } from "@/utils/decodeJwt"
 
 export function middleware(req) {
   const path = req.nextUrl.pathname

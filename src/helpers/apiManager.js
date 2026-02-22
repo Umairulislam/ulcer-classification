@@ -1,6 +1,6 @@
 import axios from "axios"
 import { deleteCookie } from "@/helpers/cookie"
-import { getCookieOnClient } from "@/helpers/clientCookis"
+import { getCookieOnClient } from "@/helpers/clientCookies"
 
 export const apiManager = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
