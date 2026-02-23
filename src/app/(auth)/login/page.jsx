@@ -22,6 +22,8 @@ import Link from "next/link"
 import { showToast } from "@/store/toastSlice"
 import { createCookie } from "@/helpers/cookie"
 import { apiManager } from "@/helpers/apiManager"
+import { handleApiError } from "@/services/apiErrorHandler"
+import { login } from "@/services/auth/"
 
 const LoginPage = () => {
   const router = useRouter()
@@ -49,8 +51,8 @@ const LoginPage = () => {
   const onSubmit = async (formData) => {
     setLoading(true)
     try {
-      // 1. Send login request using apiManager
-      const { data } = await apiManager.post("auth/login", formData)
+      // 1. Send login request and get response
+      const data = await login(formData)
 
       // 2. Extract token and user details
       const accessToken = data?.response?.extra?.access_token
@@ -71,34 +73,8 @@ const LoginPage = () => {
         router.push("/doctor/dashboard")
       }
     } catch (error) {
-      const { data, status } = error?.response || {}
-
-      switch (status) {
-        // Validation Errors: loop through them
-        case 422:
-          Object.keys(data).forEach((field) => {
-            setError(field, {
-              type: "manual",
-              message: data[field],
-            })
-          })
-          break
-
-        case 400:
-        case 404:
-          // Client Errors
-          dispatch(showToast({ message: data.message, type: "error" }))
-          break
-
-        case 500:
-          // Server Errors
-          dispatch(showToast({ message: "Server error. Please try again later.", type: "error" }))
-          break
-
-        default:
-          // Unknown Errors
-          dispatch(showToast({ message: "Something went wrong.", type: "error" }))
-      }
+      // 6. Pass the error, dispatch, and setError to the helper
+      handleApiError(error, dispatch, setError)
     } finally {
       setLoading(false)
     }
@@ -252,7 +228,7 @@ const LoginPage = () => {
                 cursor: "pointer",
               }}
             >
-              <Link href="/forget-password">Reset it here</Link>
+              <Link href="/forgot-password">Reset it here</Link>
             </Typography>
           </Typography>
         </Box>

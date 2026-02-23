@@ -10,7 +10,8 @@ import * as yup from "yup"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 import { useRouter } from "next/navigation"
-import { apiManager } from "@/helpers/apiManager"
+import { forgotPassword } from "@/services/auth"
+import { handleApiError } from "@/services/apiErrorHandler"
 
 const forgetSchema = yup.object({
   email: yup.string().email("Invalid email format").required("Email is required"),
@@ -37,37 +38,11 @@ const page = () => {
     setLoading(true)
     const payload = { email: data.email }
     try {
-      const { data } = await apiManager.post("/auth/forgot-password", payload)
+      const data = await forgotPassword(payload)
       dispatch(showToast({ message: data.message, type: "success" }))
-      console.log("🚀 ~ onSubmit ~ data:", data)
       router.push("/reset-password")
     } catch (error) {
-      const { data, status } = error?.response || {}
-
-      if (status === 400 || status === 404) {
-        dispatch(showToast({ message: data.message, type: "error" }))
-      } else if (status === 422) {
-        Object.keys(data).forEach((field) => {
-          setError(field, {
-            type: "manual",
-            message: data[field],
-          })
-        })
-      } else if (status === 500) {
-        dispatch(
-          showToast({
-            message: "Server error. Please try again later.",
-            type: "error",
-          })
-        )
-      } else {
-        dispatch(
-          showToast({
-            message: "Something went wrong. Please try again.",
-            type: "error",
-          })
-        )
-      }
+      handleApiError(error, dispatch, setError)
     } finally {
       setLoading(false)
     }
