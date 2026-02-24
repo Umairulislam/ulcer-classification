@@ -31,6 +31,7 @@ import moment from "moment"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 import { apiManager } from "@/helpers/apiManager"
+import { deleteDoctor, getDoctors, toggleDoctorStatus } from "@/services/admin"
 
 const page = () => {
   const dispatch = useDispatch()
@@ -43,13 +44,15 @@ const page = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
 
-  const getDoctors = async () => {
+  const fetchDoctors = async () => {
     setLoading(true)
     try {
-      let path = `doctor/all?page=${page + 1}&perPage=${rowsPerPage}`
-      if (searchQuery) path += `&search=${searchQuery}`
-      if (filterStatus !== "all") path += `&status=${filterStatus}`
-      const { data } = await apiManager.get(path)
+      const data = await getDoctors({
+        page: page + 1,
+        perPage: rowsPerPage,
+        search: searchQuery,
+        status: filterStatus,
+      })
       setDoctors(data?.response)
     } catch (error) {
       console.log(error)
@@ -60,14 +63,14 @@ const page = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      const { data } = await apiManager.delete(`doctor/delete/${selectedDoctor?.id}`)
-      setDoctors((prev) => {
-        prev.details.filter((doc) => {
-          return doc?.id !== selectedDoctor?.id
-        })
-      })
+      const data = await deleteDoctor(selectedDoctor?.id)
+      // setDoctors((prev) => {
+      //   prev.details.filter((doc) => {
+      //     return doc?.id !== selectedDoctor?.id
+      //   })
+      // })
       dispatch(showToast({ message: data?.message, type: "success" }))
-      getDoctors()
+      fetchDoctors()
     } catch (error) {
       dispatch(showToast({ message: error.response.data.message, type: "error" }))
       console.error("Failed to delete doctor:", error)
@@ -80,11 +83,9 @@ const page = () => {
   const handleToggleStatus = async (doctor) => {
     setLoading(true)
     try {
-      const { data } = await apiManager.patch(`doctor/update/status/${doctor.id}`, {
-        status: doctor.status === "active" ? "deactive" : "active",
-      })
+      const data = await toggleDoctorStatus(doctor.id, doctor.status)
       dispatch(showToast({ message: data.message, type: "success" }))
-      getDoctors()
+      fetchDoctors()
     } catch (error) {
       console.error("Error toggling doctor status:", error)
     } finally {
@@ -107,10 +108,8 @@ const page = () => {
   }
 
   useEffect(() => {
-    const handler = setTimeout(getDoctors, 500)
-    return () => {
-      clearTimeout(handler)
-    }
+    const handler = setTimeout(fetchDoctors, 500)
+    return () => clearTimeout(handler)
   }, [page, rowsPerPage, searchQuery, filterStatus])
 
   return (
@@ -158,7 +157,7 @@ const page = () => {
           border: "1px solid lightgray",
         }}
       >
-        <TableContainer sx={{ height: "calc(100vh - 280px)" }}>
+        <TableContainer sx={{ height: "calc(100vh - 300px)" }}>
           <Table stickyHeader>
             <TableHead>
               <TableRow>

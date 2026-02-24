@@ -57,3 +57,109 @@ A modern frontend application for classifying ulcer images. The system consists 
 ## 👨‍💼 Author
 
 Crafted with care by **Engr. Umair Ul Islam** ✨
+
+```bash
+eslint.config.mjs
+jsconfig.json
+next.config.mjs
+package.json
+postcss.config.mjs
+README.md
+tailwind.config.mjs
+public/
+src/
+  middleware.js
+  app/
+    globals.css
+    layout.js
+    page.js
+    (auth)/
+      forget-password/
+        page.jsx
+      login/
+        page.jsx
+      reset-password/
+        page.jsx
+    (dashboard)/
+      layout.js
+      admin/
+        dashboard/
+          page.jsx
+        doctors/
+          page.jsx
+          create/
+            page.jsx
+          update/
+            [id]/
+              page.jsx
+        patients/
+          page.jsx
+          create/
+            page.jsx
+          update/
+            [id]/
+              page.jsx
+        profile/
+          [id]/
+            update-password/
+              page.jsx
+            update-profile/
+              page.jsx
+      doctor/
+        classification/
+          page.jsx
+        dashboard/
+          page.jsx
+        patients/
+          page.jsx
+          classify/
+            [id]/
+              page.jsx
+        profile/
+          [id]/
+            update-password/
+              page.jsx
+            update-profile/
+              page.jsx
+  assets/
+    icons/
+      index.js
+    images/
+      index.js
+  components/
+    AlertDialog.jsx
+    CustomButton.jsx
+    DashboardCard.jsx
+    index.js
+    Loader.jsx
+    NoRecordsFound.jsx
+    StatusChip.jsx
+    Toast.jsx
+  helpers/
+    apiManager.js
+    clientCookis.js
+    cookie.js
+  hoc/
+    AppProvider.js
+  layouts/
+    Header.jsx
+    index.js
+    Sidenav.jsx
+  schemas/
+    classificationSchema.js
+    doctorSchema.js
+    index.js
+    loginSchema.js
+    patientSchema.js
+    resetSchema.js
+    updatePassSchema.js
+    updateProfileSchema.js
+  store/
+    store.js
+    toastSlice.js
+    userSlice.js
+  styles/
+    theme.js
+  utils/
+    utils.js
+```

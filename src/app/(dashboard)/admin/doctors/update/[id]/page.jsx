@@ -21,6 +21,8 @@ import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 import { apiManager } from "@/helpers/apiManager"
+import { handleApiError } from "@/services/apiErrorHandler"
+import { updateDoctor } from "@/services/admin"
 
 const page = () => {
   const params = useParams()
@@ -78,36 +80,11 @@ const page = () => {
 
     setLoading(true)
     try {
-      const { data } = await apiManager.patch(`doctor/update/${id}`, payload)
+      const data = await updateDoctor(id, payload)
       dispatch(showToast({ message: data.message, type: "success" }))
       router.push("/admin/doctors")
     } catch (error) {
-      const { data, status } = error?.response || {}
-
-      if (status === 400 || status === 404) {
-        dispatch(showToast({ message: data.message, type: "error" }))
-      } else if (status === 422) {
-        Object.keys(data).forEach((field) => {
-          setError(field, {
-            type: "manual",
-            message: data[field],
-          })
-        })
-      } else if (status === 500) {
-        dispatch(
-          showToast({
-            message: "Server error. Please try again later.",
-            type: "error",
-          })
-        )
-      } else {
-        dispatch(
-          showToast({
-            message: "Something went wrong. Please try again.",
-            type: "error",
-          })
-        )
-      }
+      handleApiError(error, dispatch, setError)
     } finally {
       setLoading(false)
     }

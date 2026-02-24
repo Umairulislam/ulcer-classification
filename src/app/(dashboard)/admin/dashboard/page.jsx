@@ -2,6 +2,7 @@
 
 import { DashboardCard } from "@/components"
 import { apiManager } from "@/helpers/apiManager"
+import { getAdminDashboard } from "@/services/admin"
 import {
   Box,
   Container,
@@ -25,7 +26,7 @@ const AdminDashboard = () => {
   const getStats = async () => {
     setLoading(true)
     try {
-      const { data } = await apiManager.get("dashboard/admin")
+      const data = await getAdminDashboard()
       setAdminStats(data?.response?.details)
     } catch (error) {
       console.log("Error fetching stats:", error)
@@ -39,12 +40,6 @@ const AdminDashboard = () => {
   }, [])
 
   // Hard-coded data
-  const quickStats = [
-    { title: "Total Doctors", value: 25 },
-    { title: "Total Patients", value: 120 },
-    { title: "Total Appointments", value: 45 },
-  ]
-
   const recentActivity = [
     { id: 1, action: "New patient added", date: "2024-03-10" },
     { id: 2, action: "Doctor registered", date: "2024-03-09" },
@@ -63,7 +58,7 @@ const AdminDashboard = () => {
   return (
     <Container>
       <Typography variant="h4" fontWeight="bold" mb={4}>
-        Admin Dashboard
+        Dashboard Statistics
       </Typography>
 
       {/* Quick Stats */}
