@@ -32,6 +32,7 @@ import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 import { apiManager } from "@/helpers/apiManager"
 import { deleteDoctor, getDoctors, toggleDoctorStatus } from "@/services/admin"
+import { handleApiError } from "@/services/apiErrorHandler"
 
 const page = () => {
   const dispatch = useDispatch()
@@ -64,16 +65,10 @@ const page = () => {
   const handleConfirmDelete = async () => {
     try {
       const data = await deleteDoctor(selectedDoctor?.id)
-      // setDoctors((prev) => {
-      //   prev.details.filter((doc) => {
-      //     return doc?.id !== selectedDoctor?.id
-      //   })
-      // })
       dispatch(showToast({ message: data?.message, type: "success" }))
       fetchDoctors()
     } catch (error) {
-      dispatch(showToast({ message: error.response.data.message, type: "error" }))
-      console.error("Failed to delete doctor:", error)
+      handleApiError(error, dispatch)
     } finally {
       setDialogOpen(false)
       setSelectedDoctor(null)

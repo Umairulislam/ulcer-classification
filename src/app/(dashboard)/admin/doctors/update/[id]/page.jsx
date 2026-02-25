@@ -22,7 +22,7 @@ import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 import { apiManager } from "@/helpers/apiManager"
 import { handleApiError } from "@/services/apiErrorHandler"
-import { updateDoctor } from "@/services/admin"
+import { getDoctorById, updateDoctor } from "@/services/admin"
 
 const page = () => {
   const params = useParams()
@@ -54,10 +54,10 @@ const page = () => {
     },
   })
 
-  const getDoctor = async () => {
+  const fetchDoctor = async () => {
     setLoading(true)
     try {
-      const { data } = await apiManager.get(`doctor/${id}`)
+      const data = await getDoctorById(id)
       // Populate form fields with the fetched data
       reset(data?.response?.details)
     } catch (error) {
@@ -68,7 +68,6 @@ const page = () => {
   }
 
   const onSubmit = async (data) => {
-    console.log("🚀 ~ onSubmit ~ data:", data)
     const payload = {
       first_name: data.first_name,
       last_name: data.last_name,
@@ -91,7 +90,7 @@ const page = () => {
   }
 
   useEffect(() => {
-    getDoctor()
+    fetchDoctor()
   }, [id, reset])
 
   return (

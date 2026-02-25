@@ -9,6 +9,11 @@ export async function getDoctors({ page, perPage, search, status }) {
   return data
 }
 
+export async function getDoctorById(id) {
+  const { data } = await apiManager.get(`doctor/${id}`)
+  return data
+}
+
 export async function createDoctor(payload) {
   const { data } = await apiManager.post("doctor/create", payload)
   return data
