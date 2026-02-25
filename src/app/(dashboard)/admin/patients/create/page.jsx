@@ -9,7 +9,8 @@ import { patientSchema } from "@/schemas"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
-import { apiManager } from "@/helpers/apiManager"
+import { createPatient, getDoctors } from "@/services/admin"
+import { handleApiError } from "@/services/apiErrorHandler"
 
 const page = () => {
   const router = useRouter()
@@ -32,11 +33,10 @@ const page = () => {
     },
   })
 
-  const getDoctors = async () => {
+  const fetchDoctors = async () => {
     setLoading(true)
     try {
-      let path = `doctor/all?page=1&perPage=100`
-      const { data } = await apiManager.get(path)
+      const data = await getDoctors({ page: 1, perPage: 100 })
       setDoctors(data?.response?.details)
     } catch (error) {
       console.log(error)
@@ -60,43 +60,18 @@ const page = () => {
 
     setLoading(true)
     try {
-      const { data } = await apiManager.post("patient/add", payload)
+      const data = await createPatient(payload)
       dispatch(showToast({ message: data.message, type: "success" }))
       router.push("/admin/patients")
     } catch (error) {
-      const { data, status } = error?.response || {}
-
-      if (status === 400 || status === 404) {
-        dispatch(showToast({ message: data.message, type: "error" }))
-      } else if (status === 422) {
-        Object.keys(data).forEach((field) => {
-          setError(field, {
-            type: "manual",
-            message: data[field],
-          })
-        })
-      } else if (status === 500) {
-        dispatch(
-          showToast({
-            message: "Server error. Please try again later.",
-            type: "error",
-          })
-        )
-      } else {
-        dispatch(
-          showToast({
-            message: "Something went wrong. Please try again.",
-            type: "error",
-          })
-        )
-      }
+      handleApiError(error, setError, dispatch)
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    getDoctors()
+    fetchDoctors()
   }, [])
 
   return (
@@ -221,13 +196,13 @@ const page = () => {
                   getOptionLabel={(option) => `${option.first_name} ${option.last_name}`}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
                   onChange={(event, value) => field.onChange(value)}
-                  value={field.value}
+                  value={field.value ?? null}
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       variant="outlined"
                       placeholder="Select Doctor"
-                      error={errors.doctor_id}
+                      error={!!errors.doctor_id}
                       helperText={errors.doctor_id?.message}
                     />
                   )}

@@ -27,6 +27,7 @@ import moment from "moment"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 import { apiManager } from "@/helpers/apiManager"
+import { deletePatient, getDoctors, getPatients } from "@/services/admin"
 
 const page = () => {
   const dispatch = useDispatch()
@@ -40,13 +41,15 @@ const page = () => {
   const [filterDoctor, setFilterDoctor] = useState(null)
   const [doctors, setDoctors] = useState([])
 
-  const getPatients = async () => {
+  const fetchPatients = async () => {
     setLoading(true)
     try {
-      let path = `patient/all?page=${page + 1}&perPage=${rowsPerPage}`
-      if (searchQuery) path += `&search=${searchQuery}`
-      if (filterDoctor) path += `&doctor_id=${filterDoctor?.id}`
-      const { data } = await apiManager.get(path)
+      const data = await getPatients({
+        page: page + 1,
+        perPage: rowsPerPage,
+        search: searchQuery,
+        doctor_id: filterDoctor?.id,
+      })
       setPatients(data?.response)
     } catch (error) {
       console.log(error)
@@ -55,32 +58,22 @@ const page = () => {
     }
   }
 
-  const getDoctors = async () => {
-    setLoading(true)
+  const fetchDoctors = async () => {
     try {
-      let path = `doctor/all?page=1&perPage=100`
-      const { data } = await apiManager.get(path)
+      const data = await getDoctors({ page: 1, perPage: 100 })
       setDoctors(data?.response?.details)
     } catch (error) {
       console.log("Error fetching doctor", error)
-    } finally {
-      setLoading(false)
     }
   }
 
   const handleConfirmDelete = async () => {
     try {
-      const { data } = await apiManager.delete(`patient/${selectedPatient?.id}`)
-      setPatients((prev) => {
-        prev.details.filter((pat) => {
-          return pat?.id !== selectedPatient?.id
-        })
-      })
+      const data = await deletePatient(selectedPatient?.id)
       dispatch(showToast({ message: data?.message, type: "success" }))
-      getPatients()
+      fetchPatients()
     } catch (error) {
-      dispatch(showToast({ message: error.response.data.message, type: "error" }))
-      console.error("Failed to delete patient:", error)
+      handleApiError(error, dispatch)
     } finally {
       setDialogOpen(false)
       setSelectedPatient(null)
@@ -102,11 +95,11 @@ const page = () => {
   }
 
   useEffect(() => {
-    getDoctors()
+    fetchDoctors()
   }, [])
 
   useEffect(() => {
-    const handler = setTimeout(getPatients, 500)
+    const handler = setTimeout(fetchPatients, 500)
     return () => {
       clearTimeout(handler)
     }
@@ -152,7 +145,7 @@ const page = () => {
           border: "1px solid lightgray",
         }}
       >
-        <TableContainer sx={{ height: "calc(100vh - 280px)" }}>
+        <TableContainer sx={{ height: "calc(100vh - 300px)" }}>
           <Table stickyHeader>
             <TableHead>
               <TableRow>
