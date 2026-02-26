@@ -20,7 +20,6 @@ import { useParams } from "next/navigation"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
-import { apiManager } from "@/helpers/apiManager"
 import { handleApiError } from "@/services/apiErrorHandler"
 import { getDoctorById, updateDoctor } from "@/services/admin"
 

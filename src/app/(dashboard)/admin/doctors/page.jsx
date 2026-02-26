@@ -30,7 +30,6 @@ import { CustomButton, AlertDialog } from "@/components"
 import moment from "moment"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
-import { apiManager } from "@/helpers/apiManager"
 import { deleteDoctor, getDoctors, toggleDoctorStatus } from "@/services/admin"
 import { handleApiError } from "@/services/apiErrorHandler"
 

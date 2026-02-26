@@ -23,7 +23,7 @@ const AdminDashboard = () => {
   const [adminStats, setAdminStats] = useState({})
   const [loading, setLoading] = useState(false)
 
-  const getStats = async () => {
+  const fetchStats = async () => {
     setLoading(true)
     try {
       const data = await getAdminDashboard()
@@ -36,7 +36,7 @@ const AdminDashboard = () => {
   }
 
   useEffect(() => {
-    getStats()
+    fetchStats()
   }, [])
 
   // Hard-coded data

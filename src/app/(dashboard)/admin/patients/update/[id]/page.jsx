@@ -9,7 +9,6 @@ import { patientSchema } from "@/schemas"
 import { useParams, useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
-import { apiManager } from "@/helpers/apiManager"
 import { getDoctors, getPatientById, updatePatient } from "@/services/admin"
 import { handleApiError } from "@/services/apiErrorHandler"
 

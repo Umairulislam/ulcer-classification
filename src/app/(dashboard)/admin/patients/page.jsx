@@ -26,7 +26,6 @@ import { CustomButton, AlertDialog } from "@/components"
 import moment from "moment"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
-import { apiManager } from "@/helpers/apiManager"
 import { deletePatient, getDoctors, getPatients } from "@/services/admin"
 
 const page = () => {
