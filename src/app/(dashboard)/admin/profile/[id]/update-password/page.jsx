@@ -4,6 +4,8 @@ import { Lock, VisibilityOff, Visibility } from "@/assets/icons"
 import { CustomButton } from "@/components"
 import { apiManager } from "@/helpers/apiManager"
 import { updatePassSchema } from "@/schemas"
+import { handleApiError } from "@/services/apiErrorHandler"
+import { updatePassword } from "@/services/shared"
 import { showToast } from "@/store/toastSlice"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
@@ -50,17 +52,11 @@ const page = () => {
 
     setLoading(true)
     try {
-      const { data } = await apiManager.post("auth/change-password", payload)
+      const data = await updatePassword(payload)
       dispatch(showToast({ message: data?.message, type: "success" }))
       router.push(`/${basePath}/dashboard`)
     } catch (error) {
-      dispatch(
-        showToast({
-          message: error?.response?.data?.current_password,
-          type: "error",
-        })
-      )
-      console.error("Error updating password:", error)
+      handleApiError(error, dispatch)
     } finally {
       setLoading(false)
     }

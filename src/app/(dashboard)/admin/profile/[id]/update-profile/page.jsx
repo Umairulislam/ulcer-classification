@@ -11,6 +11,9 @@ import { useRouter } from "next/navigation"
 import { useDispatch, useSelector } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 import { apiManager } from "@/helpers/apiManager"
+import { updateProfile } from "@/services/shared"
+import { handleApiError } from "@/services/apiErrorHandler"
+import { getDoctorById } from "@/services/admin"
 
 const page = () => {
   const params = useParams()
@@ -40,7 +43,7 @@ const page = () => {
   const fetchDoctor = async () => {
     setLoading(true)
     try {
-      const { data } = await apiManager.get(`doctor/${user?.id}`)
+      const data = await getDoctorById(id)
       // Populate form fields with the fetched data
       reset(data?.response?.details)
     } catch (error) {
@@ -51,7 +54,6 @@ const page = () => {
   }
 
   const onSubmit = async (data) => {
-    console.log("🚀 ~ onSubmit ~ data:", data)
     const payload = {
       first_name: data.first_name,
       last_name: data.last_name,
@@ -63,36 +65,11 @@ const page = () => {
     setLoading(true)
     try {
       // API to be change
-      const { data } = await apiManager.patch(`doctor/update/${id}`, payload)
+      const data = await updateProfile(id, payload)
       dispatch(showToast({ message: data.message, type: "success" }))
       router.push("/admin/dashboard")
     } catch (error) {
-      const { data, status } = error?.response || {}
-
-      if (status === 400 || status === 404) {
-        dispatch(showToast({ message: data.message, type: "error" }))
-      } else if (status === 422) {
-        Object.keys(data).forEach((field) => {
-          setError(field, {
-            type: "manual",
-            message: data[field],
-          })
-        })
-      } else if (status === 500) {
-        dispatch(
-          showToast({
-            message: "Server error. Please try again later.",
-            type: "error",
-          })
-        )
-      } else {
-        dispatch(
-          showToast({
-            message: "Something went wrong. Please try again.",
-            type: "error",
-          })
-        )
-      }
+      handleApiError(error, setError, dispatch)
     } finally {
       setLoading(false)
     }
