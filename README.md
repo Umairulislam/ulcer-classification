@@ -2,13 +2,9 @@
 
 A modern frontend application for classifying ulcer images. The system consists of two main panels: **Admin** and **Doctor**. Admins manage users and patients, while doctors classify ulcer images and generate reports. Built with **Next.js**, **Material UI**, **Redux Toolkit**, and **Recharts**.
 
----
-
 ## 🎥 Demo
 
 ![Demo](/src/assets/images/gif.gif)
-
----
 
 ## 🏢 Project Highlights
 
@@ -29,8 +25,6 @@ A modern frontend application for classifying ulcer images. The system consists 
 - 🔹 Download and view classification reports.
 - 🔑 Update personal profile and password.
 
----
-
 ## 💡 Features
 
 - 📧 Password reset with OTP (for both admin and doctor).
@@ -41,8 +35,6 @@ A modern frontend application for classifying ulcer images. The system consists 
 - 🔐 Role-based route protection using middleware.
 - 🔢 Pagination support in tables for better navigation.
 
----
-
 ## 🚀 Tech Stack
 
 ![Next.js](https://img.shields.io/badge/Next.js-000?style=for-the-badge&logo=next.js&logoColor=white)  
@@ -52,114 +44,6 @@ A modern frontend application for classifying ulcer images. The system consists 
 ![React Hook Form](https://img.shields.io/badge/React_Hook_Form-EC5990?style=for-the-badge&logo=reacthookform&logoColor=white)  
 ![Recharts](https://img.shields.io/badge/Recharts-FC4445?style=for-the-badge&logo=chart.js&logoColor=white)
 
----
-
 ## 👨‍💼 Author
 
 Crafted with care by **Engr. Umair Ul Islam** ✨
-
-```bash
-eslint.config.mjs
-jsconfig.json
-next.config.mjs
-package.json
-postcss.config.mjs
-README.md
-tailwind.config.mjs
-public/
-src/
-  middleware.js
-  app/
-    globals.css
-    layout.js
-    page.js
-    (auth)/
-      forget-password/
-        page.jsx
-      login/
-        page.jsx
-      reset-password/
-        page.jsx
-    (dashboard)/
-      layout.js
-      admin/
-        dashboard/
-          page.jsx
-        doctors/
-          page.jsx
-          create/
-            page.jsx
-          update/
-            [id]/
-              page.jsx
-        patients/
-          page.jsx
-          create/
-            page.jsx
-          update/
-            [id]/
-              page.jsx
-        profile/
-          [id]/
-            update-password/
-              page.jsx
-            update-profile/
-              page.jsx
-      doctor/
-        classification/
-          page.jsx
-        dashboard/
-          page.jsx
-        patients/
-          page.jsx
-          classify/
-            [id]/
-              page.jsx
-        profile/
-          [id]/
-            update-password/
-              page.jsx
-            update-profile/
-              page.jsx
-  assets/
-    icons/
-      index.js
-    images/
-      index.js
-  components/
-    AlertDialog.jsx
-    CustomButton.jsx
-    DashboardCard.jsx
-    index.js
-    Loader.jsx
-    NoRecordsFound.jsx
-    StatusChip.jsx
-    Toast.jsx
-  helpers/
-    apiManager.js
-    clientCookis.js
-    cookie.js
-  hoc/
-    AppProvider.js
-  layouts/
-    Header.jsx
-    index.js
-    Sidenav.jsx
-  schemas/
-    classificationSchema.js
-    doctorSchema.js
-    index.js
-    loginSchema.js
-    patientSchema.js
-    resetSchema.js
-    updatePassSchema.js
-    updateProfileSchema.js
-  store/
-    store.js
-    toastSlice.js
-    userSlice.js
-  styles/
-    theme.js
-  utils/
-    utils.js
-```
