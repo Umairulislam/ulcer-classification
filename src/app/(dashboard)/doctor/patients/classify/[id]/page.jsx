@@ -10,6 +10,9 @@ import { useParams, useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 import { apiManager } from "@/helpers/apiManager"
+import { getPatientById } from "@/services/admin"
+import { classifyUlcer } from "@/services/doctors"
+import { handleApiError } from "@/services/apiErrorHandler"
 
 const page = () => {
   const params = useParams()
@@ -31,10 +34,10 @@ const page = () => {
     resolver: yupResolver(classificationSchema),
   })
 
-  const getPatient = async () => {
+  const fetchPatient = async () => {
     setLoading(true)
     try {
-      const { data } = await apiManager.get(`patient/${id}`)
+      const data = await getPatientById(id)
       setPatient(data?.response?.details)
     } catch (error) {
       console.error("Error fetching patient details:", error)
@@ -43,20 +46,12 @@ const page = () => {
     }
   }
 
-  const onSubmit = async (data) => {
-    console.log("🚀 ~ onSubmit ~ data:", data)
-    const payload = {
-      image: data.image[0],
-      id: id,
-    }
-
+  const onSubmit = async (formData) => {
     setLoading(true)
     try {
-      const { data } = await apiManager.post(`patient/classify/upload/${id}`, payload, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-
+      const data = await classifyUlcer(id, formData.image[0])
       dispatch(showToast({ message: data.message, type: "success" }))
+
       const pdfUrl = data?.response?.details?.report_url
       if (pdfUrl) {
         window.open(pdfUrl, "_blank") // Opens the PDF in a new tab
@@ -64,32 +59,7 @@ const page = () => {
 
       router.push("/doctor/patients")
     } catch (error) {
-      const { data, status } = error?.response || {}
-
-      if (status === 400 || status === 404) {
-        dispatch(showToast({ message: data.message, type: "error" }))
-      } else if (status === 422) {
-        Object.keys(data).forEach((field) => {
-          setError(field, {
-            type: "manual",
-            message: data[field],
-          })
-        })
-      } else if (status === 500) {
-        dispatch(
-          showToast({
-            message: "Server error. Please try again later.",
-            type: "error",
-          })
-        )
-      } else {
-        dispatch(
-          showToast({
-            message: "Something went wrong. Please try again.",
-            type: "error",
-          })
-        )
-      }
+      handleApiError(error, dispatch, setError)
     } finally {
       setLoading(false)
     }
@@ -108,7 +78,7 @@ const page = () => {
   }
 
   useEffect(() => {
-    getPatient()
+    fetchPatient()
   }, [])
 
   return (
@@ -122,32 +92,54 @@ const page = () => {
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Name
             </Typography>
-            <TextField value={patient?.name} variant="outlined" fullWidth disabled />
+            <TextField value={patient?.name ?? ""} variant="outlined" fullWidth disabled />
           </Grid2>
+
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Email
             </Typography>
-            <TextField value={patient?.email} variant="outlined" type="email" disabled fullWidth />
+            <TextField
+              value={patient?.email ?? ""}
+              variant="outlined"
+              type="email"
+              disabled
+              fullWidth
+            />
           </Grid2>
+
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Phone Number
             </Typography>
-            <TextField value={patient?.phone_no} variant="outlined" fullWidth disabled />
+            <TextField value={patient?.phone_no ?? ""} variant="outlined" fullWidth disabled />
           </Grid2>
+
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Age
             </Typography>
-            <TextField value={patient?.age} type="number" variant="outlined" fullWidth disabled />
+            <TextField
+              value={patient?.age ?? ""}
+              type="number"
+              variant="outlined"
+              fullWidth
+              disabled
+            />
           </Grid2>
+
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Gender
             </Typography>
-            <TextField value={patient?.gender} variant="outlined" fullWidth disabled></TextField>
+            <TextField
+              value={patient?.gender ?? ""}
+              variant="outlined"
+              fullWidth
+              disabled
+            ></TextField>
           </Grid2>
+
           {/* Image Upload Field */}
           <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
@@ -176,19 +168,20 @@ const page = () => {
                 {errors.image.message}
               </Typography>
             )}
-            {/* Image Preview */}
-            {preview && (
-              <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }} mt={2}>
-                <Typography variant="subtitle1">Preview:</Typography>
-                <Avatar
-                  variant="rounded"
-                  src={preview}
-                  sx={{ width: 200, height: 200, mx: "auto", mt: 2 }}
-                />
-              </Grid2>
-            )}
           </Grid2>
         </Grid2>
+
+        {/* Image Preview */}
+        {preview && (
+          <Grid2 size={{ xs: 12 }} mt={2}>
+            <Typography variant="subtitle1">Preview:</Typography>
+            <Avatar
+              variant="rounded"
+              src={preview}
+              sx={{ width: 200, height: 200, mx: "auto", mt: 2 }}
+            />
+          </Grid2>
+        )}
 
         <CustomButton text={!loading ? "Submit" : "Submitting"} disabled={loading} type="submit" />
       </Box>

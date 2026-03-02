@@ -23,7 +23,9 @@ import { useDispatch } from "react-redux"
 import { Download, Science } from "@/assets/icons"
 import Link from "next/link"
 import { showToast } from "@/store/toastSlice"
-import { apiManager } from "@/helpers/apiManager"
+import { getPatients } from "@/services/admin"
+import { getPatientReports } from "@/services/doctors/patientService"
+import { handleApiError } from "@/services/apiErrorHandler"
 
 const page = () => {
   const dispatch = useDispatch()
@@ -32,57 +34,32 @@ const page = () => {
   const [loading, setLoading] = useState(true)
   const [patients, setPatients] = useState([])
 
-  const getPatients = async () => {
+  const fetchPatients = async () => {
     setLoading(true)
     try {
-      let path = `patient/all?page=${page + 1}&perPage=${rowsPerPage}`
-      const { data } = await apiManager.get(path)
+      const data = await getPatients({
+        page: page + 1,
+        perPage: rowsPerPage,
+      })
       setPatients(data?.response)
     } catch (error) {
-      console.log(error)
+      handleApiError(error, dispatch)
     } finally {
       setLoading(false)
     }
   }
 
   const getReports = async (id) => {
-    console.log("🚀 ~ getReports ~ id:", id)
     setLoading(true)
     try {
-      const { data } = await apiManager.post(`patient/get-all/reports/${id}`)
+      const data = await getPatientReports(id)
       dispatch(showToast({ message: data.message, type: "success" }))
       const pdfUrl = data?.response?.details?.report_url
       if (pdfUrl) {
         window.open(pdfUrl, "_blank") // Opens the PDF in a new tab
       }
     } catch (error) {
-      console.log(error)
-      const { data, status } = error?.response || {}
-
-      if (status === 400 || status === 404) {
-        dispatch(showToast({ message: data.message, type: "error" }))
-      } else if (status === 422) {
-        Object.keys(data).forEach((field) => {
-          setError(field, {
-            type: "manual",
-            message: data[field],
-          })
-        })
-      } else if (status === 500) {
-        dispatch(
-          showToast({
-            message: "Server error. Please try again later.",
-            type: "error",
-          })
-        )
-      } else {
-        dispatch(
-          showToast({
-            message: "Something went wrong. Please try again.",
-            type: "error",
-          })
-        )
-      }
+      handleApiError(error, dispatch)
     } finally {
       setLoading(false)
     }
@@ -98,7 +75,7 @@ const page = () => {
   }
 
   useEffect(() => {
-    getPatients()
+    fetchPatients()
   }, [page, rowsPerPage])
 
   return (

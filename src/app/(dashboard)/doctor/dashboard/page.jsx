@@ -1,7 +1,7 @@
 "use client"
 
 import { DashboardCard, StatusChip } from "@/components"
-import { apiManager } from "@/helpers/apiManager"
+import { getDoctorDashboard } from "@/services/doctors"
 import {
   Box,
   Container,
@@ -19,14 +19,13 @@ import { PieChart, Pie, Tooltip, Legend, ResponsiveContainer } from "recharts"
 
 const DoctorDashboard = () => {
   const [doctorStats, setDoctorStats] = useState({})
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
-  const getStats = async () => {
+  const fetchStats = async () => {
     setLoading(true)
     try {
-      const { data } = await apiManager.get("dashboard/doctor")
+      const data = await getDoctorDashboard()
       setDoctorStats(data?.response?.details)
-      console.log("🚀 ~ getStats ~ data:", data)
     } catch (error) {
       console.log("Error fetching stats:", error)
     } finally {
@@ -35,11 +34,10 @@ const DoctorDashboard = () => {
   }
 
   useEffect(() => {
-    getStats()
+    fetchStats()
   }, [])
 
   // Hard-coded data
-
   const upcomingAppointments = [
     {
       id: 1,
