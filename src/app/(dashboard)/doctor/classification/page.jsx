@@ -12,7 +12,7 @@ import {
   Autocomplete,
 } from "@mui/material"
 import { useForm, Controller } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
+import { zodResolver } from "@hookform/resolvers/zod"
 import * as yup from "yup"
 import { apiManager } from "@/helpers/apiManager"
 
@@ -51,7 +51,7 @@ const ClassificationPage = () => {
     setValue,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(classificationSchema),
+    resolver: zodResolver(classificationSchema),
     defaultValues: {
       patient_name: "",
       image: null,

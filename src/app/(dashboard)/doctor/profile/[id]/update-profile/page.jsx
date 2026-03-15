@@ -1,7 +1,7 @@
 "use client"
 
 import { Box, Container, Grid, TextField, Typography, MenuItem } from "@mui/material"
-import { yupResolver } from "@hookform/resolvers/yup"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, Controller } from "react-hook-form"
 import { updateProfileSchema } from "@/schemas"
 import { useEffect, useState } from "react"
@@ -26,7 +26,7 @@ const page = () => {
     reset,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(updateProfileSchema),
+    resolver: zodResolver(updateProfileSchema),
     defaultValues: {
       first_name: "",
       last_name: "",

@@ -6,7 +6,7 @@ import { updatePassSchema } from "@/schemas"
 import { handleApiError } from "@/services/apiErrorHandler"
 import { updatePassword } from "@/services/shared"
 import { showToast } from "@/store/toastSlice"
-import { yupResolver } from "@hookform/resolvers/yup"
+import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Box,
   Container,
@@ -39,7 +39,7 @@ const page = () => {
     submit,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(updatePassSchema),
+    resolver: zodResolver(updatePassSchema),
   })
 
   const onSubmit = async (data) => {

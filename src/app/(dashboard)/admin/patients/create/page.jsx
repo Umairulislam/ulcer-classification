@@ -4,7 +4,7 @@ import { Box, Container, Grid, TextField, Typography, Autocomplete, MenuItem } f
 import React, { useEffect, useState } from "react"
 import { CustomButton } from "@/components"
 import { useForm, Controller } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { patientSchema } from "@/schemas"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
@@ -24,7 +24,7 @@ const page = () => {
     setError,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(patientSchema(false)),
+    resolver: zodResolver(patientSchema(false)),
     defaultValues: {
       name: "",
       email: "",

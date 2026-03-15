@@ -5,7 +5,7 @@ import { CustomButton } from "@/components"
 import { apiManager } from "@/helpers/apiManager"
 import { updatePassSchema } from "@/schemas"
 import { showToast } from "@/store/toastSlice"
-import { yupResolver } from "@hookform/resolvers/yup"
+import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Box,
   Container,
@@ -38,7 +38,7 @@ const page = () => {
     submit,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(updatePassSchema),
+    resolver: zodResolver(updatePassSchema),
   })
 
   const onSubmit = async (data) => {

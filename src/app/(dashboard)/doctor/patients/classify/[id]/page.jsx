@@ -4,7 +4,7 @@ import { Box, Container, Grid, TextField, Typography, Button, Avatar } from "@mu
 import React, { useEffect, useState } from "react"
 import { CustomButton } from "@/components"
 import { useForm, Controller } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { classificationSchema } from "@/schemas"
 import { useParams, useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
@@ -30,7 +30,7 @@ const page = () => {
     setError,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(classificationSchema),
+    resolver: zodResolver(classificationSchema),
   })
 
   const fetchPatient = async () => {

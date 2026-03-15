@@ -13,7 +13,7 @@ import {
 } from "@mui/material"
 import { Email, Visibility, VisibilityOff, Lock } from "@/assets/icons"
 import { useForm, Controller } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { loginSchema } from "@/schemas"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
@@ -41,7 +41,7 @@ const LoginPage = () => {
     setError,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(loginSchema),
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",

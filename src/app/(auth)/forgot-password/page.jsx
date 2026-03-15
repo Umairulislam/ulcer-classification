@@ -5,7 +5,7 @@ import { TextField, Typography, Box, InputAdornment } from "@mui/material"
 import { CustomButton } from "@/components"
 import { useForm, Controller } from "react-hook-form"
 import { Email } from "@/assets/icons"
-import { yupResolver } from "@hookform/resolvers/yup"
+import { zodResolver } from "@hookform/resolvers/zod"
 import * as yup from "yup"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
@@ -28,7 +28,7 @@ const page = () => {
     setError,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(forgetSchema),
+    resolver: zodResolver(forgetSchema),
     defaultValues: {
       email: "",
     },

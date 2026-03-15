@@ -14,7 +14,7 @@ import React, { useState } from "react"
 import { Visibility, VisibilityOff } from "@/assets/icons"
 import { CustomButton } from "@/components"
 import { useForm, Controller } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { doctorSchema } from "@/schemas"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
@@ -38,7 +38,7 @@ const page = () => {
     setError,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(doctorSchema(false)),
+    resolver: zodResolver(doctorSchema(false)),
     defaultValues: {
       first_name: "",
       last_name: "",

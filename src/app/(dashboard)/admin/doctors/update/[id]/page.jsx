@@ -11,7 +11,7 @@ import {
   MenuItem,
 } from "@mui/material"
 import { Visibility, VisibilityOff } from "@/assets/icons"
-import { yupResolver } from "@hookform/resolvers/yup"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, Controller } from "react-hook-form"
 import { doctorSchema } from "@/schemas"
 import { useEffect, useState } from "react"
@@ -43,7 +43,7 @@ const page = () => {
     reset,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(doctorSchema(isUpdate)),
+    resolver: zodResolver(doctorSchema(isUpdate)),
     defaultValues: {
       first_name: "",
       last_name: "",

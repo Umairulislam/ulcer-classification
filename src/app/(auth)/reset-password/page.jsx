@@ -5,7 +5,7 @@ import { Box, TextField, Button, Typography, InputAdornment, IconButton } from "
 import { CustomButton } from "@/components"
 import { useForm, Controller } from "react-hook-form"
 import { Email, Lock, Visibility, VisibilityOff, VpnKey } from "@/assets/icons"
-import { yupResolver } from "@hookform/resolvers/yup"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { resetSchema } from "@/schemas"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
@@ -34,7 +34,7 @@ const page = () => {
     setError,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(resetSchema),
+    resolver: zodResolver(resetSchema),
     defaultValues: {
       otp_code: "",
       email: "",
