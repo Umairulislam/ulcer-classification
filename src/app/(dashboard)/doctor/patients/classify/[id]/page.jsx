@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Container, Grid2, TextField, Typography, Button, Avatar } from "@mui/material"
+import { Box, Container, Grid, TextField, Typography, Button, Avatar } from "@mui/material"
 import React, { useEffect, useState } from "react"
 import { CustomButton } from "@/components"
 import { useForm, Controller } from "react-hook-form"
@@ -9,7 +9,6 @@ import { classificationSchema } from "@/schemas"
 import { useParams, useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
-import { apiManager } from "@/helpers/apiManager"
 import { getPatientById } from "@/services/admin"
 import { classifyUlcer } from "@/services/doctors"
 import { handleApiError } from "@/services/apiErrorHandler"
@@ -87,15 +86,15 @@ const page = () => {
         Patient Classification
       </Typography>
       <Box component="form" sx={{ width: "100%", marginTop: 4 }} onSubmit={handleSubmit(onSubmit)}>
-        <Grid2 container spacing={2} mb={2}>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+        <Grid container spacing={2} mb={2}>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Name
             </Typography>
             <TextField value={patient?.name ?? ""} variant="outlined" fullWidth disabled />
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Email
             </Typography>
@@ -106,16 +105,16 @@ const page = () => {
               disabled
               fullWidth
             />
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Phone Number
             </Typography>
             <TextField value={patient?.phone_no ?? ""} variant="outlined" fullWidth disabled />
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Age
             </Typography>
@@ -126,9 +125,9 @@ const page = () => {
               fullWidth
               disabled
             />
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Gender
             </Typography>
@@ -138,10 +137,10 @@ const page = () => {
               fullWidth
               disabled
             ></TextField>
-          </Grid2>
+          </Grid>
 
           {/* Image Upload Field */}
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Upload Image
             </Typography>
@@ -168,19 +167,19 @@ const page = () => {
                 {errors.image.message}
               </Typography>
             )}
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
 
         {/* Image Preview */}
         {preview && (
-          <Grid2 size={{ xs: 12 }} mt={2}>
+          <Grid size={{ xs: 12 }} mt={2}>
             <Typography variant="subtitle1">Preview:</Typography>
             <Avatar
               variant="rounded"
               src={preview}
               sx={{ width: 200, height: 200, mx: "auto", mt: 2 }}
             />
-          </Grid2>
+          </Grid>
         )}
 
         <CustomButton text={!loading ? "Submit" : "Submitting"} disabled={loading} type="submit" />

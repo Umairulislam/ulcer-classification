@@ -9,7 +9,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import {
   Box,
   Container,
-  Grid2,
+  Grid,
   IconButton,
   InputAdornment,
   TextField,
@@ -72,8 +72,8 @@ const page = () => {
         Update Password
       </Typography>
       <Box component="form" sx={{ width: "100%", marginTop: 4 }} onSubmit={handleSubmit(onSubmit)}>
-        <Grid2 container spacing={2} mb={2}>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+        <Grid container spacing={2} mb={2}>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Old Password
             </Typography>
@@ -113,8 +113,8 @@ const page = () => {
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               New Password
             </Typography>
@@ -154,8 +154,8 @@ const page = () => {
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Confirm Password
             </Typography>
@@ -195,8 +195,8 @@ const page = () => {
                 />
               )}
             />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
         <CustomButton text={!loading ? "Update" : "Updating"} disabled={loading} type="submit" />
       </Box>
     </Container>

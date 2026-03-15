@@ -5,7 +5,7 @@ import {
   Container,
   Box,
   Typography,
-  Grid2,
+  Grid,
   TextField,
   Button,
   Avatar,
@@ -123,9 +123,9 @@ const ClassificationPage = () => {
           backgroundColor: "background.paper",
         }}
       >
-        <Grid2 container spacing={2}>
+        <Grid container spacing={2}>
           {/* Patient Name Field */}
-          <Grid2 size={{ xs: 12 }}>
+          <Grid size={{ xs: 12 }}>
             <Controller
               name="patient_id"
               control={control}
@@ -148,10 +148,10 @@ const ClassificationPage = () => {
                 />
               )}
             />
-          </Grid2>
+          </Grid>
 
           {/* Image Upload Field */}
-          <Grid2 size={{ xs: 12 }}>
+          <Grid size={{ xs: 12 }}>
             <Button
               variant="contained"
               component="label"
@@ -171,22 +171,22 @@ const ClassificationPage = () => {
                 {errors.image.message}
               </Typography>
             )}
-          </Grid2>
+          </Grid>
 
           {/* Image Preview */}
           {preview && (
-            <Grid2 size={{ xs: 12 }} sx={{ textAlign: "center" }}>
+            <Grid size={{ xs: 12 }} sx={{ textAlign: "center" }}>
               <Typography variant="subtitle1">Preview:</Typography>
               <Avatar
                 variant="rounded"
                 src={preview}
                 sx={{ width: 200, height: 200, mx: "auto", mt: 2 }}
               />
-            </Grid2>
+            </Grid>
           )}
 
           {/* Submit Button */}
-          <Grid2 size={{ xs: 12 }}>
+          <Grid size={{ xs: 12 }}>
             <Button
               type="submit"
               variant="contained"
@@ -197,8 +197,8 @@ const ClassificationPage = () => {
             >
               Classify Ulcer
             </Button>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </Box>
     </Container>
   )

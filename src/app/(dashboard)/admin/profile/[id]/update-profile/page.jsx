@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Container, Grid2, TextField, Typography, MenuItem } from "@mui/material"
+import { Box, Container, Grid, TextField, Typography, MenuItem } from "@mui/material"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useForm, Controller } from "react-hook-form"
 import { updateProfileSchema } from "@/schemas"
@@ -10,7 +10,6 @@ import { useParams } from "next/navigation"
 import { useRouter } from "next/navigation"
 import { useDispatch, useSelector } from "react-redux"
 import { showToast } from "@/store/toastSlice"
-import { apiManager } from "@/helpers/apiManager"
 import { updateProfile } from "@/services/shared"
 import { handleApiError } from "@/services/apiErrorHandler"
 import { getDoctorById } from "@/services/admin"
@@ -85,8 +84,8 @@ const page = () => {
         Update Profile
       </Typography>
       <Box component="form" sx={{ width: "100%", marginTop: 4 }} onSubmit={handleSubmit(onSubmit)}>
-        <Grid2 container spacing={2} mb={2}>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+        <Grid container spacing={2} mb={2}>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               First Name
             </Typography>
@@ -104,8 +103,8 @@ const page = () => {
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Last Name
             </Typography>
@@ -123,8 +122,8 @@ const page = () => {
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Email
             </Typography>
@@ -144,8 +143,8 @@ const page = () => {
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Phone Number
             </Typography>
@@ -163,8 +162,8 @@ const page = () => {
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Gender
             </Typography>
@@ -187,8 +186,8 @@ const page = () => {
                 </TextField>
               )}
             />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
         <CustomButton text={!loading ? "Update" : "Updating"} disabled={loading} type="submit" />
       </Box>
     </Container>

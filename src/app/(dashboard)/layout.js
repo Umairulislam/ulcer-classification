@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { CssBaseline, Box, useTheme, useMediaQuery } from "@mui/material"
+import { Box, useTheme, useMediaQuery } from "@mui/material"
 import { Sidenav, Header } from "@/layouts"
 import { useSelector } from "react-redux"
 
@@ -18,11 +18,7 @@ const Layout = ({ children }) => {
 
   return (
     <Box sx={{ display: "flex", height: "100vh" }}>
-      <CssBaseline />
-      <Header
-        isSmallScreen={isSmallScreen}
-        handleDrawerToggle={handleDrawerToggle}
-      />
+      <Header isSmallScreen={isSmallScreen} handleDrawerToggle={handleDrawerToggle} />
       <Sidenav
         role={role}
         isSmallScreen={isSmallScreen}

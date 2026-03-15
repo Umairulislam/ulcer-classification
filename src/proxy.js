@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { decodeJwt } from "@/utils/decodeJwt"
 
-export function middleware(req) {
+export function proxy(req) {
   const path = req.nextUrl.pathname
   // Get the access token from cookies
   const accessToken = req.cookies.get("accessToken")?.value

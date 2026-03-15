@@ -5,7 +5,7 @@ import { getDoctorDashboard } from "@/services/doctors"
 import {
   Box,
   Container,
-  Grid2,
+  Grid,
   Typography,
   Table,
   TableBody,
@@ -72,9 +72,8 @@ const DoctorDashboard = () => {
       <Typography variant="h4" fontWeight="bold" mb={4}>
         Doctor Dashboard
       </Typography>
-
       {/* Quick Stats */}
-      <Grid2 container spacing={3} mb={4}>
+      <Grid container spacing={3} mb={4}>
         {Object.entries(doctorStats ?? {}).map(([key, value]) => (
           <DashboardCard
             key={key}
@@ -82,8 +81,7 @@ const DoctorDashboard = () => {
             value={value}
           />
         ))}
-      </Grid2>
-
+      </Grid>
       {/* Classification table */}
       <Box mb={4}>
         <Typography variant="h6" fontWeight="bold" mb={2}>
@@ -123,7 +121,6 @@ const DoctorDashboard = () => {
           </Table>
         </TableContainer>
       </Box>
-
       {/* Classification Chart */}
       <Box mb={4}>
         <Typography variant="h6" fontWeight="bold" mb={2}>

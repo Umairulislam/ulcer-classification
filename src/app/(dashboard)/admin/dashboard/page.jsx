@@ -1,12 +1,11 @@
 "use client"
 
 import { DashboardCard } from "@/components"
-import { apiManager } from "@/helpers/apiManager"
 import { getAdminDashboard } from "@/services/admin"
 import {
   Box,
   Container,
-  Grid2,
+  Grid,
   Typography,
   Table,
   TableBody,
@@ -60,9 +59,8 @@ const AdminDashboard = () => {
       <Typography variant="h4" fontWeight="bold" mb={4}>
         Dashboard Statistics
       </Typography>
-
       {/* Quick Stats */}
-      <Grid2 container spacing={3} mb={4}>
+      <Grid container spacing={3} mb={4}>
         {Object.entries(adminStats ?? {}).map(([key, value]) => (
           <DashboardCard
             key={key}
@@ -70,8 +68,7 @@ const AdminDashboard = () => {
             value={value}
           />
         ))}
-      </Grid2>
-
+      </Grid>
       {/* Recent Activity */}
       <Box mb={4}>
         <Typography variant="h6" fontWeight="bold" mb={2}>
@@ -107,7 +104,6 @@ const AdminDashboard = () => {
           </Table>
         </TableContainer>
       </Box>
-
       {/* Patient Growth Chart */}
       <Box mb={4}>
         <Typography variant="h6" fontWeight="bold" mb={2}>

@@ -19,6 +19,19 @@ const theme = createTheme({
       contrastText: "#FFFFFF", // Text color on error background
     },
   },
+
+  // --- Component Overrides ---
+  // Override default MUI component styles globally
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        a: {
+          color: "inherit",
+          textDecoration: "none",
+        },
+      },
+    },
+  },
 })
 
 export default theme

@@ -16,7 +16,7 @@ import {
   IconButton,
   Tooltip,
   CircularProgress,
-  Grid2,
+  Grid,
   TextField,
   FormControl,
   Select,
@@ -117,7 +117,7 @@ const page = () => {
         </Link>
       </Stack>
 
-      <Grid2 container spacing={2} mt={2} justifyContent="flex-start" alignItems="flex-start">
+      <Grid container spacing={2} mt={2} justifyContent="flex-start" alignItems="flex-start">
         <TextField
           label="Search doctor"
           variant="outlined"
@@ -137,7 +137,7 @@ const page = () => {
             <MenuItem value="deactive">Deactive</MenuItem>
           </Select>
         </FormControl>
-      </Grid2>
+      </Grid>
 
       {/* {!loading && doctors?.details?.length === 0 ? (
         <NoRecordsFound title="There is no doctor to display" />

@@ -9,12 +9,6 @@ import { getCookieOnClient } from "@/helpers/clientCookies"
 import { deleteCookie } from "@/helpers/cookie"
 import { Loader, Toast } from "@/components"
 
-// const { Toast, Loader } = require("@/components")
-// const { setUser } = require("@/store/userSlice")
-// const { useRouter } = require("next/navigation")
-// const { useState, useEffect } = require("react")
-// const { useDispatch } = require("react-redux")
-
 const AppProvider = ({ children }) => {
   const router = useRouter()
   const dispatch = useDispatch()

@@ -3,7 +3,7 @@
 import {
   Box,
   Container,
-  Grid2,
+  Grid,
   TextField,
   Typography,
   InputAdornment,
@@ -77,8 +77,8 @@ const page = () => {
         Create Doctor
       </Typography>
       <Box component="form" sx={{ width: "100%", marginTop: 4 }} onSubmit={handleSubmit(onSubmit)}>
-        <Grid2 container spacing={2} mb={2}>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+        <Grid container spacing={2} mb={2}>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               First Name
             </Typography>
@@ -96,8 +96,8 @@ const page = () => {
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Last Name
             </Typography>
@@ -115,8 +115,8 @@ const page = () => {
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Email
             </Typography>
@@ -135,8 +135,8 @@ const page = () => {
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Password
             </Typography>
@@ -170,8 +170,8 @@ const page = () => {
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Phone Number
             </Typography>
@@ -189,8 +189,8 @@ const page = () => {
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Gender
             </Typography>
@@ -213,8 +213,8 @@ const page = () => {
                 </TextField>
               )}
             />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
         <CustomButton text={!loading ? "Submit" : "Submitting"} disabled={loading} type="submit" />
       </Box>
     </Container>

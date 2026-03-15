@@ -16,7 +16,7 @@ import {
   IconButton,
   Tooltip,
   CircularProgress,
-  Grid2,
+  Grid,
   TextField,
   Autocomplete,
 } from "@mui/material"
@@ -115,7 +115,7 @@ const page = () => {
         </Link>
       </Stack>
 
-      <Grid2 container spacing={2} mt={2} justifyContent="flex-start" alignItems="flex-start">
+      <Grid container spacing={2} mt={2} justifyContent="flex-start" alignItems="flex-start">
         <TextField
           label="Search patient"
           variant="outlined"
@@ -133,7 +133,7 @@ const page = () => {
           onChange={(e, value) => setFilterDoctor(value)}
           renderInput={(params) => <TextField {...params} label="Select Doctor" />}
         />
-      </Grid2>
+      </Grid>
 
       <Paper
         sx={{
