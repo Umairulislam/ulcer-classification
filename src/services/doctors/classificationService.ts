@@ -1,10 +1,10 @@
 import { apiManager } from "@/helpers/apiManager"
-import { ApiResponse } from "@/types/api"
+import { ApiResponse, ClassificationResult } from "@/types/api"
 
 export async function classifyUlcer(
   patientId: string,
   imageFile: File
-): Promise<ApiResponse<unknown>> {
+): Promise<ApiResponse<ClassificationResult>> {
   const formData = new FormData()
   formData.append("image", imageFile)
 

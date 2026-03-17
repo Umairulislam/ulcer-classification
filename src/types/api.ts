@@ -62,3 +62,16 @@ export interface PaginationParams {
   perPage: number
   search?: string
 }
+
+export interface PatientReport {
+  id: string
+  pdf_path: string
+  report_url: string
+  created_at: string
+  updated_at: string
+  deleted_at: string | null
+}
+
+export interface ClassificationResult {
+  prediction: string
+}

@@ -1,13 +1,18 @@
-import { NextResponse } from "next/server"
+import { NextResponse, NextRequest } from "next/server"
 import { decodeJwt } from "@/utils/decodeJwt"
 
-export function proxy(req) {
+interface JwtPayload {
+  exp: number
+  role: "admin" | "doctor"
+}
+
+// Public routes that don't require authentication
+const publicPaths = ["/login", "/forgot-password", "/reset-password"]
+
+export function proxy(req: NextRequest): NextResponse {
   const path = req.nextUrl.pathname
   // Get the access token from cookies
   const accessToken = req.cookies.get("accessToken")?.value
-
-  // Public routes that don't require authentication
-  const publicPaths = ["/login", "/forgot-password", "/reset-password"]
 
   // 🚩 1. Redirect unauthenticated users trying to access protected routes
   if (!accessToken && !publicPaths.includes(path)) {
@@ -16,13 +21,12 @@ export function proxy(req) {
 
   if (accessToken) {
     try {
-      const decodedJwt = decodeJwt(accessToken)
-      const isExpired = decodedJwt.exp * 1000 < Date.now()
-      const role = decodedJwt.role
+      const decoded = decodeJwt(accessToken) as unknown as JwtPayload
+      const isExpired = decoded.exp * 1000 < Date.now()
+      const { role } = decoded
 
       // ⏱️ 2. If token is expired, clear it and go to login
       if (isExpired) {
-        console.warn("Token has expired")
         return NextResponse.redirect(new URL("/login", req.url))
       }
 
@@ -39,8 +43,7 @@ export function proxy(req) {
       if (role === "doctor" && path.startsWith("/admin")) {
         return NextResponse.redirect(new URL("/doctor/dashboard", req.url))
       }
-    } catch (error) {
-      console.error("Invalid Token:", error)
+    } catch {
       return NextResponse.redirect(new URL("/login", req.url))
     }
   }

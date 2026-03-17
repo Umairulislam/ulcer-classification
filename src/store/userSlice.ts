@@ -1,15 +1,9 @@
+import { UserRecord } from "@/types/api"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-
-interface User {
-  id: string
-  name: string
-  email: string
-  role: "admin" | "doctor"
-}
 
 interface UserState {
   loggedIn: boolean
-  user: User | null
+  user: UserRecord | null
 }
 
 const initialState: UserState = {
@@ -21,7 +15,7 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<User>) => {
+    setUser: (state, action: PayloadAction<UserRecord>) => {
       state.loggedIn = true
       state.user = action.payload
     },
@@ -32,6 +26,6 @@ const userSlice = createSlice({
   },
 })
 
-export type { User, UserState }
+export type { UserState }
 export const { setUser, clearUser } = userSlice.actions
 export default userSlice.reducer
