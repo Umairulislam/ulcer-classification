@@ -1,10 +1,11 @@
 import { Snackbar, Alert } from "@mui/material"
 import { useSelector, useDispatch } from "react-redux"
 import { hideToast } from "@/store/toastSlice"
+import { AppDispatch, RootState } from "@/store/store"
 
 const Toast = () => {
-  const { isVisible, message, type } = useSelector((state) => state.toast)
-  const dispatch = useDispatch()
+  const { isVisible, message, type } = useSelector((state: RootState) => state.toast)
+  const dispatch = useDispatch<AppDispatch>()
 
   const handleClose = () => {
     dispatch(hideToast())
@@ -16,7 +17,6 @@ const Toast = () => {
       autoHideDuration={4000}
       onClose={handleClose}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      variant="filled"
     >
       <Alert onClose={handleClose} severity={type} sx={{ width: "100%" }}>
         {message}

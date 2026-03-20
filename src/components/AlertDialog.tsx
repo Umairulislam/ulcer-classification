@@ -1,4 +1,3 @@
-import React from "react"
 import {
   Dialog,
   DialogTitle,
@@ -8,7 +7,15 @@ import {
   Button,
 } from "@mui/material"
 
-const AlertDialog = ({ open, onClose, onConfirm, title, content }) => {
+interface AlertDialogProps {
+  open: boolean
+  onClose: () => void
+  onConfirm: () => void
+  title: string
+  content: string
+}
+
+const AlertDialog = ({ open, onClose, onConfirm, title, content }: AlertDialogProps) => {
   return (
     <Dialog
       open={open}
@@ -18,15 +25,12 @@ const AlertDialog = ({ open, onClose, onConfirm, title, content }) => {
     >
       <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          {content}
-        </DialogContentText>
+        <DialogContentText id="alert-dialog-description">{content}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        {/* Cancel Button - Outlined */}
         <Button
           onClick={onClose}
-          color="secondary.main"
+          color="secondary"
           variant="outlined"
           sx={{
             textTransform: "none",
@@ -35,7 +39,6 @@ const AlertDialog = ({ open, onClose, onConfirm, title, content }) => {
           Cancel
         </Button>
 
-        {/* Confirm Button - Filled */}
         <Button
           onClick={onConfirm}
           variant="contained"

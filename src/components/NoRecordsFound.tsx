@@ -2,7 +2,11 @@ import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import { NoData } from "@/assets/images"
 
-const NoRecordsFound = ({ title }) => {
+interface NoRecordsFoundProps {
+  title: string
+}
+
+const NoRecordsFound = ({ title }: NoRecordsFoundProps) => {
   return (
     <Box
       sx={{

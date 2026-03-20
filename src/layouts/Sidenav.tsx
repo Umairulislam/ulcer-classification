@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { ReactNode } from "react"
 import {
   Box,
   CircularProgress,
@@ -11,11 +11,24 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material"
-import { Dashboard, LocalHospital, Groups, Science } from "@/assets/icons"
+import { Dashboard, LocalHospital, Groups } from "@/assets/icons"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 
-const menus = {
+interface MenuItem {
+  label: string
+  path: string
+  icon: ReactNode
+}
+
+interface SidenavProps {
+  role: "admin" | "doctor" | null
+  isSmallScreen: boolean
+  mobileOpen: boolean
+  handleDrawerToggle: () => void
+}
+
+const menus: Record<"admin" | "doctor", MenuItem[]> = {
   admin: [
     { label: "Dashboard", path: "/admin/dashboard", icon: <Dashboard /> },
     { label: "Doctors", path: "/admin/doctors", icon: <LocalHospital /> },
@@ -24,38 +37,21 @@ const menus = {
   doctor: [
     { label: "Dashboard", path: "/doctor/dashboard", icon: <Dashboard /> },
     { label: "Patients", path: "/doctor/patients", icon: <Groups /> },
-    // {
-    //   label: "Classification",
-    //   path: "/doctor/classification",
-    //   icon: <Science />,
-    // },
   ],
 }
 
-const Sidenav = ({ role, isSmallScreen, mobileOpen, handleDrawerToggle }) => {
+const Sidenav = ({ role, isSmallScreen, mobileOpen, handleDrawerToggle }: SidenavProps) => {
   const router = useRouter()
   const pathname = usePathname()
 
-  const handleMenuClick = (path) => {
+  const handleMenuClick = (path: string): void => {
     router.push(path)
     if (isSmallScreen) handleDrawerToggle()
   }
 
   const drawerContent = (
-    <Box
-      sx={{
-        width: 250,
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <Box
-        sx={{
-          textAlign: "center",
-          p: 2,
-        }}
-      >
+    <Box sx={{ width: 250, height: "100vh", display: "flex", flexDirection: "column" }}>
+      <Box sx={{ textAlign: "center", p: 2 }}>
         <Typography variant="h6" fontWeight="bold">
           Dashboard
         </Typography>
@@ -72,19 +68,12 @@ const Sidenav = ({ role, isSmallScreen, mobileOpen, handleDrawerToggle }) => {
                 cursor: "pointer",
                 borderRadius: "10px",
                 marginY: "2px",
-                backgroundColor:
-                  pathname === menu.path ? "primary.main" : "inherit",
+                backgroundColor: pathname === menu.path ? "primary.main" : "inherit",
                 color: pathname === menu.path ? "white" : "inherit",
-                "&:hover": {
-                  backgroundColor: "primary.light",
-                },
+                "&:hover": { backgroundColor: "primary.light", color: "white" },
               }}
             >
-              <ListItemIcon
-                sx={{
-                  color: pathname === menu.path ? "white" : "inherit",
-                }}
-              >
+              <ListItemIcon sx={{ color: pathname === menu.path ? "white" : "inherit" }}>
                 {menu.icon}
               </ListItemIcon>
               <ListItemText primary={menu.label} />
@@ -92,17 +81,11 @@ const Sidenav = ({ role, isSmallScreen, mobileOpen, handleDrawerToggle }) => {
           ))
         ) : (
           <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "70vh",
-            }}
+            sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "70vh" }}
           >
             <CircularProgress color="primary" />
           </Box>
         )}
-        {/* {} */}
       </List>
     </Box>
   )
@@ -118,13 +101,7 @@ const Sidenav = ({ role, isSmallScreen, mobileOpen, handleDrawerToggle }) => {
         open={isSmallScreen ? mobileOpen : true}
         onClose={handleDrawerToggle}
         ModalProps={{ keepMounted: true }}
-        sx={{
-          "& .MuiDrawer-paper": {
-            boxSizing: "border-box",
-            width: 250,
-            overflowX: "hidden",
-          },
-        }}
+        sx={{ "& .MuiDrawer-paper": { boxSizing: "border-box", width: 250, overflowX: "hidden" } }}
       >
         {drawerContent}
       </Drawer>

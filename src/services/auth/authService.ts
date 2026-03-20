@@ -20,3 +20,8 @@ export async function resetPassword(payload: ResetFormValues): Promise<ApiRespon
   const { data } = await apiManager.post("auth/reset-password", payload)
   return data
 }
+
+export async function logout(): Promise<ApiResponse<null>> {
+  const { data } = await apiManager.post("auth/logout")
+  return data
+}

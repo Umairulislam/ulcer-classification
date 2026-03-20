@@ -1,7 +1,12 @@
-import React from "react"
-import { Button } from "@mui/material"
+import React, { ElementType } from "react"
+import { Button, ButtonProps } from "@mui/material"
 
-const CustomButton = ({ text, icon: Icon, onClick, ...props }) => {
+interface CustomButtonProps extends ButtonProps {
+  text: string
+  icon?: ElementType
+}
+
+const CustomButton = ({ text, icon: Icon, onClick, ...props }: CustomButtonProps) => {
   return (
     <Button
       variant="contained"
@@ -16,12 +21,13 @@ const CustomButton = ({ text, icon: Icon, onClick, ...props }) => {
         alignItems: "center",
         gap: "8px",
         "&:hover": {
-          backgroundColor: "primary.light", // Change color on hover
+          backgroundColor: "primary.light",
+          color: "white",
         },
       }}
-      {...props} // Allow overriding or extending styles
+      {...props}
     >
-      {Icon && <Icon />} {/* Render the icon only if provided */}
+      {Icon && <Icon />}
       {text}
     </Button>
   )

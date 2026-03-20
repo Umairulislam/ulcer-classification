@@ -22,17 +22,24 @@ import Link from "next/link"
 import { deleteCookie } from "@/helpers/cookie"
 import { ProfileAvatar } from "@/assets/images"
 import { apiManager } from "@/helpers/apiManager"
+import { RootState, AppDispatch } from "@/store/store"
+import { logout } from "@/services/auth"
 
-const Header = ({ isSmallScreen, handleDrawerToggle }) => {
-  const dispatch = useDispatch()
+interface HeaderProps {
+  isSmallScreen: boolean
+  handleDrawerToggle: () => void
+}
+
+const Header = ({ isSmallScreen, handleDrawerToggle }: HeaderProps) => {
+  const dispatch = useDispatch<AppDispatch>()
   const router = useRouter()
-  const { user } = useSelector((state) => state.user)
+  const { user } = useSelector((state: RootState) => state.user)
   const pathname = usePathname()
   const basePath = pathname.split("/")[1]
-  const [anchorEl, setAnchorEl] = useState(null)
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [loading, setLoading] = useState(false)
 
-  const handleOpenMenu = (event) => {
+  const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
 
@@ -43,23 +50,14 @@ const Header = ({ isSmallScreen, handleDrawerToggle }) => {
   const handleLogout = async () => {
     setLoading(true)
     try {
-      // 1. Call API to invalidate session on server
-      const { data } = await apiManager.post("auth/logout")
-
-      // 2. Remove Cookie (Server Action)
+      const data = await logout()
       await deleteCookie()
-
-      // 3. Optional: Manually clear client cookie to be instant
-      document.cookie = "accessToken=; Max-Age=0; path=/;"
-
-      // 5. Redirect
       router.push("/login")
-
-      // 4. Clear Redux
       dispatch(clearUser())
       dispatch(showToast({ message: data.message, type: "success" }))
     } catch (error) {
-      const errorMessage = error?.response?.data?.message || "Logout failed"
+      const err = error as { response?: { data?: { message?: string } } }
+      const errorMessage = err?.response?.data?.message || "Logout failed"
       dispatch(showToast({ message: errorMessage, type: "error" }))
       console.error(error)
     } finally {
@@ -75,7 +73,7 @@ const Header = ({ isSmallScreen, handleDrawerToggle }) => {
         width: isSmallScreen ? "100%" : "calc(100% - 250px)",
         ml: isSmallScreen ? 0 : "250px",
         backgroundColor: "white",
-        boxShadow: (0, 0, 0, 0),
+        boxShadow: "none",
       }}
     >
       <Toolbar>
