@@ -6,23 +6,20 @@ import { CustomButton } from "@/components"
 import { useForm, Controller } from "react-hook-form"
 import { Email, Lock, Visibility, VisibilityOff, VpnKey } from "@/assets/icons"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { resetSchema } from "@/schemas"
+import { ResetFormValues, resetSchema } from "@/schemas"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 import { useRouter } from "next/navigation"
 import { resetPassword } from "@/services/auth"
 import { handleApiError } from "@/services/apiErrorHandler"
+import { AppDispatch } from "@/store/store"
 
-const page = () => {
+const ResetPasswordPage = () => {
   const router = useRouter()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-
-  const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev)
-  }
 
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword((prev) => !prev)
@@ -33,7 +30,7 @@ const page = () => {
     control,
     setError,
     formState: { errors },
-  } = useForm({
+  } = useForm<ResetFormValues>({
     resolver: zodResolver(resetSchema),
     defaultValues: {
       otp_code: "",
@@ -42,16 +39,11 @@ const page = () => {
     },
   })
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (formData: ResetFormValues): Promise<void> => {
     setLoading(true)
-    const payload = {
-      email: data.email,
-      otp_code: data.otp_code,
-      password: data.password,
-    }
     try {
-      const data = await resetPassword(payload)
-      dispatch(showToast({ message: data.message, type: "success" }))
+      const response = await resetPassword(formData)
+      dispatch(showToast({ message: response.message, type: "success" }))
       router.push("/login")
     } catch (error) {
       handleApiError(error, dispatch, setError)
@@ -91,7 +83,7 @@ const page = () => {
             label="Email"
             placeholder="Enter your email"
             fullWidth
-            error={errors.email}
+            error={!!errors.email}
             helperText={errors.email?.message}
             sx={{ marginBottom: "12px" }}
             slotProps={{
@@ -115,7 +107,7 @@ const page = () => {
             label="otp"
             placeholder="Enter the OTP sent to your email"
             fullWidth
-            error={errors.otp_code}
+            error={!!errors.otp_code}
             helperText={errors.otp_code?.message}
             sx={{ marginBottom: "12px" }}
             slotProps={{
@@ -142,7 +134,7 @@ const page = () => {
             type={showPassword ? "text" : "password"}
             fullWidth
             {...field}
-            error={errors.password}
+            error={!!errors.password}
             helperText={errors.password?.message}
             sx={{ marginBottom: "12px" }}
             slotProps={{
@@ -155,7 +147,7 @@ const page = () => {
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
-                      onClick={togglePasswordVisibility}
+                      onClick={() => setShowPassword((prev) => !prev)}
                       edge="end"
                       aria-label="toggle password visibility"
                     >
@@ -179,7 +171,7 @@ const page = () => {
             type={showConfirmPassword ? "text" : "password"}
             fullWidth
             {...field}
-            error={errors.confirm_password}
+            error={!!errors.confirm_password}
             helperText={errors.confirm_password?.message}
             sx={{ marginBottom: "12px" }}
             slotProps={{
@@ -211,4 +203,4 @@ const page = () => {
   )
 }
 
-export default page
+export default ResetPasswordPage

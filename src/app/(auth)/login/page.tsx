@@ -14,33 +14,30 @@ import {
 import { Email, Visibility, VisibilityOff, Lock } from "@/assets/icons"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { loginSchema } from "@/schemas"
+import { LoginFormValues, loginSchema } from "@/schemas"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { setUser } from "@/store/userSlice"
 import Link from "next/link"
 import { showToast } from "@/store/toastSlice"
 import { createCookie } from "@/helpers/cookie"
-import { apiManager } from "@/helpers/apiManager"
 import { handleApiError } from "@/services/apiErrorHandler"
 import { login } from "@/services/auth/"
+import { AppDispatch } from "@/store/store"
+import { AuthExtra } from "@/types/api"
 
 const LoginPage = () => {
   const router = useRouter()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
-
-  const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev)
-  }
 
   const {
     handleSubmit,
     control,
     setError,
     formState: { errors },
-  } = useForm({
+  } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -48,16 +45,16 @@ const LoginPage = () => {
     },
   })
 
-  const onSubmit = async (formData) => {
+  const onSubmit = async (formData: LoginFormValues): Promise<void> => {
     setLoading(true)
     try {
       // 1. Send login request and get response
       const data = await login(formData)
 
       // 2. Extract token and user details
-      const accessToken = data?.response?.extra?.access_token
+      const accessToken = (data?.response?.extra as AuthExtra)?.access_token
       const userDetails = data?.response?.details
-      const role = userDetails?.role
+      const { role } = userDetails
 
       // 3. Set the cookie (Server-side helper)
       await createCookie(accessToken)
@@ -92,7 +89,6 @@ const LoginPage = () => {
         color: "primary.main",
         padding: 2,
       }}
-      onSubmit={handleSubmit(onSubmit)}
     >
       <Paper
         elevation={6}
@@ -129,6 +125,7 @@ const LoginPage = () => {
             flexDirection: "column",
             gap: 3,
           }}
+          onSubmit={handleSubmit(onSubmit)}
         >
           {/* Email Field */}
           <Controller
@@ -141,7 +138,7 @@ const LoginPage = () => {
                 fullWidth
                 placeholder="Enter your email"
                 variant="outlined"
-                error={errors.email}
+                error={!!errors.email}
                 helperText={errors.email?.message}
                 slotProps={{
                   input: {
@@ -168,7 +165,7 @@ const LoginPage = () => {
                 variant="outlined"
                 type={showPassword ? "text" : "password"}
                 fullWidth
-                error={errors.password}
+                error={!!errors.password}
                 helperText={errors.password?.message}
                 slotProps={{
                   input: {
@@ -180,7 +177,7 @@ const LoginPage = () => {
                     endAdornment: (
                       <InputAdornment position="end">
                         <IconButton
-                          onClick={togglePasswordVisibility}
+                          onClick={() => setShowPassword((prev) => !prev)}
                           edge="end"
                           aria-label="toggle password visibility"
                         >
@@ -197,7 +194,7 @@ const LoginPage = () => {
           {/* Submit Button */}
           <Button
             variant="contained"
-            color="primary.main"
+            color="primary"
             size="large"
             fullWidth
             type="submit"
@@ -208,7 +205,6 @@ const LoginPage = () => {
               fontSize: "1rem",
               paddingY: 1.5,
               borderRadius: 2,
-              boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
               backgroundColor: "primary.main",
               color: "#fff",
             }}

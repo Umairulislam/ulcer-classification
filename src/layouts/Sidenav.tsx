@@ -93,7 +93,7 @@ const Sidenav = ({ role, isSmallScreen, mobileOpen, handleDrawerToggle }: Sidena
   return (
     <Box
       component="nav"
-      sx={{ width: { md: 250 }, flexShrink: { md: 0 } }}
+      sx={{ width: { lg: 250 }, flexShrink: { lg: 0 } }}
       aria-label="sidebar menus"
     >
       <Drawer

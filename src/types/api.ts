@@ -5,6 +5,12 @@ export interface PaginationMeta {
   itemsPerPage: number
   totalPages: number
   currentPage: number
+  access_token?: string
+}
+
+// Login specific response
+export interface AuthExtra {
+  access_token: string
 }
 
 // Base user shape (doctor/admin)
@@ -52,7 +58,7 @@ export interface ApiResponse<T> {
   message: string
   response: {
     details: T
-    extra?: PaginationMeta
+    extra?: PaginationMeta | AuthExtra
   }
 }
 

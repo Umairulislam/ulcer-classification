@@ -13,16 +13,45 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
 } from "@mui/material"
 import { useEffect, useState } from "react"
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts"
 
-const AdminDashboard = () => {
-  const [adminStats, setAdminStats] = useState({})
+import { AdminDashboardDetails } from "@/types/api"
+
+interface RecentActivity {
+  id: number
+  action: string
+  date: string
+}
+
+interface PatientGrowth {
+  month: string
+  patients: number
+}
+
+const tableHead = ["Action", "Date"]
+
+const recentActivity: RecentActivity[] = [
+  { id: 1, action: "New patient added", date: "2024-03-10" },
+  { id: 2, action: "Doctor registered", date: "2024-03-09" },
+  { id: 3, action: "Appointment scheduled", date: "2024-03-08" },
+]
+
+const patientGrowthData: PatientGrowth[] = [
+  { month: "Jan", patients: 10 },
+  { month: "Feb", patients: 20 },
+  { month: "Mar", patients: 30 },
+  { month: "Apr", patients: 40 },
+  { month: "May", patients: 50 },
+  { month: "Jun", patients: 60 },
+]
+
+const AdminDashboardPage = () => {
+  const [adminStats, setAdminStats] = useState<AdminDashboardDetails | null>(null)
   const [loading, setLoading] = useState(false)
 
-  const fetchStats = async () => {
+  const fetchStats = async (): Promise<void> => {
     setLoading(true)
     try {
       const data = await getAdminDashboard()
@@ -38,37 +67,23 @@ const AdminDashboard = () => {
     fetchStats()
   }, [])
 
-  // Hard-coded data
-  const recentActivity = [
-    { id: 1, action: "New patient added", date: "2024-03-10" },
-    { id: 2, action: "Doctor registered", date: "2024-03-09" },
-    { id: 3, action: "Appointment scheduled", date: "2024-03-08" },
-  ]
-
-  const patientGrowthData = [
-    { month: "Jan", patients: 10 },
-    { month: "Feb", patients: 20 },
-    { month: "Mar", patients: 30 },
-    { month: "Apr", patients: 40 },
-    { month: "May", patients: 50 },
-    { month: "Jun", patients: 60 },
-  ]
-
   return (
     <Container>
       <Typography variant="h4" fontWeight="bold" mb={4}>
         Dashboard Statistics
       </Typography>
+
       {/* Quick Stats */}
       <Grid container spacing={3} mb={4}>
         {Object.entries(adminStats ?? {}).map(([key, value]) => (
           <DashboardCard
             key={key}
             title={key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
-            value={value}
+            value={value as string | number}
           />
         ))}
       </Grid>
+
       {/* Recent Activity */}
       <Box mb={4}>
         <Typography variant="h6" fontWeight="bold" mb={2}>
@@ -80,7 +95,7 @@ const AdminDashboard = () => {
               <TableRow>
                 {tableHead.map((head, index) => (
                   <TableCell
-                    key={index}
+                    key={head}
                     sx={{
                       color: "white",
                       backgroundColor: "primary.main",
@@ -104,6 +119,7 @@ const AdminDashboard = () => {
           </Table>
         </TableContainer>
       </Box>
+
       {/* Patient Growth Chart */}
       <Box mb={4}>
         <Typography variant="h6" fontWeight="bold" mb={2}>
@@ -123,6 +139,4 @@ const AdminDashboard = () => {
   )
 }
 
-export default AdminDashboard
-
-const tableHead = ["Action", "Date"]
+export default AdminDashboardPage

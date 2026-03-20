@@ -6,20 +6,23 @@ import { CustomButton } from "@/components"
 import { useForm, Controller } from "react-hook-form"
 import { Email } from "@/assets/icons"
 import { zodResolver } from "@hookform/resolvers/zod"
-import * as yup from "yup"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 import { useRouter } from "next/navigation"
 import { forgotPassword } from "@/services/auth"
 import { handleApiError } from "@/services/apiErrorHandler"
+import z from "zod"
+import { AppDispatch } from "@/store/store"
 
-const forgetSchema = yup.object({
-  email: yup.string().email("Invalid email format").required("Email is required"),
+const forgotPasswordSchema = z.object({
+  email: z.string().email("Invalid email format"),
 })
 
-const page = () => {
+type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>
+
+const ForgotPasswordPage = () => {
   const router = useRouter()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [loading, setLoading] = useState(false)
 
   const {
@@ -27,19 +30,18 @@ const page = () => {
     control,
     setError,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(forgetSchema),
+  } = useForm<ForgotPasswordFormValues>({
+    resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: "",
     },
   })
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (formData: ForgotPasswordFormValues): Promise<void> => {
     setLoading(true)
-    const payload = { email: data.email }
     try {
-      const data = await forgotPassword(payload)
-      dispatch(showToast({ message: data.message, type: "success" }))
+      const response = await forgotPassword({ email: formData.email })
+      dispatch(showToast({ message: response.message, type: "success" }))
       router.push("/reset-password")
     } catch (error) {
       handleApiError(error, dispatch, setError)
@@ -79,7 +81,7 @@ const page = () => {
             label="Email"
             placeholder="Enter your email"
             fullWidth
-            error={errors.email}
+            error={!!errors.email}
             helperText={errors.email?.message}
             sx={{ marginBottom: "12px" }}
             slotProps={{
@@ -99,4 +101,4 @@ const page = () => {
   )
 }
 
-export default page
+export default ForgotPasswordPage
