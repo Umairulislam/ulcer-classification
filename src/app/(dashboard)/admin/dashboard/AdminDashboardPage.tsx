@@ -1,6 +1,6 @@
 "use client"
 
-import { DashboardCard } from "@/components"
+import { DashboardCard, Loader } from "@/components"
 import { getAdminDashboard } from "@/services/admin"
 import {
   Box,
@@ -66,6 +66,8 @@ const AdminDashboardPage = () => {
   useEffect(() => {
     fetchStats()
   }, [])
+
+  if (loading) return <Loader />
 
   return (
     <Container>

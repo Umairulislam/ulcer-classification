@@ -23,6 +23,7 @@ import {
   InputLabel,
   MenuItem,
   Switch,
+  SelectChangeEvent,
 } from "@mui/material"
 import Link from "next/link"
 import { Edit, Delete, Add } from "@/assets/icons"
@@ -32,19 +33,36 @@ import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 import { deleteDoctor, getDoctors, toggleDoctorStatus } from "@/services/admin"
 import { handleApiError } from "@/services/apiErrorHandler"
+import { AppDispatch } from "@/store/store"
+import { UserRecord } from "@/types/api"
+
+interface DoctorsResponse {
+  details: UserRecord[]
+  extra: { totalItems: number }
+}
+
+const tableHead = [
+  "First Name",
+  "Last Name",
+  "Email",
+  "Phone Number",
+  "Create At",
+  "Status",
+  "Actions",
+]
 
 const page = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [loading, setLoading] = useState(true)
-  const [doctors, setDoctors] = useState([])
+  const [doctors, setDoctors] = useState<DoctorsResponse | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [selectedDoctor, setSelectedDoctor] = useState(null)
+  const [selectedDoctor, setSelectedDoctor] = useState<UserRecord | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
 
-  const fetchDoctors = async () => {
+  const fetchDoctors = async (): Promise<void> => {
     setLoading(true)
     try {
       const data = await getDoctors({
@@ -53,7 +71,7 @@ const page = () => {
         search: searchQuery,
         status: filterStatus,
       })
-      setDoctors(data?.response)
+      setDoctors(data?.response as DoctorsResponse)
     } catch (error) {
       console.log(error)
     } finally {
@@ -61,9 +79,10 @@ const page = () => {
     }
   }
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = async (): Promise<void> => {
+    if (!selectedDoctor) return
     try {
-      const data = await deleteDoctor(selectedDoctor?.id)
+      const data = await deleteDoctor(selectedDoctor.id)
       dispatch(showToast({ message: data?.message, type: "success" }))
       fetchDoctors()
     } catch (error) {
@@ -74,31 +93,31 @@ const page = () => {
     }
   }
 
-  const handleToggleStatus = async (doctor) => {
+  const handleToggleStatus = async (doctor: UserRecord): Promise<void> => {
     setLoading(true)
     try {
       const data = await toggleDoctorStatus(doctor.id, doctor.status)
       dispatch(showToast({ message: data.message, type: "success" }))
       fetchDoctors()
     } catch (error) {
-      console.error("Error toggling doctor status:", error)
+      handleApiError(error, dispatch)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleChangePage = (event, newPage) => {
+  const handleDeleteClick = (doctor: UserRecord): void => {
+    setSelectedDoctor(doctor)
+    setDialogOpen(true)
+  }
+
+  const handleChangePage = (_: unknown, newPage: number): void => {
     setPage(newPage)
   }
 
-  const handleChangeRowsPerPage = (event) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(0)
-  }
-
-  const handleDeleteClick = (doctor) => {
-    setSelectedDoctor(doctor)
-    setDialogOpen(true)
   }
 
   useEffect(() => {
@@ -126,11 +145,11 @@ const page = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <FormControl variant="outlined" size="small" sx={{ minWidth: 210 }}>
-          <InputLabel id="demo-simple-select-label">Status</InputLabel>
+          <InputLabel>Status</InputLabel>
           <Select
             label="Status"
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
+            onChange={(e: SelectChangeEvent) => setFilterStatus(e.target.value)}
           >
             <MenuItem value="all">All</MenuItem>
             <MenuItem value="active">Active</MenuItem>
@@ -139,9 +158,6 @@ const page = () => {
         </FormControl>
       </Grid>
 
-      {/* {!loading && doctors?.details?.length === 0 ? (
-        <NoRecordsFound title="There is no doctor to display" />
-      ) : ( */}
       <Paper
         sx={{
           width: "100%",
@@ -155,16 +171,16 @@ const page = () => {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                {tableHead.map((head, index) => (
+                {tableHead.map((head) => (
                   <TableCell
-                    key={index}
+                    key={head}
+                    align={head === "Actions" ? "center" : "left"}
                     sx={{
                       color: "white",
                       backgroundColor: "primary.main",
                       fontWeight: "bold",
                       whiteSpace: "nowrap",
                     }}
-                    align={head === "Actions" ? "center" : "left"}
                   >
                     {head}
                   </TableCell>
@@ -197,7 +213,6 @@ const page = () => {
                       {moment(row.created_at).format("DD-MM-YYYY")}
                     </TableCell>
                     <TableCell>
-                      {/* <StatusChip status={row.status} /> */}
                       <Tooltip title={row.status} arrow>
                         <Switch
                           checked={row.status === "active"}
@@ -212,10 +227,7 @@ const page = () => {
                             <IconButton
                               sx={{
                                 backgroundColor: "secondary.light",
-                                "&:hover": {
-                                  backgroundColor: "primary.light",
-                                  color: "white",
-                                },
+                                "&:hover": { backgroundColor: "primary.light", color: "white" },
                               }}
                             >
                               <Edit />
@@ -227,10 +239,7 @@ const page = () => {
                             onClick={() => handleDeleteClick(row)}
                             sx={{
                               backgroundColor: "secondary.light",
-                              "&:hover": {
-                                backgroundColor: "primary.light",
-                                color: "white",
-                              },
+                              "&:hover": { backgroundColor: "primary.light", color: "white" },
                             }}
                           >
                             <Delete />
@@ -244,8 +253,6 @@ const page = () => {
             </TableBody>
           </Table>
         </TableContainer>
-
-        {/* Pagination section */}
         <TablePagination
           rowsPerPageOptions={[5, 10, 20]}
           component="div"
@@ -256,7 +263,6 @@ const page = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-      {/* )} */}
 
       {/* Alert Dialog */}
       <AlertDialog
@@ -271,13 +277,3 @@ const page = () => {
 }
 
 export default page
-
-const tableHead = [
-  "First Name",
-  "Last Name",
-  "Email",
-  "Phone Number",
-  "Create At",
-  "Status",
-  "Actions",
-]

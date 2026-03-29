@@ -1,6 +1,6 @@
 "use client"
 
-import { DashboardCard, StatusChip } from "@/components"
+import { DashboardCard, Loader, StatusChip } from "@/components"
 import { getDoctorDashboard } from "@/services/doctors"
 import {
   Box,
@@ -17,11 +17,55 @@ import {
 import { useEffect, useState } from "react"
 import { PieChart, Pie, Tooltip, Legend, ResponsiveContainer } from "recharts"
 
+interface Appointment {
+  id: number
+  patient: string
+  age: number
+  classified: boolean
+  date: string
+}
+
+interface ClassificationData {
+  name: string
+  value: number
+}
+
+const tableHead = ["Patient", "Age", "Classification Status", "Date Classified"]
+
+const upcomingAppointments: Appointment[] = [
+  {
+    id: 1,
+    patient: "John Doe",
+    age: 31,
+    classified: true,
+    date: "2024-03-15",
+  },
+  {
+    id: 2,
+    patient: "Jane Smith",
+    age: 32,
+    classified: false,
+    date: "2024-03-16",
+  },
+  {
+    id: 3,
+    patient: "Alice Johnson",
+    age: 35,
+    classified: true,
+    date: "2024-03-17",
+  },
+]
+
+const classificationData: ClassificationData[] = [
+  { name: "Completed", value: 40 },
+  { name: "Pending", value: 10 },
+]
+
 const DoctorDashboard = () => {
   const [doctorStats, setDoctorStats] = useState({})
   const [loading, setLoading] = useState(true)
 
-  const fetchStats = async () => {
+  const fetchStats = async (): Promise<void> => {
     setLoading(true)
     try {
       const data = await getDoctorDashboard()
@@ -37,36 +81,7 @@ const DoctorDashboard = () => {
     fetchStats()
   }, [])
 
-  // Hard-coded data
-  const upcomingAppointments = [
-    {
-      id: 1,
-      patient: "John Doe",
-      age: 31,
-      classified: true,
-      date: "2024-03-15",
-    },
-    {
-      id: 2,
-      patient: "Jane Smith",
-      age: 32,
-      classified: false,
-      date: "2024-03-16",
-    },
-    {
-      id: 3,
-      patient: "Alice Johnson",
-      age: 35,
-      classified: true,
-      date: "2024-03-17",
-    },
-  ]
-
-  const classificationData = [
-    { name: "Completed", value: 40 },
-    { name: "Pending", value: 10 },
-  ]
-
+  if (loading) return <Loader />
   return (
     <Container>
       <Typography variant="h4" fontWeight="bold" mb={4}>
@@ -78,7 +93,7 @@ const DoctorDashboard = () => {
           <DashboardCard
             key={key}
             title={key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
-            value={value}
+            value={value as string | number}
           />
         ))}
       </Grid>
@@ -148,5 +163,3 @@ const DoctorDashboard = () => {
 }
 
 export default DoctorDashboard
-
-const tableHead = ["Patient", "Age", "Classification Status", "Date Classified"]
