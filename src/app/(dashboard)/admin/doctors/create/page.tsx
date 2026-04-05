@@ -1,87 +1,68 @@
 "use client"
 
-import { Box, Container, Grid, TextField, Typography, MenuItem } from "@mui/material"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm, Controller } from "react-hook-form"
-import { updateProfileSchema } from "@/schemas"
-import { useEffect, useState } from "react"
+import {
+  Box,
+  Container,
+  Grid,
+  TextField,
+  Typography,
+  InputAdornment,
+  IconButton,
+  MenuItem,
+} from "@mui/material"
+import React, { useState } from "react"
+import { Visibility, VisibilityOff } from "@/assets/icons"
 import { CustomButton } from "@/components"
-import { useParams } from "next/navigation"
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
-import { updateProfile } from "@/services/shared"
+import { createDoctor } from "@/services/admin"
 import { handleApiError } from "@/services/apiErrorHandler"
-import { getDoctorById } from "@/services/admin"
+import { AppDispatch } from "@/store/store"
+import { createDoctorSchema, DoctorFormValues } from "@/schemas/doctorSchema"
 
-const page = () => {
-  const params = useParams()
+const CreateDoctorPage = () => {
   const router = useRouter()
-  const dispatch = useDispatch()
-  const { id } = params
-  const { user } = useSelector((state) => state.user)
+  const dispatch = useDispatch<AppDispatch>()
+  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const {
     handleSubmit,
     control,
-    reset,
     setError,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(updateProfileSchema),
+  } = useForm<DoctorFormValues>({
+    resolver: zodResolver(createDoctorSchema),
     defaultValues: {
       first_name: "",
       last_name: "",
       email: "",
+      password: "",
       phone_no: "",
-      gender: "",
+      gender: "male",
     },
   })
 
-  const fetchDoctor = async () => {
+  const onSubmit = async (formData: DoctorFormValues): Promise<void> => {
     setLoading(true)
     try {
-      const data = await getDoctorById(id)
-      // Populate form fields with the fetched data
-      reset(data?.response?.details)
-    } catch (error) {
-      console.error("Error fetching doctor details:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const onSubmit = async (data) => {
-    const payload = {
-      first_name: data.first_name,
-      last_name: data.last_name,
-      email: data.email,
-      phone_no: data.phone_no,
-      gender: data.gender,
-    }
-
-    setLoading(true)
-    try {
-      // API to be change
-      const data = await updateProfile(id, payload)
+      const data = await createDoctor(formData)
       dispatch(showToast({ message: data.message, type: "success" }))
-      router.push("/admin/dashboard")
+      router.push("/admin/doctors")
     } catch (error) {
-      handleApiError(error, setError, dispatch)
+      handleApiError(error, dispatch, setError)
     } finally {
       setLoading(false)
     }
   }
-
-  useEffect(() => {
-    fetchDoctor()
-  }, [id, reset])
 
   return (
     <Container>
       <Typography variant="h4" fontWeight="bold">
-        Update Profile
+        Create Doctor
       </Typography>
       <Box component="form" sx={{ width: "100%", marginTop: 4 }} onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={2} mb={2}>
@@ -98,7 +79,7 @@ const page = () => {
                   placeholder="Enter first name (only alphabets)"
                   variant="outlined"
                   fullWidth
-                  error={errors.first_name}
+                  error={!!errors.first_name}
                   helperText={errors.first_name?.message}
                 />
               )}
@@ -117,7 +98,7 @@ const page = () => {
                   placeholder="Enter last name (only alphabets)"
                   variant="outlined"
                   fullWidth
-                  error={errors.last_name}
+                  error={!!errors.last_name}
                   helperText={errors.last_name?.message}
                 />
               )}
@@ -137,9 +118,43 @@ const page = () => {
                   variant="outlined"
                   type="email"
                   fullWidth
-                  error={errors.email}
+                  error={!!errors.email}
                   helperText={errors.email?.message}
-                  disabled
+                />
+              )}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+            <Typography variant="body1" fontWeight="bold" mb={1}>
+              Password
+            </Typography>
+            <Controller
+              name="password"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  placeholder="At least 6 characters"
+                  variant="outlined"
+                  type={showPassword ? "text" : "password"}
+                  fullWidth
+                  error={!!errors.password}
+                  helperText={errors.password?.message}
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            edge="end"
+                            aria-label="toggle password visibility"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
                 />
               )}
             />
@@ -157,7 +172,7 @@ const page = () => {
                   placeholder="e.g., +1234567890"
                   variant="outlined"
                   fullWidth
-                  error={errors.phone_no}
+                  error={!!errors.phone_no}
                   helperText={errors.phone_no?.message}
                 />
               )}
@@ -177,7 +192,7 @@ const page = () => {
                   label="Gender"
                   variant="outlined"
                   fullWidth
-                  error={errors.gender}
+                  error={!!errors.gender}
                   helperText={errors.gender?.message}
                 >
                   <MenuItem value="male">Male</MenuItem>
@@ -188,10 +203,10 @@ const page = () => {
             />
           </Grid>
         </Grid>
-        <CustomButton text={!loading ? "Update" : "Updating"} disabled={loading} type="submit" />
+        <CustomButton text={!loading ? "Submit" : "Submitting"} disabled={loading} type="submit" />
       </Box>
     </Container>
   )
 }
 
-export default page
+export default CreateDoctorPage

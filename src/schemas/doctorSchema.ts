@@ -6,11 +6,13 @@ const baseDoctorSchema = z.object({
   email: z.string().email("Invalid email format"),
   phone_no: z.string().min(10, "Phone Number must be at least 10 digits"),
   gender: z.enum(["male", "female", "other"], { message: "Invalid gender" }),
+})
+
+export const createDoctorSchema = baseDoctorSchema.extend({
   password: z.string().min(6, "Password must be at least 6 characters"),
 })
 
-const doctorSchema = (isUpdate = false) =>
-  isUpdate ? baseDoctorSchema.omit({ password: true }) : baseDoctorSchema
+export const updateDoctorSchema = baseDoctorSchema
 
-export type DoctorFormValues = z.infer<typeof baseDoctorSchema>
-export default doctorSchema
+export type DoctorFormValues = z.infer<typeof createDoctorSchema>
+export type UpdateDoctorFormValues = z.infer<typeof updateDoctorSchema>

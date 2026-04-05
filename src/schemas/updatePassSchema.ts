@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-const updatePassSchema = z
+export const updatePassSchema = z
   .object({
     current_password: z.string().min(6, "Old Password must be at least 6 characters"),
     new_password: z.string().min(6, "New password must be at least 6 characters"),
@@ -16,4 +16,3 @@ const updatePassSchema = z
   })
 
 export type UpdatePassFormValues = z.infer<typeof updatePassSchema>
-export default updatePassSchema

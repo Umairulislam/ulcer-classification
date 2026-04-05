@@ -27,20 +27,30 @@ import moment from "moment"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 import { deletePatient, getDoctors, getPatients } from "@/services/admin"
+import { AppDispatch } from "@/store/store"
+import { PatientRecord, UserRecord } from "@/types/api"
+import { handleApiError } from "@/services/apiErrorHandler"
 
-const page = () => {
-  const dispatch = useDispatch()
+interface PatientsResponse {
+  details: PatientRecord[]
+  extra: { totalItems: number }
+}
+
+const tableHead = ["Name", "Email", "Gender", "Age", "Phone Number", "Create At", "Actions"]
+
+const PatientsPage = () => {
+  const dispatch = useDispatch<AppDispatch>()
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [loading, setLoading] = useState(true)
-  const [patients, setPatients] = useState([])
+  const [patients, setPatients] = useState<PatientsResponse | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [selectedPatient, setSelectedPatient] = useState(null)
+  const [selectedPatient, setSelectedPatient] = useState<PatientRecord | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
-  const [filterDoctor, setFilterDoctor] = useState(null)
-  const [doctors, setDoctors] = useState([])
+  const [filterDoctor, setFilterDoctor] = useState<UserRecord | null>(null)
+  const [doctors, setDoctors] = useState<UserRecord[]>([])
 
-  const fetchPatients = async () => {
+  const fetchPatients = async (): Promise<void> => {
     setLoading(true)
     try {
       const data = await getPatients({
@@ -49,7 +59,7 @@ const page = () => {
         search: searchQuery,
         doctor_id: filterDoctor?.id,
       })
-      setPatients(data?.response)
+      setPatients(data?.response as PatientsResponse)
     } catch (error) {
       console.log(error)
     } finally {
@@ -57,7 +67,7 @@ const page = () => {
     }
   }
 
-  const fetchDoctors = async () => {
+  const fetchDoctors = async (): Promise<void> => {
     try {
       const data = await getDoctors({ page: 1, perPage: 100 })
       setDoctors(data?.response?.details)
@@ -66,9 +76,10 @@ const page = () => {
     }
   }
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = async (): Promise<void> => {
+    if (!selectedPatient) return
     try {
-      const data = await deletePatient(selectedPatient?.id)
+      const data = await deletePatient(selectedPatient.id)
       dispatch(showToast({ message: data?.message, type: "success" }))
       fetchPatients()
     } catch (error) {
@@ -79,16 +90,16 @@ const page = () => {
     }
   }
 
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = (_: unknown, newPage: number): void => {
     setPage(newPage)
   }
 
-  const handleChangeRowsPerPage = (event) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(0)
   }
 
-  const handleDeleteClick = (patient) => {
+  const handleDeleteClick = (patient: PatientRecord): void => {
     setSelectedPatient(patient)
     setDialogOpen(true)
   }
@@ -124,13 +135,12 @@ const page = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <Autocomplete
-          variant="outlined"
           size="small"
           sx={{ minWidth: 210 }}
           options={doctors}
           getOptionLabel={(option) => `${option.first_name} ${option.last_name}`}
           value={filterDoctor}
-          onChange={(e, value) => setFilterDoctor(value)}
+          onChange={(_: unknown, value: UserRecord | null) => setFilterDoctor(value)}
           renderInput={(params) => <TextField {...params} label="Select Doctor" />}
         />
       </Grid>
@@ -148,9 +158,9 @@ const page = () => {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                {tableHead.map((head, index) => (
+                {tableHead.map((head) => (
                   <TableCell
-                    key={index}
+                    key={head}
                     sx={{
                       color: "white",
                       backgroundColor: "primary.main",
@@ -253,6 +263,4 @@ const page = () => {
   )
 }
 
-export default page
-
-const tableHead = ["Name", "Email", "Gender", "Age", "Phone Number", "Create At", "Actions"]
+export default PatientsPage

@@ -1,70 +1,67 @@
 "use client"
 
-import { Box, Container, Grid, TextField, Typography, Autocomplete, MenuItem } from "@mui/material"
-import React, { useEffect, useState } from "react"
-import { CustomButton } from "@/components"
+import React, { useState, useEffect } from "react"
+import { Autocomplete, Box, Container, Grid, MenuItem, TextField, Typography } from "@mui/material"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { patientSchema } from "@/schemas"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 import { createPatient, getDoctors } from "@/services/admin"
 import { handleApiError } from "@/services/apiErrorHandler"
+import { CustomButton, Loader } from "@/components"
+import { AppDispatch } from "@/store/store"
+import { UserRecord } from "@/types/api"
+import { PatientFormValues } from "@/schemas"
+import { patientSchema } from "@/schemas/patientSchema"
 
-const page = () => {
+const CreatePatientPage = () => {
   const router = useRouter()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [loading, setLoading] = useState(false)
-  const [doctors, setDoctors] = useState([])
+  const [doctors, setDoctors] = useState<UserRecord[]>([])
 
   const {
     handleSubmit,
     control,
     setError,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(patientSchema(false)),
+  } = useForm<PatientFormValues>({
+    resolver: zodResolver(patientSchema),
     defaultValues: {
       name: "",
       email: "",
       phone_no: "",
-      doctor_id: null,
+      age: "" as unknown as number,
+      gender: "male",
+      doctor_id: { id: "", first_name: "", last_name: "" },
     },
   })
 
-  const fetchDoctors = async () => {
+  const fetchDoctors = async (): Promise<void> => {
     setLoading(true)
     try {
       const data = await getDoctors({ page: 1, perPage: 100 })
-      setDoctors(data?.response?.details)
+      setDoctors(data?.response?.details ?? [])
     } catch (error) {
-      console.log(error)
+      console.error(error)
     } finally {
       setLoading(false)
     }
   }
 
-  const onSubmit = async (data) => {
-    const payload = {
-      name: data.name,
-      phone_no: data.phone_no,
-      age: data.age,
-      gender: data.gender,
-      doctor_id: data.doctor_id?.id,
-    }
-
-    if (data.email) {
-      payload.email = data.email
-    }
-
+  const onSubmit = async (formData: PatientFormValues): Promise<void> => {
     setLoading(true)
     try {
-      const data = await createPatient(payload)
-      dispatch(showToast({ message: data.message, type: "success" }))
+      const payload = {
+        ...formData,
+        doctor_id: formData.doctor_id?.id,
+      }
+      const response = await createPatient(payload as unknown as PatientFormValues)
+      dispatch(showToast({ message: response.message, type: "success" }))
       router.push("/admin/patients")
     } catch (error) {
-      handleApiError(error, setError, dispatch)
+      handleApiError(error, dispatch, setError)
     } finally {
       setLoading(false)
     }
@@ -74,6 +71,8 @@ const page = () => {
     fetchDoctors()
   }, [])
 
+  if (loading) return <Loader />
+
   return (
     <Container>
       <Typography variant="h4" fontWeight="bold">
@@ -81,7 +80,7 @@ const page = () => {
       </Typography>
       <Box component="form" sx={{ width: "100%", marginTop: 4 }} onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={2} mb={2}>
-          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Name
             </Typography>
@@ -91,16 +90,16 @@ const page = () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  placeholder="Enter Name (only alphabets)"
-                  variant="outlined"
+                  placeholder="Enter Name"
                   fullWidth
-                  error={errors.name}
+                  error={!!errors.name}
                   helperText={errors.name?.message}
                 />
               )}
             />
           </Grid>
-          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Email
             </Typography>
@@ -111,16 +110,16 @@ const page = () => {
                 <TextField
                   {...field}
                   placeholder="e.g., example@domain.com"
-                  variant="outlined"
                   type="email"
                   fullWidth
-                  error={errors.email}
+                  error={!!errors.email}
                   helperText={errors.email?.message}
                 />
               )}
             />
           </Grid>
-          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Phone Number
             </Typography>
@@ -131,15 +130,15 @@ const page = () => {
                 <TextField
                   {...field}
                   placeholder="e.g., +1234567890"
-                  variant="outlined"
                   fullWidth
-                  error={errors.phone_no}
+                  error={!!errors.phone_no}
                   helperText={errors.phone_no?.message}
                 />
               )}
             />
           </Grid>
-          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Age
             </Typography>
@@ -150,16 +149,17 @@ const page = () => {
                 <TextField
                   {...field}
                   type="number"
+                  onChange={(e) => field.onChange(Number(e.target.value))}
                   placeholder="e.g., 20"
-                  variant="outlined"
                   fullWidth
-                  error={errors.age}
+                  error={!!errors.age}
                   helperText={errors.age?.message}
                 />
               )}
             />
           </Grid>
-          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Gender
             </Typography>
@@ -171,9 +171,8 @@ const page = () => {
                   {...field}
                   select
                   label="Gender"
-                  variant="outlined"
                   fullWidth
-                  error={errors.gender}
+                  error={!!errors.gender}
                   helperText={errors.gender?.message}
                 >
                   <MenuItem value="male">Male</MenuItem>
@@ -183,7 +182,8 @@ const page = () => {
               )}
             />
           </Grid>
-          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }}>
+
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Typography variant="body1" fontWeight="bold" mb={1}>
               Doctor
             </Typography>
@@ -195,15 +195,14 @@ const page = () => {
                   options={doctors}
                   getOptionLabel={(option) => `${option.first_name} ${option.last_name}`}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
-                  onChange={(event, value) => field.onChange(value)}
-                  value={field.value ?? null}
+                  onChange={(_: unknown, value) => field.onChange(value)}
+                  value={field.value?.id ? (field.value as unknown as UserRecord) : null}
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      variant="outlined"
                       placeholder="Select Doctor"
                       error={!!errors.doctor_id}
-                      helperText={errors.doctor_id?.message}
+                      helperText={errors.doctor_id?.id?.message}
                     />
                   )}
                 />
@@ -211,10 +210,14 @@ const page = () => {
             />
           </Grid>
         </Grid>
-        <CustomButton text={!loading ? "Submit" : "Submitting"} disabled={loading} type="submit" />
+        <CustomButton
+          text={loading ? "Submitting..." : "Submit"}
+          disabled={loading}
+          type="submit"
+        />
       </Box>
     </Container>
   )
 }
 
-export default page
+export default CreatePatientPage

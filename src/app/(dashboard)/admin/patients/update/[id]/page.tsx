@@ -2,61 +2,59 @@
 
 import { Box, Container, Grid, TextField, Typography, Autocomplete, MenuItem } from "@mui/material"
 import React, { useEffect, useState } from "react"
-import { CustomButton } from "@/components"
+import { CustomButton, Loader } from "@/components"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { patientSchema } from "@/schemas"
 import { useParams, useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 import { getDoctors, getPatientById, updatePatient } from "@/services/admin"
 import { handleApiError } from "@/services/apiErrorHandler"
+import { AppDispatch } from "@/store/store"
+import { PatientRecord, UserRecord } from "@/types/api"
+import { PatientFormValues, patientSchema, UpdatePatientPayload } from "@/schemas/patientSchema"
 
-const page = () => {
-  const params = useParams()
-  const { id } = params
-  const isUpdate = Boolean(id)
+const UpdatePatientPage = () => {
+  const { id } = useParams<{ id: string }>()
   const router = useRouter()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [loading, setLoading] = useState(false)
-  const [doctors, setDoctors] = useState([])
+  const [doctors, setDoctors] = useState<UserRecord[]>([])
 
   const {
     handleSubmit,
     control,
-    reset,
     setValue,
     setError,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(patientSchema(isUpdate)),
+  } = useForm<PatientFormValues>({
+    resolver: zodResolver(patientSchema),
     defaultValues: {
       name: "",
       email: "",
       phone_no: "",
-      age: "",
-      gender: "",
-      doctor_id: null,
+      age: "" as unknown as number,
+      gender: "male",
+      doctor_id: { id: "", first_name: "", last_name: "" },
     },
   })
 
-  const fetchPatient = async () => {
+  const fetchPatient = async (): Promise<void> => {
     setLoading(true)
     try {
       const data = await getPatientById(id)
-      const patientData = data?.response?.details
+      const patient = data?.response?.details as PatientRecord
 
-      // Populate form fields with the fetched data
-      Object.keys(patientData).forEach((key) => {
-        if (key === "user") {
-          setValue("doctor_id", {
-            id: patientData.user.id,
-            first_name: patientData.user.first_name,
-            last_name: patientData.user.last_name,
-          })
-        } else {
-          setValue(key, patientData[key])
-        }
+      // Populate form fields with fetched data
+      setValue("name", patient.name)
+      setValue("email", patient.email)
+      setValue("phone_no", patient.phone_no)
+      setValue("age", Number(patient.age))
+      setValue("gender", patient.gender)
+      setValue("doctor_id", {
+        id: patient.user.id,
+        first_name: patient.user.first_name,
+        last_name: patient.user.last_name ?? "",
       })
     } catch (error) {
       console.error("Error fetching patient details:", error)
@@ -65,38 +63,32 @@ const page = () => {
     }
   }
 
-  const fetchDoctors = async () => {
-    setLoading(true)
+  const fetchDoctors = async (): Promise<void> => {
     try {
       const data = await getDoctors({ page: 1, perPage: 100 })
-      setDoctors(data?.response?.details)
+      setDoctors(data?.response?.details ?? [])
     } catch (error) {
-      console.log(error)
-    } finally {
-      setLoading(false)
+      console.error(error)
     }
   }
 
-  const onSubmit = async (data) => {
-    const payload = {
-      name: data.name,
-      phone_no: data.phone_no,
-      age: data.age,
-      gender: data.gender,
-      doctor_id: data.doctor_id?.id,
-    }
-
-    if (data.email) {
-      payload.email = data.email
-    }
-
+  const onSubmit = async (formData: PatientFormValues): Promise<void> => {
     setLoading(true)
     try {
-      const data = await updatePatient(id, payload)
-      dispatch(showToast({ message: data.message, type: "success" }))
+      const payload: UpdatePatientPayload = {
+        name: formData.name,
+        phone_no: formData.phone_no,
+        age: formData.age,
+        gender: formData.gender,
+        doctor_id: formData.doctor_id?.id,
+      }
+      if (formData.email) payload.email = formData.email
+
+      const response = await updatePatient(id, payload as Partial<PatientFormValues>)
+      dispatch(showToast({ message: response.message, type: "success" }))
       router.push("/admin/patients")
     } catch (error) {
-      handleApiError(error, setError, dispatch)
+      handleApiError(error, dispatch, setError)
     } finally {
       setLoading(false)
     }
@@ -107,10 +99,10 @@ const page = () => {
   }, [])
 
   useEffect(() => {
-    if (isUpdate) {
-      fetchPatient()
-    }
+    fetchPatient()
   }, [id])
+
+  if (loading) return <Loader />
 
   return (
     <Container>
@@ -132,7 +124,7 @@ const page = () => {
                   placeholder="Enter Name (only alphabets)"
                   variant="outlined"
                   fullWidth
-                  error={errors.name}
+                  error={!!errors.name}
                   helperText={errors.name?.message}
                 />
               )}
@@ -153,7 +145,7 @@ const page = () => {
                   type="email"
                   disabled
                   fullWidth
-                  error={errors.email}
+                  error={!!errors.email}
                   helperText={errors.email?.message}
                 />
               )}
@@ -172,7 +164,7 @@ const page = () => {
                   placeholder="e.g., +1234567890"
                   variant="outlined"
                   fullWidth
-                  error={errors.phone_no}
+                  error={!!errors.phone_no}
                   helperText={errors.phone_no?.message}
                 />
               )}
@@ -189,10 +181,11 @@ const page = () => {
                 <TextField
                   {...field}
                   type="number"
+                  onChange={(e) => field.onChange(Number(e.target.value))}
                   placeholder="e.g., 20"
                   variant="outlined"
                   fullWidth
-                  error={errors.age}
+                  error={!!errors.age}
                   helperText={errors.age?.message}
                 />
               )}
@@ -213,7 +206,7 @@ const page = () => {
                     label="Gender"
                     variant="outlined"
                     fullWidth
-                    error={errors.gender}
+                    error={!!errors.gender}
                     helperText={errors.gender?.message}
                   >
                     <MenuItem value="male">Male</MenuItem>
@@ -243,7 +236,7 @@ const page = () => {
                       {...params}
                       variant="outlined"
                       placeholder="Select Doctor"
-                      error={!!errors.doctor_id}
+                      error={!!!!errors.doctor_id}
                       helperText={errors.doctor_id?.message}
                     />
                   )}
@@ -252,10 +245,14 @@ const page = () => {
             />
           </Grid>
         </Grid>
-        <CustomButton text={!loading ? "Submit" : "Submitting"} disabled={loading} type="submit" />
+        <CustomButton
+          text={loading ? "Submitting..." : "Submit"}
+          disabled={loading}
+          type="submit"
+        />
       </Box>
     </Container>
   )
 }
 
-export default page
+export default UpdatePatientPage
