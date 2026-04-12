@@ -26,22 +26,40 @@ import { showToast } from "@/store/toastSlice"
 import { getPatients } from "@/services/admin"
 import { getPatientReports } from "@/services/doctors/patientService"
 import { handleApiError } from "@/services/apiErrorHandler"
+import { PatientRecord } from "@/types/api"
+import { AppDispatch } from "@/store/store"
 
-const page = () => {
-  const dispatch = useDispatch()
+interface PatientsResponse {
+  details: PatientRecord[]
+  extra: { totalItems: number }
+}
+
+const tableHead = [
+  "Patient ID",
+  "Name",
+  "Email",
+  "Phone Number",
+  "Gender",
+  "Age",
+  "Create At",
+  "Actions",
+]
+
+const DoctorPatientsPage = () => {
+  const dispatch = useDispatch<AppDispatch>()
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [loading, setLoading] = useState(true)
-  const [patients, setPatients] = useState([])
+  const [patients, setPatients] = useState<PatientsResponse | null>(null)
 
-  const fetchPatients = async () => {
+  const fetchPatients = async (): Promise<void> => {
     setLoading(true)
     try {
       const data = await getPatients({
         page: page + 1,
         perPage: rowsPerPage,
       })
-      setPatients(data?.response)
+      setPatients(data?.response as PatientsResponse)
     } catch (error) {
       handleApiError(error, dispatch)
     } finally {
@@ -49,14 +67,14 @@ const page = () => {
     }
   }
 
-  const getReports = async (id) => {
+  const getReports = async (id: string): Promise<void> => {
     setLoading(true)
     try {
       const data = await getPatientReports(id)
       dispatch(showToast({ message: data.message, type: "success" }))
-      const pdfUrl = data?.response?.details?.report_url
-      if (pdfUrl) {
-        window.open(pdfUrl, "_blank") // Opens the PDF in a new tab
+      const pdfUrl = data?.response?.details
+      if (Array.isArray(pdfUrl) && pdfUrl.length > 0) {
+        window.open(pdfUrl[0]?.report_url, "_blank")
       }
     } catch (error) {
       handleApiError(error, dispatch)
@@ -65,11 +83,11 @@ const page = () => {
     }
   }
 
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = (_: unknown, newPage: number): void => {
     setPage(newPage)
   }
 
-  const handleChangeRowsPerPage = (event) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(0)
   }
@@ -101,7 +119,7 @@ const page = () => {
               <TableRow>
                 {tableHead.map((head, index) => (
                   <TableCell
-                    key={index}
+                    key={head}
                     sx={{
                       color: "white",
                       backgroundColor: "primary.main",
@@ -158,7 +176,7 @@ const page = () => {
                             </IconButton>
                           </Link>
                         </Tooltip>
-                        <Tooltip title="Downloada all reports" arrow>
+                        <Tooltip title="Download all reports" arrow>
                           <IconButton
                             onClick={() => getReports(row.id)}
                             sx={{
@@ -185,7 +203,7 @@ const page = () => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 20]}
           component="div"
-          count={patients?.extra?.totalItems}
+          count={patients?.extra?.totalItems ?? 0}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -196,15 +214,4 @@ const page = () => {
   )
 }
 
-export default page
-
-const tableHead = [
-  "Patient ID",
-  "Name",
-  "Email",
-  "Phone Number",
-  "Gender",
-  "Age",
-  "Create At",
-  "Actions",
-]
+export default DoctorPatientsPage

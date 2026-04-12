@@ -2,6 +2,7 @@
 
 import { DashboardCard, Loader, StatusChip } from "@/components"
 import { getDoctorDashboard } from "@/services/doctors"
+import { AdminDashboardDetails } from "@/types/api"
 import {
   Box,
   Container,
@@ -29,8 +30,6 @@ interface ClassificationData {
   name: string
   value: number
 }
-
-const tableHead = ["Patient", "Age", "Classification Status", "Date Classified"]
 
 const upcomingAppointments: Appointment[] = [
   {
@@ -61,8 +60,10 @@ const classificationData: ClassificationData[] = [
   { name: "Pending", value: 10 },
 ]
 
-const DoctorDashboard = () => {
-  const [doctorStats, setDoctorStats] = useState({})
+const tableHead = ["Patient", "Age", "Classification Status", "Date Classified"]
+
+const DoctorDashboardPage = () => {
+  const [doctorStats, setDoctorStats] = useState<AdminDashboardDetails | null>(null)
   const [loading, setLoading] = useState(true)
 
   const fetchStats = async (): Promise<void> => {
@@ -108,7 +109,7 @@ const DoctorDashboard = () => {
               <TableRow>
                 {tableHead.map((head, index) => (
                   <TableCell
-                    key={index}
+                    key={head}
                     sx={{
                       color: "white",
                       backgroundColor: "primary.main",
@@ -162,4 +163,4 @@ const DoctorDashboard = () => {
   )
 }
 
-export default DoctorDashboard
+export default DoctorDashboardPage
