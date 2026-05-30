@@ -121,8 +121,7 @@ const UpdatePatientPage = () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  placeholder="Enter Name (only alphabets)"
-                  variant="outlined"
+                  placeholder="Enter Name"
                   fullWidth
                   error={!!errors.name}
                   helperText={errors.name?.message}
@@ -141,7 +140,6 @@ const UpdatePatientPage = () => {
                 <TextField
                   {...field}
                   placeholder="e.g., example@domain.com"
-                  variant="outlined"
                   type="email"
                   disabled
                   fullWidth
@@ -162,7 +160,6 @@ const UpdatePatientPage = () => {
                 <TextField
                   {...field}
                   placeholder="e.g., +1234567890"
-                  variant="outlined"
                   fullWidth
                   error={!!errors.phone_no}
                   helperText={errors.phone_no?.message}
@@ -183,7 +180,6 @@ const UpdatePatientPage = () => {
                   type="number"
                   onChange={(e) => field.onChange(Number(e.target.value))}
                   placeholder="e.g., 20"
-                  variant="outlined"
                   fullWidth
                   error={!!errors.age}
                   helperText={errors.age?.message}
@@ -204,7 +200,6 @@ const UpdatePatientPage = () => {
                     {...field}
                     select
                     label="Gender"
-                    variant="outlined"
                     fullWidth
                     error={!!errors.gender}
                     helperText={errors.gender?.message}
@@ -234,7 +229,6 @@ const UpdatePatientPage = () => {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      variant="outlined"
                       placeholder="Select Doctor"
                       error={!!!!errors.doctor_id}
                       helperText={errors.doctor_id?.message}

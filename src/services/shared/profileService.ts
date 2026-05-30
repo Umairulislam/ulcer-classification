@@ -1,6 +1,7 @@
 import { apiManager } from "@/helpers/apiManager"
+import { UpdatePassFormValues } from "@/schemas/updatePassSchema"
+import { UpdateProfileFormValues } from "@/schemas/updateProfileSchema"
 import { ApiResponse, UserRecord } from "@/types/api"
-import { UpdatePassFormValues, UpdateProfileFormValues } from "@/schemas"
 
 export async function updatePassword(payload: UpdatePassFormValues): Promise<ApiResponse<null>> {
   const { data } = await apiManager.post("auth/change-password", payload)

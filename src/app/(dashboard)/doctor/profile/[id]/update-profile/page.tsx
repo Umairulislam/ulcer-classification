@@ -3,78 +3,73 @@
 import { Box, Container, Grid, TextField, Typography, MenuItem } from "@mui/material"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, Controller } from "react-hook-form"
-import { updateProfileSchema } from "@/schemas"
 import { useEffect, useState } from "react"
-import { CustomButton } from "@/components"
-import { useParams } from "next/navigation"
+import { CustomButton, Loader } from "@/components"
+import { useParams, usePathname } from "next/navigation"
 import { useRouter } from "next/navigation"
 import { useDispatch, useSelector } from "react-redux"
 import { showToast } from "@/store/toastSlice"
-import { apiManager } from "@/helpers/apiManager"
+import { AppDispatch } from "@/store/store"
+import { UpdateProfileFormValues, updateProfileSchema } from "@/schemas/updateProfileSchema"
+import { getDoctorById } from "@/services/admin"
+import { updateProfile } from "@/services/shared"
+import { handleApiError } from "@/services/apiErrorHandler"
 
-const page = () => {
-  const params = useParams()
+const UpdateProfilePage = () => {
+  const { id } = useParams<{ id: string }>()
   const router = useRouter()
-  const dispatch = useDispatch()
-  const { id } = params
-  const { user } = useSelector((state) => state.user)
+  const pathname = usePathname()
+  const basePath = pathname.split("/")[1]
+  const dispatch = useDispatch<AppDispatch>()
   const [loading, setLoading] = useState(false)
 
   const {
     handleSubmit,
     control,
     reset,
+    setError,
     formState: { errors },
-  } = useForm({
+  } = useForm<UpdateProfileFormValues>({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
       first_name: "",
       last_name: "",
       email: "",
       phone_no: "",
-      gender: "",
+      gender: "male",
     },
   })
 
-  const fetchDoctor = async () => {
+  const fetchProfile = async (): Promise<void> => {
     setLoading(true)
     try {
-      const { data } = await apiManager.get(`doctor/${user?.id}`)
-      // Populate form fields with the fetched data
+      const data = await getDoctorById(id)
       reset(data?.response?.details)
     } catch (error) {
-      console.error("Error fetching doctor details:", error)
+      console.error("Error fetching profile details:", error)
     } finally {
       setLoading(false)
     }
   }
 
-  const onSubmit = async (data) => {
-    console.log("🚀 ~ onSubmit ~ data:", data)
-    const payload = {
-      first_name: data.first_name,
-      last_name: data.last_name,
-      email: data.email,
-      phone_no: data.phone_no,
-      gender: data.gender,
-    }
-
+  const onSubmit = async (formData: UpdateProfileFormValues): Promise<void> => {
     setLoading(true)
     try {
-      // API to be change
-      const { data } = await apiManager.patch(`doctor/update/${id}`, payload)
-      dispatch(showToast({ message: data.message, type: "success" }))
-      router.push("/admin/dashboard")
+      const response = await updateProfile(id, formData)
+      dispatch(showToast({ message: response.message, type: "success" }))
+      router.push(`/${basePath}/dashboard`)
     } catch (error) {
-      console.error("Error updating admin profile", error)
+      handleApiError(error, dispatch, setError)
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchDoctor()
-  }, [id, reset])
+    fetchProfile()
+  }, [id])
+
+  if (loading) return <Loader />
 
   return (
     <Container>
@@ -94,9 +89,8 @@ const page = () => {
                 <TextField
                   {...field}
                   placeholder="Enter first name (only alphabets)"
-                  variant="outlined"
                   fullWidth
-                  error={errors.first_name}
+                  error={!!errors.first_name}
                   helperText={errors.first_name?.message}
                 />
               )}
@@ -112,10 +106,9 @@ const page = () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  placeholder="Enter last name (only alphabets)"
-                  variant="outlined"
+                  placeholder="Enter last name"
                   fullWidth
-                  error={errors.last_name}
+                  error={!!errors.last_name}
                   helperText={errors.last_name?.message}
                 />
               )}
@@ -132,12 +125,11 @@ const page = () => {
                 <TextField
                   {...field}
                   placeholder="e.g., example@domain.com"
-                  variant="outlined"
                   type="email"
                   fullWidth
-                  error={errors.email}
-                  helperText={errors.email?.message}
                   disabled
+                  error={!!errors.email}
+                  helperText={errors.email?.message}
                 />
               )}
             />
@@ -153,9 +145,8 @@ const page = () => {
                 <TextField
                   {...field}
                   placeholder="e.g., +1234567890"
-                  variant="outlined"
                   fullWidth
-                  error={errors.phone_no}
+                  error={!!errors.phone_no}
                   helperText={errors.phone_no?.message}
                 />
               )}
@@ -173,9 +164,8 @@ const page = () => {
                   {...field}
                   select
                   label="Gender"
-                  variant="outlined"
                   fullWidth
-                  error={errors.gender}
+                  error={!!errors.gender}
                   helperText={errors.gender?.message}
                 >
                   <MenuItem value="male">Male</MenuItem>
@@ -186,10 +176,10 @@ const page = () => {
             />
           </Grid>
         </Grid>
-        <CustomButton text={!loading ? "Update" : "Updating"} disabled={loading} type="submit" />
+        <CustomButton text={loading ? "Updating..." : "Update"} disabled={loading} type="submit" />
       </Box>
     </Container>
   )
 }
 
-export default page
+export default UpdateProfilePage

@@ -2,38 +2,37 @@
 
 import { Box, Container, Grid, TextField, Typography, Button, Avatar } from "@mui/material"
 import React, { useEffect, useState } from "react"
-import { CustomButton } from "@/components"
-import { useForm, Controller } from "react-hook-form"
+import { CustomButton, Loader } from "@/components"
+import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { classificationSchema } from "@/schemas"
 import { useParams, useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { showToast } from "@/store/toastSlice"
 import { getPatientById } from "@/services/admin"
 import { classifyUlcer } from "@/services/doctors"
 import { handleApiError } from "@/services/apiErrorHandler"
+import { AppDispatch } from "@/store/store"
+import { PatientRecord } from "@/types/api"
+import { ClassificationFormValues, classificationSchema } from "@/schemas/classificationSchema"
 
 const page = () => {
-  const params = useParams()
-  const { id } = params
+  const { id } = useParams<{ id: string }>()
   const router = useRouter()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [loading, setLoading] = useState(false)
-  const [preview, setPreview] = useState(null)
-  const [patient, setPatient] = useState({})
+  const [preview, setPreview] = useState<string | null>(null)
+  const [patient, setPatient] = useState<PatientRecord | null>(null)
 
   const {
     handleSubmit,
-    control,
-    reset,
     setValue,
     setError,
     formState: { errors },
-  } = useForm({
+  } = useForm<ClassificationFormValues>({
     resolver: zodResolver(classificationSchema),
   })
 
-  const fetchPatient = async () => {
+  const fetchPatient = async (): Promise<void> => {
     setLoading(true)
     try {
       const data = await getPatientById(id)
@@ -45,13 +44,13 @@ const page = () => {
     }
   }
 
-  const onSubmit = async (formData) => {
+  const onSubmit = async (formData: ClassificationFormValues): Promise<void> => {
     setLoading(true)
     try {
       const data = await classifyUlcer(id, formData.image[0])
       dispatch(showToast({ message: data.message, type: "success" }))
 
-      const pdfUrl = data?.response?.details?.report_url
+      const pdfUrl = data?.response?.details?.prediction
       if (pdfUrl) {
         window.open(pdfUrl, "_blank") // Opens the PDF in a new tab
       }
@@ -64,13 +63,11 @@ const page = () => {
     }
   }
 
-  const handleImageChange = (e) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const fileList = e.target.files
-    setValue("image", fileList)
     if (fileList && fileList.length > 0) {
-      const file = fileList[0]
-      const previewUrl = URL.createObjectURL(file)
-      setPreview(previewUrl)
+      setValue("image", fileList)
+      setPreview(URL.createObjectURL(fileList[0]))
     } else {
       setPreview(null)
     }
@@ -79,6 +76,8 @@ const page = () => {
   useEffect(() => {
     fetchPatient()
   }, [])
+
+  if (loading) return <Loader />
 
   return (
     <Container>

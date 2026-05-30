@@ -1,6 +1,7 @@
 import { apiManager } from "@/helpers/apiManager"
+import { LoginFormValues } from "@/schemas/loginSchema"
+import { ResetFormValues } from "@/schemas/resetSchema"
 import { ApiResponse, UserRecord } from "@/types/api"
-import { LoginFormValues, ResetFormValues } from "@/schemas"
 
 interface ForgotPasswordPayload {
   email: string

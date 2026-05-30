@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-const classificationSchema = z.object({
+export const classificationSchema = z.object({
   image: z
     .custom<FileList>()
     .refine((files) => files?.length > 0, "Image is required")
@@ -11,4 +11,3 @@ const classificationSchema = z.object({
 })
 
 export type ClassificationFormValues = z.infer<typeof classificationSchema>
-export default classificationSchema

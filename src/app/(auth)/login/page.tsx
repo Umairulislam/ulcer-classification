@@ -14,7 +14,6 @@ import {
 import { Email, Visibility, VisibilityOff, Lock } from "@/assets/icons"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { LoginFormValues, loginSchema } from "@/schemas"
 import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { setUser } from "@/store/userSlice"
@@ -25,6 +24,7 @@ import { handleApiError } from "@/services/apiErrorHandler"
 import { login } from "@/services/auth/"
 import { AppDispatch } from "@/store/store"
 import { AuthExtra } from "@/types/api"
+import { LoginFormValues, loginSchema } from "@/schemas/loginSchema"
 
 const LoginPage = () => {
   const router = useRouter()

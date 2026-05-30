@@ -12,8 +12,7 @@ import { handleApiError } from "@/services/apiErrorHandler"
 import { CustomButton, Loader } from "@/components"
 import { AppDispatch } from "@/store/store"
 import { UserRecord } from "@/types/api"
-import { PatientFormValues } from "@/schemas"
-import { patientSchema } from "@/schemas/patientSchema"
+import { PatientFormValues, patientSchema } from "@/schemas/patientSchema"
 
 const CreatePatientPage = () => {
   const router = useRouter()

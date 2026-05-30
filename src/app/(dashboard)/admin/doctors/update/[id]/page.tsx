@@ -84,8 +84,7 @@ const UpdateDoctorPage = () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  placeholder="Enter first name (only alphabets)"
-                  variant="outlined"
+                  placeholder="Enter first name"
                   fullWidth
                   error={!!errors.first_name}
                   helperText={errors.first_name?.message}
@@ -103,8 +102,7 @@ const UpdateDoctorPage = () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  placeholder="Enter last name (only alphabets)"
-                  variant="outlined"
+                  placeholder="Enter last name"
                   fullWidth
                   error={!!errors.last_name}
                   helperText={errors.last_name?.message}
@@ -123,7 +121,6 @@ const UpdateDoctorPage = () => {
                 <TextField
                   {...field}
                   placeholder="e.g., example@domain.com"
-                  variant="outlined"
                   type="email"
                   fullWidth
                   error={!!errors.email}
@@ -144,7 +141,6 @@ const UpdateDoctorPage = () => {
                 <TextField
                   {...field}
                   placeholder="e.g., +1234567890"
-                  variant="outlined"
                   fullWidth
                   error={!!errors.phone_no}
                   helperText={errors.phone_no?.message}
@@ -164,7 +160,6 @@ const UpdateDoctorPage = () => {
                   {...field}
                   select
                   label="Gender"
-                  variant="outlined"
                   fullWidth
                   error={!!errors.gender}
                   helperText={errors.gender?.message}

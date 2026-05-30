@@ -1,6 +1,6 @@
 import { apiManager } from "@/helpers/apiManager"
+import { DoctorFormValues } from "@/schemas/doctorSchema"
 import { ApiResponse, UserRecord, PaginationParams } from "@/types/api"
-import { DoctorFormValues } from "@/schemas"
 
 interface GetDoctorsParams extends PaginationParams {
   status?: string

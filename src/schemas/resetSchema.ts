@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-const resetSchema = z
+export const resetSchema = z
   .object({
     email: z.string().email("Invalid email format"),
     otp_code: z.string().length(6, "OTP must be a 6-digit number"),
