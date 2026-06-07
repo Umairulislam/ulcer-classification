@@ -1,0 +1,134 @@
+"use client"
+
+import { DashboardCard, Loader } from "@/components"
+import { getAdminDashboard } from "@/services/admin"
+import {
+  Box,
+  Container,
+  Grid,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material"
+import { useEffect, useState } from "react"
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts"
+
+import { AdminDashboardDetails } from "@/types/api"
+
+interface RecentActivity {
+  id: number
+  action: string
+  date: string
+}
+
+interface PatientGrowth {
+  month: string
+  patients: number
+}
+
+const tableHead = ["Action", "Date"]
+
+const recentActivity: RecentActivity[] = [
+  { id: 1, action: "New patient added", date: "2024-03-10" },
+  { id: 2, action: "Doctor registered", date: "2024-03-09" },
+  { id: 3, action: "Appointment scheduled", date: "2024-03-08" },
+]
+
+const patientGrowthData: PatientGrowth[] = [
+  { month: "Jan", patients: 10 },
+  { month: "Feb", patients: 20 },
+  { month: "Mar", patients: 30 },
+  { month: "Apr", patients: 40 },
+  { month: "May", patients: 50 },
+  { month: "Jun", patients: 60 },
+]
+
+const AdminDashboardPage = () => {
+  const [adminStats, setAdminStats] = useState<AdminDashboardDetails | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  const fetchStats = async (): Promise<void> => {
+    setLoading(true)
+    try {
+      const data = await getAdminDashboard()
+      setAdminStats(data?.response?.details)
+    } catch (error) {
+      console.log("Error fetching stats:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchStats()
+  }, [])
+
+  if (loading) return <Loader />
+
+  return (
+    <Container>
+      <Typography variant="h4" fontWeight="bold" mb={4}>
+        Dashboard Statistics
+      </Typography>
+
+      {/* Quick Stats */}
+      <Grid container spacing={3} mb={4}>
+        {Object.entries(adminStats ?? {}).map(([key, value]) => (
+          <DashboardCard
+            key={key}
+            title={key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
+            value={value as string | number}
+          />
+        ))}
+      </Grid>
+
+      {/* Recent Activity */}
+      <Box mb={4}>
+        <Typography variant="h6" fontWeight="bold" mb={2}>
+          Recent Activity
+        </Typography>
+        <TableContainer>
+          <Table>
+            <TableHead sx={{ border: "1px solid lightgray" }}>
+              <TableRow>
+                {tableHead.map((head, index) => (
+                  <TableCell key={head}>{head}</TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody sx={{ border: "1px solid lightgray" }}>
+              {recentActivity.map((activity) => (
+                <TableRow key={activity.id}>
+                  <TableCell>{activity.action}</TableCell>
+                  <TableCell>{activity.date}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+
+      {/* Patient Growth Chart */}
+      <Box mb={4}>
+        <Typography variant="h6" fontWeight="bold" mb={2}>
+          Patient Growth
+        </Typography>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={patientGrowthData}>
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="patients" fill="#009689" />
+          </BarChart>
+        </ResponsiveContainer>
+      </Box>
+    </Container>
+  )
+}
+
+export default AdminDashboardPage
