@@ -27,7 +27,6 @@ apiManager.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
     if (error.response?.status === 401 && typeof window !== "undefined") {
-      console.log("Unauthorized. Redirecting to login page.", error.response)
       await deleteCookie()
       window.location.href = "/login"
     }

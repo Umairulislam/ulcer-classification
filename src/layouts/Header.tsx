@@ -74,6 +74,7 @@ const Header = ({ isSmallScreen, handleDrawerToggle }: HeaderProps) => {
         ml: isSmallScreen ? 0 : "250px",
         backgroundColor: "white",
         boxShadow: "none",
+        border: "none",
       }}
     >
       <Toolbar>

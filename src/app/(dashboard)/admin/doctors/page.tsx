@@ -172,16 +172,7 @@ const page = () => {
             <TableHead>
               <TableRow>
                 {tableHead.map((head) => (
-                  <TableCell
-                    key={head}
-                    align={head === "Actions" ? "center" : "left"}
-                    sx={{
-                      color: "white",
-                      backgroundColor: "primary.main",
-                      fontWeight: "bold",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
+                  <TableCell key={head} align={head === "Actions" ? "center" : "left"}>
                     {head}
                   </TableCell>
                 ))}
@@ -224,12 +215,7 @@ const page = () => {
                       <Stack direction="row" spacing={1} justifyContent="center">
                         <Tooltip title="Edit" arrow>
                           <Link href={`doctors/update/${row.id}`}>
-                            <IconButton
-                              sx={{
-                                backgroundColor: "secondary.light",
-                                "&:hover": { backgroundColor: "primary.light", color: "white" },
-                              }}
-                            >
+                            <IconButton>
                               <Edit />
                             </IconButton>
                           </Link>

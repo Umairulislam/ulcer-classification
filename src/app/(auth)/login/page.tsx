@@ -201,7 +201,6 @@ const LoginPage = () => {
             disabled={loading}
             sx={{
               mt: 2,
-              textTransform: "capitalize",
               fontSize: "1rem",
               paddingY: 1.5,
               borderRadius: 2,

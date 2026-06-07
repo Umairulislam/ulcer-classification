@@ -96,17 +96,7 @@ const AdminDashboardPage = () => {
             <TableHead sx={{ border: "1px solid lightgray" }}>
               <TableRow>
                 {tableHead.map((head, index) => (
-                  <TableCell
-                    key={head}
-                    sx={{
-                      color: "white",
-                      backgroundColor: "primary.main",
-                      fontWeight: "bold",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {head}
-                  </TableCell>
+                  <TableCell key={head}>{head}</TableCell>
                 ))}
               </TableRow>
             </TableHead>

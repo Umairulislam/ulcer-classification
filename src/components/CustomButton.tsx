@@ -14,7 +14,6 @@ const CustomButton = ({ text, icon: Icon, onClick, ...props }: CustomButtonProps
       sx={{
         backgroundColor: "primary.main",
         color: "white",
-        textTransform: "none",
         fontWeight: "bold",
         paddingX: "20px",
         display: "flex",

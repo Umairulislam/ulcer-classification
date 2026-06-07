@@ -118,17 +118,7 @@ const DoctorPatientsPage = () => {
             <TableHead>
               <TableRow>
                 {tableHead.map((head, index) => (
-                  <TableCell
-                    key={head}
-                    sx={{
-                      color: "white",
-                      backgroundColor: "primary.main",
-                      fontWeight: "bold",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {head}
-                  </TableCell>
+                  <TableCell key={head}>{head}</TableCell>
                 ))}
               </TableRow>
             </TableHead>
@@ -163,15 +153,7 @@ const DoctorPatientsPage = () => {
                       <Stack direction="row" spacing={1}>
                         <Tooltip title="Classify" arrow>
                           <Link href={`patients/classify/${row.id}`}>
-                            <IconButton
-                              sx={{
-                                backgroundColor: "secondary.light",
-                                "&:hover": {
-                                  backgroundColor: "primary.light",
-                                  color: "white",
-                                },
-                              }}
-                            >
+                            <IconButton>
                               <Science />
                             </IconButton>
                           </Link>

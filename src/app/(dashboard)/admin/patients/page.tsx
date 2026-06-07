@@ -159,17 +159,7 @@ const PatientsPage = () => {
             <TableHead>
               <TableRow>
                 {tableHead.map((head) => (
-                  <TableCell
-                    key={head}
-                    sx={{
-                      color: "white",
-                      backgroundColor: "primary.main",
-                      fontWeight: "bold",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {head}
-                  </TableCell>
+                  <TableCell key={head}>{head}</TableCell>
                 ))}
               </TableRow>
             </TableHead>
@@ -217,16 +207,7 @@ const PatientsPage = () => {
                           </Link>
                         </Tooltip>
                         <Tooltip title="Delete" arrow>
-                          <IconButton
-                            onClick={() => handleDeleteClick(row)}
-                            sx={{
-                              backgroundColor: "secondary.light",
-                              "&:hover": {
-                                backgroundColor: "primary.light",
-                                color: "white",
-                              },
-                            }}
-                          >
+                          <IconButton onClick={() => handleDeleteClick(row)}>
                             <Delete />
                           </IconButton>
                         </Tooltip>
