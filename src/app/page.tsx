@@ -1,5 +1,5 @@
-const Home = () => {
-  return null
-}
+import { redirect } from "next/navigation"
 
-export default Home
+export default function RootPage() {
+  redirect("/login")
+}

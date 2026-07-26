@@ -1,45 +1,51 @@
-import { Geist, Geist_Mono } from "next/font/google"
+import type { Metadata, Viewport } from "next"
+import { Lexend, Inter } from "next/font/google"
+import { AppProviders } from "@/providers/AppProviders"
 import "./globals.css"
-import { Provider } from "react-redux"
-import store from "@/store/store"
-import { ThemeProvider } from "@mui/material/styles"
-import theme from "@/theme/theme"
-import AppProvider from "@/hoc/AppProvider"
-import { CssBaseline } from "@mui/material"
-import { Metadata } from "next"
-import Providers from "@/hoc/Providers"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const lexend = Lexend({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-lexend",
+  display: "swap",
 })
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
+  display: "swap",
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
   title: {
     default: "Ulcer Classification System",
     template: "%s | Ulcer Classification System",
   },
-  description:
-    "A modern platform for classifying ulcer images. Admins manage doctors and patients while doctors classify ulcer images and generate detailed reports.",
-  keywords: ["ulcer classification", "medical imaging", "hospital management", "doctor portal"],
-  authors: [{ name: "Engr. Umair Ul Islam" }],
-  robots: "noindex, nofollow", // private app — keep it off search engines
+  description: "Ulcer image classification and reporting for doctors and administrators.",
+  icons: {
+    icon: "/favicon.ico",
+  },
+  // Internal clinical tool, not a public marketing site — keep it out of
+  // search engines. Flip to true if that assumption is wrong.
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
-interface RootLayoutProps {
-  children: React.ReactNode
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#4F46E5",
 }
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Providers>{children}</Providers>
+    <html lang="en" className={`${lexend.variable} ${inter.variable}`}>
+      <body>
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   )

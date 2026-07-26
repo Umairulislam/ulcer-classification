@@ -87,8 +87,8 @@ export const colors = {
 // stay legible and easy to scan in tables.
 
 export const fontFamily = {
-  display: '"Lexend", "Inter", "Helvetica Neue", Arial, sans-serif',
-  body: '"Inter", "Helvetica Neue", Arial, sans-serif',
+  display: 'var(--font-lexend), "Inter", "Helvetica Neue", Arial, sans-serif',
+  body: 'var(--font-inter), "Helvetica Neue", Arial, sans-serif',
   mono: '"IBM Plex Mono", "Roboto Mono", monospace',
 } as const
 

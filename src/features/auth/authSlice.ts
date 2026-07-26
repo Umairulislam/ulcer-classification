@@ -3,6 +3,7 @@ import { AuthState, User } from "./types"
 import { RootState } from "@/store/store"
 
 const ACCESS_TOKEN_KEY = "access_token"
+const ACCESS_TOKEN_COOKIE = "accessToken"
 
 const readStoredToken = (): string | null => {
   if (typeof window === "undefined") return null
@@ -11,10 +12,12 @@ const readStoredToken = (): string | null => {
 const persistToken = (token: string) => {
   if (typeof window === "undefined") return
   window.localStorage.setItem(ACCESS_TOKEN_KEY, token)
+  document.cookie = `${ACCESS_TOKEN_COOKIE}=${token}; path=/; samesite=lax`
 }
 const clearStoredToken = () => {
   if (typeof window === "undefined") return
   window.localStorage.removeItem(ACCESS_TOKEN_KEY)
+  document.cookie = `${ACCESS_TOKEN_COOKIE}=; path=/; max-age=0`
 }
 
 const storedToken = readStoredToken()
