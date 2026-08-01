@@ -7,18 +7,11 @@ import { useLoginMutation } from "@/features/auth/authApi"
 import { Alert, Box, Button, Paper, Stack, TextField, Typography } from "@mui/material"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
+import { getErrorMessage } from "@/utils/getErrorMessage"
 
 const DASHBOARD_BY_ROLE: Record<string, string> = {
   admin: "/admin/dashboard",
   doctor: "/doctor/dashboard",
-}
-
-function getErrorMessage(error: unknown): string {
-  if (error && typeof error === "object" && "data" in error) {
-    const data = (error as { data?: { message?: string } }).data
-    if (data?.message) return data.message
-  }
-  return "Invalid email or password. Please try again."
 }
 
 const LoginForm = () => {
@@ -73,7 +66,11 @@ const LoginForm = () => {
         </Stack>
 
         <Stack spacing={3}>
-          {isError && <Alert severity="error">{getErrorMessage(error)}</Alert>}
+          {isError && (
+            <Alert severity="error">
+              {getErrorMessage(error, "Invalid email or password. Please try again.")}
+            </Alert>
+          )}
 
           <TextField
             label="Email"
@@ -95,15 +92,20 @@ const LoginForm = () => {
             helperText={errors.password?.message}
           />
 
-          <Stack direction="column" justifyContent="center" gap={1}>
-            <Button type="submit" variant="contained" size="large" fullWidth disabled={isLoading}>
-              {isLoading ? "Signing in…" : "Sign in"}
-            </Button>
-
-            <Button component={Link} href="/forgot-password" size="small">
+          <Stack direction="row" justifyContent="flex-end" sx={{ mt: -1 }}>
+            <Button
+              component={Link}
+              href="/forgot-password"
+              size="small"
+              sx={{ textTransform: "none" }}
+            >
               Forgot password?
             </Button>
           </Stack>
+
+          <Button type="submit" variant="contained" size="large" fullWidth disabled={isLoading}>
+            {isLoading ? "Signing in…" : "Sign in"}
+          </Button>
         </Stack>
       </Paper>
     </Box>

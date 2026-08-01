@@ -8,7 +8,7 @@ import {
 } from "@reduxjs/toolkit/query/react"
 import { logOut } from "@/features/auth/authSlice"
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
 export const TAG_TYPES = [
   "Auth",
