@@ -8,11 +8,7 @@ import { Alert, Box, Button, Paper, Stack, TextField, Typography } from "@mui/ma
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { getErrorMessage } from "@/utils/getErrorMessage"
-
-const DASHBOARD_BY_ROLE: Record<string, string> = {
-  admin: "/admin/dashboard",
-  doctor: "/doctor/dashboard",
-}
+import { DASHBOARD_BY_ROLE } from "@/constants/roles"
 
 const LoginForm = () => {
   const router = useRouter()

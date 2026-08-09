@@ -1,45 +1,47 @@
 "use client"
 
-import React, { useState } from "react"
-import { Box, useTheme, useMediaQuery } from "@mui/material"
-import { Sidenav, Header } from "@/layouts"
-import { useSelector } from "react-redux"
-import { RootState } from "@/store/store"
+import { useState } from "react"
+import { Box } from "@mui/material"
+import Header from "@/components/layout/Header"
+import Sidebar from "@/components/layout/Sidebar"
+import { layout } from "@/theme/tokens"
 
-interface DashboardLayoutProps {
-  children: React.ReactNode
-}
-
-const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  const { user } = useSelector((state: RootState) => state.user)
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+  const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const theme = useTheme()
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"))
-  const role = user?.role ?? null
 
-  const handleDrawerToggle = (): void => {
-    setMobileOpen((prev) => !prev)
-  }
+  const sidebarWidth = collapsed ? layout.drawerWidthCollapsed : layout.drawerWidth
 
   return (
-    <Box sx={{ display: "flex", height: "100vh" }}>
-      <Header isSmallScreen={isSmallScreen} handleDrawerToggle={handleDrawerToggle} />
-      <Sidenav
-        role={role}
-        isSmallScreen={isSmallScreen}
-        mobileOpen={mobileOpen}
-        handleDrawerToggle={handleDrawerToggle}
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+      <Header
+        sidebarWidth={sidebarWidth}
+        collapsed={collapsed}
+        onMenuClick={() => setMobileOpen(true)}
+        onCollapseClick={() => setCollapsed((prev) => !prev)}
       />
+
+      <Sidebar
+        collapsed={collapsed}
+        mobileOpen={mobileOpen}
+        onMobileClose={() => setMobileOpen(false)}
+      />
+
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
-          mt: 8,
-          overflow: "auto",
+          minWidth: 0,
+          ml: { md: `${sidebarWidth}px` },
+          transition: (theme) =>
+            theme.transitions.create("margin-left", {
+              duration: theme.transitions.duration.short,
+            }),
         }}
       >
-        {children}
+        {/* Spacer matching the fixed header's height */}
+        <Box sx={{ height: layout.headerHeight }} />
+        <Box sx={{ p: { xs: 2, md: 3 } }}>{children}</Box>
       </Box>
     </Box>
   )

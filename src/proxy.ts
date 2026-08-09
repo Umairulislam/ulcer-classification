@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { decodeJwt } from "@/utils/decodeJwt"
+import { DASHBOARD_BY_ROLE } from "./constants/roles"
 
 interface JwtPayload {
   exp: number
@@ -7,8 +8,6 @@ interface JwtPayload {
 }
 
 const publicPaths = ["/login", "/forgot-password", "/reset-password"]
-
-const dashboardFor = (role: string) => (role === "admin" ? "/admin/dashboard" : "/doctor/dashboard")
 
 export function proxy(req: NextRequest): NextResponse {
   const path = req.nextUrl.pathname
@@ -42,15 +41,15 @@ export function proxy(req: NextRequest): NextResponse {
 
     // 3. Logged in, on "/" or "/login" → send to their own dashboard
     if (path === "/" || path === "/login") {
-      return NextResponse.redirect(new URL(dashboardFor(role), req.url))
+      return NextResponse.redirect(new URL(DASHBOARD_BY_ROLE[role], req.url))
     }
 
     // 4. Logged in, wrong role's section → send to their own dashboard
     if (role === "admin" && path.startsWith("/doctor")) {
-      return NextResponse.redirect(new URL("/admin/dashboard", req.url))
+      return NextResponse.redirect(new URL(DASHBOARD_BY_ROLE.admin, req.url))
     }
     if (role === "doctor" && path.startsWith("/admin")) {
-      return NextResponse.redirect(new URL("/doctor/dashboard", req.url))
+      return NextResponse.redirect(new URL(DASHBOARD_BY_ROLE.doctor, req.url))
     }
   }
 
