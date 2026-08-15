@@ -32,7 +32,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         sx={{
           flexGrow: 1,
           minWidth: 0,
-          ml: { md: `${sidebarWidth}px` },
+          // ml: { md: `${sidebarWidth}px` },
           transition: (theme) =>
             theme.transitions.create("margin-left", {
               duration: theme.transitions.duration.short,
