@@ -569,13 +569,14 @@ export const theme = createTheme({
         root: {
           borderRadius: radius.lg,
           border: `1px solid ${colors.neutral[200]}`,
+          backgroundColor: colors.neutral[0],
         },
       },
     },
     MuiTableHead: {
       styleOverrides: {
         root: {
-          backgroundColor: colors.neutral[50],
+          backgroundColor: colors.neutral[0],
           "& .MuiTableCell-root": {
             fontSize: fontSize.xs,
             fontWeight: fontWeight.semibold,
