@@ -1,9 +1,11 @@
 import { api, type ApiEnvelope } from "@/services/api"
 import type {
+  CreateDoctorRequest,
   Doctor,
   GetDoctorsParams,
   MessageResult,
   PaginationMeta,
+  UpdateDoctorPayload,
   UpdateDoctorStatusRequest,
 } from "./types"
 
@@ -46,6 +48,34 @@ export const doctorApi = api.injectEndpoints({
           : [{ type: "Doctor" as const, id: "LIST" }],
     }),
 
+    getDoctorById: builder.query<Doctor, string>({
+      query: (id) => ({
+        url: `doctor/${id}`,
+      }),
+      transformResponse: (raw: ApiEnvelope<{ details: Doctor }>) => raw.response.details,
+      providesTags: (_result, _error, id) => [{ type: "Doctor", id }],
+    }),
+
+    createDoctor: builder.mutation<MessageResult, CreateDoctorRequest>({
+      query: (body) => ({
+        url: "doctor/create",
+        method: "POST",
+        body,
+      }),
+      transformResponse: (raw: ApiEnvelope<MessageResult>) => raw.response,
+      invalidatesTags: () => [{ type: "Doctor", id: "LIST" }],
+    }),
+
+    updateDoctor: builder.mutation<MessageResult, UpdateDoctorPayload>({
+      query: ({ id, data }) => ({
+        url: `doctor/update/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      transformResponse: (raw: ApiEnvelope<MessageResult>) => raw.response,
+      invalidatesTags: (_result, _error, { id }) => [{ type: "Doctor", id }],
+    }),
+
     updateDoctorStatus: builder.mutation<MessageResult, UpdateDoctorStatusRequest>({
       query: ({ id, status }) => ({
         url: `doctor/update/status/${id}`,
@@ -53,7 +83,6 @@ export const doctorApi = api.injectEndpoints({
         body: { status },
       }),
       transformResponse: (raw: ApiEnvelope<MessageResult>) => raw.response,
-      // Only that one doctor's row needs to refetch — not the whole list.
       invalidatesTags: (_result, _error, { id }) => [{ type: "Doctor", id }],
     }),
 
@@ -69,5 +98,11 @@ export const doctorApi = api.injectEndpoints({
   overrideExisting: false,
 })
 
-export const { useGetAllDoctorsQuery, useUpdateDoctorStatusMutation, useDeleteDoctorMutation } =
-  doctorApi
+export const {
+  useGetAllDoctorsQuery,
+  useGetDoctorByIdQuery,
+  useCreateDoctorMutation,
+  useUpdateDoctorMutation,
+  useUpdateDoctorStatusMutation,
+  useDeleteDoctorMutation,
+} = doctorApi
