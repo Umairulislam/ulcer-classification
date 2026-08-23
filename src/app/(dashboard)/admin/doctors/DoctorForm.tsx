@@ -2,7 +2,7 @@
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useForm, type Resolver } from "react-hook-form"
+import { Controller, useForm, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Paper, Grid, TextField, MenuItem, Button, Stack, Alert, Skeleton } from "@mui/material"
 import {
@@ -52,6 +52,7 @@ const DoctorForm = ({ mode, doctorId }: DoctorFormProps) => {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm<DoctorFormValues>({
     resolver: zodResolver(getDoctorSchema(mode)) as Resolver<DoctorFormValues>,
@@ -173,21 +174,26 @@ const DoctorForm = ({ mode, doctorId }: DoctorFormProps) => {
           </Grid>
 
           <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField
-              select
-              label="Gender"
-              fullWidth
-              defaultValue="male"
-              {...register("gender")}
-              error={!!errors.gender}
-              helperText={errors.gender?.message}
-            >
-              {GENDER_OPTIONS.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
+            <Controller
+              name="gender"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  select
+                  label="Gender"
+                  fullWidth
+                  error={!!errors.gender}
+                  helperText={errors.gender?.message}
+                >
+                  {GENDER_OPTIONS.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              )}
+            />
           </Grid>
 
           {!isEdit && (
