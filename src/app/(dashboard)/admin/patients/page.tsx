@@ -15,7 +15,7 @@ import type { Patient } from "@/features/patient/types"
 
 const PatientsPage = () => {
   const [searchInput, setSearchInput] = useState("")
-  const [doctorId, setDoctorId] = useState("")
+  const [doctorId, setDoctorId] = useState("all")
   const [page, setPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
 
@@ -31,7 +31,7 @@ const PatientsPage = () => {
 
   const { data, isFetching, isError } = useGetAllPatientsQuery({
     search: debouncedSearch,
-    doctor_id: doctorId || undefined,
+    doctor_id: doctorId,
     page,
     perPage,
   })

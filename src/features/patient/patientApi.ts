@@ -1,6 +1,6 @@
 import { api, type ApiEnvelope } from "@/services/api"
+import type { PaginationMeta } from "@/types/api"
 import type { GetPatientsParams, Patient } from "./types"
-import { PaginationMeta } from "@/types/api"
 
 interface PatientListRaw {
   details: Patient[]
@@ -21,7 +21,9 @@ export const patientApi = api.injectEndpoints({
           page: params?.page ?? 1,
           perPage: params?.perPage ?? 10,
           ...(params?.search ? { search: params.search } : {}),
-          ...(params?.doctor_id ? { doctor_id: params.doctor_id } : {}),
+          ...(params?.doctor_id && params.doctor_id !== "all"
+            ? { doctor_id: params.doctor_id }
+            : {}),
           ...(params?.patient_id ? { patient_id: params.patient_id } : {}),
         },
       }),

@@ -51,7 +51,7 @@ const PatientFilters = ({
           disabled={isLoading}
           sx={{ minWidth: { xs: "100%", sm: 220 } }}
         >
-          <MenuItem value="">All doctors</MenuItem>
+          <MenuItem value="all">All doctors</MenuItem>
           {doctors.map((doctor) => (
             <MenuItem key={doctor.id} value={doctor.id}>
               Dr. {doctor.first_name} {doctor.last_name}
