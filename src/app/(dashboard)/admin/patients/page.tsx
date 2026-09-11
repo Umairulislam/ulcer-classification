@@ -2,15 +2,17 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Box, Button, IconButton, Alert } from "@mui/material"
+import { Box, Button, IconButton, Stack, Alert } from "@mui/material"
 import { alpha } from "@mui/material/styles"
 import AddIcon from "@mui/icons-material/Add"
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined"
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline"
 import PageHeader from "@/components/ui/PageHeader"
 import DataTable, { type DataTableColumn } from "@/components/ui/DataTable"
+import ConfirmDialog from "@/components/ui/ConfirmDialog"
 import PatientFilters from "./PatientFilters"
 import { useDebouncedValue } from "@/hooks/useDebouncedValue"
-import { useGetAllPatientsQuery } from "@/features/patient/patientApi"
+import { useGetAllPatientsQuery, useDeletePatientMutation } from "@/features/patient/patientApi"
 import type { Patient } from "@/features/patient/types"
 
 const PatientsPage = () => {
@@ -18,6 +20,8 @@ const PatientsPage = () => {
   const [doctorId, setDoctorId] = useState("all")
   const [page, setPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
+
+  const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null)
 
   const debouncedSearch = useDebouncedValue(searchInput, 400)
 
@@ -35,6 +39,19 @@ const PatientsPage = () => {
     page,
     perPage,
   })
+
+  const [deletePatient, { isLoading: isDeleting }] = useDeletePatientMutation()
+
+  const handleDeleteConfirm = async () => {
+    if (!patientToDelete) return
+    try {
+      await deletePatient(patientToDelete.id).unwrap()
+    } catch {
+      // TODO: surface via toast once a toast/snackbar system exists
+    } finally {
+      setPatientToDelete(null)
+    }
+  }
 
   const patientColumns: DataTableColumn<Patient>[] = [
     {
@@ -72,18 +89,31 @@ const PatientsPage = () => {
       label: "",
       align: "right",
       render: (patient) => (
-        <IconButton
-          component={Link}
-          href={`/admin/patients/${patient.id}/edit`}
-          size="small"
-          sx={(theme) => ({
-            bgcolor: alpha(theme.palette.primary.main, 0.1),
-            color: theme.palette.primary.main,
-            "&:hover": { bgcolor: alpha(theme.palette.primary.main, 0.2) },
-          })}
-        >
-          <EditOutlinedIcon fontSize="small" />
-        </IconButton>
+        <Stack direction="row" spacing={1} justifyContent="flex-end">
+          <IconButton
+            component={Link}
+            href={`/admin/patients/${patient.id}/edit`}
+            size="small"
+            sx={(theme) => ({
+              bgcolor: alpha(theme.palette.primary.main, 0.1),
+              color: theme.palette.primary.main,
+              "&:hover": { bgcolor: alpha(theme.palette.primary.main, 0.2) },
+            })}
+          >
+            <EditOutlinedIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            size="small"
+            onClick={() => setPatientToDelete(patient)}
+            sx={(theme) => ({
+              bgcolor: alpha(theme.palette.error.main, 0.1),
+              color: theme.palette.error.main,
+              "&:hover": { bgcolor: alpha(theme.palette.error.main, 0.2) },
+            })}
+          >
+            <DeleteOutlineIcon fontSize="small" />
+          </IconButton>
+        </Stack>
       ),
     },
   ]
@@ -134,6 +164,17 @@ const PatientsPage = () => {
             setPage(1)
           },
         }}
+      />
+
+      <ConfirmDialog
+        open={!!patientToDelete}
+        title={`Delete ${patientToDelete?.name ?? "this patient"}?`}
+        description="This will permanently remove this patient and their records. This cannot be undone."
+        confirmLabel="Delete"
+        confirmColor="error"
+        isLoading={isDeleting}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setPatientToDelete(null)}
       />
     </Box>
   )

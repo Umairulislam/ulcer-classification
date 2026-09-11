@@ -81,3 +81,7 @@ export interface PatientReport {
 export interface ClassificationResult {
   prediction: string
 }
+
+export interface MessageResult {
+  message: string
+}
