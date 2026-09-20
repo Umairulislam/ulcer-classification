@@ -47,8 +47,9 @@ export interface ResetPasswordRequest {
 }
 
 export interface ChangePasswordRequest {
-  old_password: string
+  current_password: string
   new_password: string
+  confirm_password: string
 }
 
 export interface MessageResult {
