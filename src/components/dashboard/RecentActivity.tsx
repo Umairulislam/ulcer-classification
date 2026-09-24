@@ -18,7 +18,7 @@ import LocalHospitalOutlinedIcon from "@mui/icons-material/LocalHospitalOutlined
 import PersonAddAltOutlinedIcon from "@mui/icons-material/PersonAddAltOutlined"
 import type { SvgIconComponent } from "@mui/icons-material"
 import { formatDistanceToNow } from "date-fns"
-import { recentActivityMock, type ActivityType } from "@/features/dashboard/dashboard.mock"
+import type { ActivityItem, ActivityType } from "@/features/dashboard/dashboard.mock"
 
 const ICONS_BY_TYPE: Record<ActivityType, SvgIconComponent> = {
   classification: PersonSearchOutlinedIcon,
@@ -26,16 +26,21 @@ const ICONS_BY_TYPE: Record<ActivityType, SvgIconComponent> = {
   patient: PersonAddAltOutlinedIcon,
 }
 
-const RecentActivity = () => {
+interface RecentActivityProps {
+  items: ActivityItem[]
+  title?: string
+}
+
+const RecentActivity = ({ items, title = "Recent activity" }: RecentActivityProps) => {
   return (
     <Card>
       <CardHeader
-        title="Recent activity"
+        title={title}
         action={<Chip label="Demo data" size="small" variant="outlined" />}
       />
       <CardContent sx={{ pt: 0 }}>
         <List disablePadding>
-          {recentActivityMock.map((item) => {
+          {items.map((item) => {
             const Icon = ICONS_BY_TYPE[item.type]
             return (
               <ListItem key={item.id} disableGutters sx={{ py: 1.25 }}>

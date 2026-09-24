@@ -12,6 +12,7 @@ import ClassificationTrendChart from "@/components/dashboard/ClassificationTrend
 import WagnerGradeChart from "@/components/dashboard/WagnerGradeChart"
 import RecentActivity from "@/components/dashboard/RecentActivity"
 import { useGetAdminDashboardQuery } from "@/features/dashboard/dashboardApi"
+import { classificationTrendMock, recentActivityMock } from "@/features/dashboard/dashboard.mock"
 
 const AdminDashboardPage = () => {
   const { data, isLoading, isError } = useGetAdminDashboardQuery()
@@ -91,7 +92,7 @@ const AdminDashboardPage = () => {
 
       <Grid container spacing={2.5} sx={{ mt: 2.5 }}>
         <Grid size={{ xs: 12, md: 7 }}>
-          <ClassificationTrendChart />
+          <ClassificationTrendChart data={classificationTrendMock} />
         </Grid>
         <Grid size={{ xs: 12, md: 5 }}>
           <WagnerGradeChart />
@@ -99,7 +100,7 @@ const AdminDashboardPage = () => {
       </Grid>
 
       <Box sx={{ mt: 2.5 }}>
-        <RecentActivity />
+        <RecentActivity items={recentActivityMock} />
       </Box>
     </Box>
   )

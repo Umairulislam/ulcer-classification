@@ -1,5 +1,5 @@
 import { api, type ApiEnvelope } from "@/services/api"
-import type { AdminDashboardStats } from "./types"
+import type { AdminDashboardStats, DoctorDashboardStats } from "./types"
 
 export const dashboardApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,8 +9,15 @@ export const dashboardApi = api.injectEndpoints({
         raw.response.details,
       providesTags: ["DashboardAdmin"],
     }),
+
+    getDoctorDashboard: builder.query<DoctorDashboardStats, void>({
+      query: () => "dashboard/doctor",
+      transformResponse: (raw: ApiEnvelope<{ details: DoctorDashboardStats }>) =>
+        raw.response.details,
+      providesTags: ["DashboardDoctor"],
+    }),
   }),
   overrideExisting: false,
 })
 
-export const { useGetAdminDashboardQuery } = dashboardApi
+export const { useGetAdminDashboardQuery, useGetDoctorDashboardQuery } = dashboardApi

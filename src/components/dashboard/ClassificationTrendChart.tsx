@@ -10,19 +10,27 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts"
-import { classificationTrendMock } from "@/features/dashboard/dashboard.mock"
+import type { TrendPoint } from "@/features/dashboard/dashboard.mock"
 
-const ClassificationTrendChart = () => {
+interface ClassificationTrendChartProps {
+  data: TrendPoint[]
+  title?: string
+}
+
+const ClassificationTrendChart = ({
+  data,
+  title = "Classifications this week",
+}: ClassificationTrendChartProps) => {
   return (
-    <Card>
+    <Card sx={{ height: "100%" }}>
       <CardHeader
-        title="Classifications this week"
+        title={title}
         action={<Chip label="Demo data" size="small" variant="outlined" />}
       />
       <CardContent>
         <Box sx={{ width: "100%", height: 260 }}>
           <ResponsiveContainer>
-            <AreaChart data={classificationTrendMock} margin={{ left: -20 }}>
+            <AreaChart data={data} margin={{ left: -20 }}>
               <defs>
                 <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#4F46E5" stopOpacity={0.35} />

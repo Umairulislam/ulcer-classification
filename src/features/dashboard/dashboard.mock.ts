@@ -1,3 +1,7 @@
+// TEMPORARY — swap for a real endpoint once the backend exposes
+// classification-trend data. The chart consuming this shows a visible
+// "Demo data" chip so it's never mistaken for real numbers.
+
 export interface TrendPoint {
   date: string
   classifications: number
@@ -75,5 +79,48 @@ export const recentActivityMock: ActivityItem[] = [
     actor: "Admin",
     message: "updated a patient's profile",
     timestamp: minutesAgo(1320),
+  },
+]
+
+// Doctor-scoped versions — same shapes, phrased from the logged-in
+// doctor's own perspective rather than an admin's.
+export const doctorClassificationTrendMock: TrendPoint[] = [
+  { date: "Mon", classifications: 1 },
+  { date: "Tue", classifications: 3 },
+  { date: "Wed", classifications: 0 },
+  { date: "Thu", classifications: 2 },
+  { date: "Fri", classifications: 4 },
+  { date: "Sat", classifications: 1 },
+  { date: "Sun", classifications: 2 },
+]
+
+export const doctorActivityMock: ActivityItem[] = [
+  {
+    id: "1",
+    type: "classification",
+    actor: "You",
+    message: "classified a new ulcer image",
+    timestamp: minutesAgo(20),
+  },
+  {
+    id: "2",
+    type: "patient",
+    actor: "Admin",
+    message: "assigned a new patient to you",
+    timestamp: minutesAgo(95),
+  },
+  {
+    id: "3",
+    type: "classification",
+    actor: "You",
+    message: "classified a new ulcer image",
+    timestamp: minutesAgo(260),
+  },
+  {
+    id: "4",
+    type: "patient",
+    actor: "Admin",
+    message: "assigned a new patient to you",
+    timestamp: minutesAgo(1440),
   },
 ]
