@@ -17,6 +17,15 @@ export interface PatientListResult {
   meta: PaginationMeta
 }
 
+export interface PatientReport {
+  report_url: string
+}
+
+export interface DownloadReportsResult {
+  message: string
+  reports: PatientReport[]
+}
+
 export const patientApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getAllPatients: builder.query<PatientListResult, GetPatientsParams | void>({
@@ -88,6 +97,17 @@ export const patientApi = api.injectEndpoints({
       transformResponse: (raw: ApiEnvelope<MessageResult>) => raw.response,
       invalidatesTags: () => [{ type: "Patient", id: "LIST" }],
     }),
+
+    downloadPatientReports: builder.mutation<DownloadReportsResult, string>({
+      query: (patientId) => ({
+        url: `patient/get-all/reports/${patientId}`,
+        method: "POST",
+      }),
+      transformResponse: (raw: ApiEnvelope<{ details: PatientReport[] }>) => ({
+        message: raw.message,
+        reports: raw.response.details,
+      }),
+    }),
   }),
   overrideExisting: false,
 })
@@ -98,4 +118,5 @@ export const {
   useCreatePatientMutation,
   useUpdatePatientMutation,
   useDeletePatientMutation,
+  useDownloadPatientReportsMutation,
 } = patientApi
