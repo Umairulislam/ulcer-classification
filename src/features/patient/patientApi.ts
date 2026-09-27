@@ -1,6 +1,7 @@
 import { api, type ApiEnvelope } from "@/services/api"
 import type { MessageResult, PaginationMeta } from "@/types/api"
 import type {
+  ClassifyPatientPayload,
   CreatePatientRequest,
   GetPatientsParams,
   Patient,
@@ -108,6 +109,20 @@ export const patientApi = api.injectEndpoints({
         reports: raw.response.details,
       }),
     }),
+
+    classifyPatient: builder.mutation<MessageResult, ClassifyPatientPayload>({
+      query: ({ id, image }) => {
+        const formData = new FormData()
+        formData.append("image", image)
+        return {
+          url: `patient/classify/upload/${id}`,
+          method: "POST",
+          body: formData,
+        }
+      },
+      transformResponse: (raw: ApiEnvelope<MessageResult>) => raw.response,
+      invalidatesTags: (_result, _error, { id }) => [{ type: "Patient", id }, "DashboardDoctor"],
+    }),
   }),
   overrideExisting: false,
 })
@@ -119,4 +134,5 @@ export const {
   useUpdatePatientMutation,
   useDeletePatientMutation,
   useDownloadPatientReportsMutation,
+  useClassifyPatientMutation,
 } = patientApi

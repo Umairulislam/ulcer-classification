@@ -36,12 +36,14 @@ export interface CreatePatientRequest {
   doctor_id: string
 }
 
-// Same shape as create for patients (unlike doctor, no field is excluded
-// on update) — aliased rather than redeclared so the two stay obviously
-// in sync if the backend ever changes one.
 export type UpdatePatientRequest = CreatePatientRequest
 
 export interface UpdatePatientPayload {
   id: string
   data: UpdatePatientRequest
+}
+
+export interface ClassifyPatientPayload {
+  id: string
+  image: File
 }
