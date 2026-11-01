@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { alpha } from "@mui/material/styles"
 import { Box, Button, IconButton, Avatar, Stack, Switch, Typography, Alert } from "@mui/material"
@@ -32,9 +32,15 @@ const DoctorsPage = () => {
 
   const debouncedSearch = useDebouncedValue(searchInput, 400)
 
-  useEffect(() => {
+  const handleSearchChange = (value: string) => {
+    setSearchInput(value)
     setPage(1)
-  }, [debouncedSearch, status])
+  }
+
+  const handleStatusChange = (value: DoctorStatus | "all") => {
+    setStatus(value)
+    setPage(1)
+  }
 
   const { data, isFetching, isError } = useGetAllDoctorsQuery({
     search: debouncedSearch,
@@ -186,9 +192,9 @@ const DoctorsPage = () => {
 
       <DoctorFilters
         search={searchInput}
-        onSearchChange={setSearchInput}
+        onSearchChange={handleSearchChange}
         status={status}
-        onStatusChange={setStatus}
+        onStatusChange={handleStatusChange}
       />
 
       {isError && (

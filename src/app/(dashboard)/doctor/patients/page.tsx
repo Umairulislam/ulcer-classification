@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { Box, IconButton, Stack, Alert, Tooltip, Snackbar } from "@mui/material"
 import { alpha } from "@mui/material/styles"
@@ -23,9 +23,10 @@ const DoctorPatientsPage = () => {
   const [perPage, setPerPage] = useState(10)
   const debouncedSearch = useDebouncedValue(searchInput, 400)
 
-  useEffect(() => {
+  const handleSearchChange = (value: string) => {
+    setSearchInput(value)
     setPage(1)
-  }, [debouncedSearch])
+  }
 
   const { data, isFetching, isError } = useGetAllPatientsQuery({
     search: debouncedSearch,
@@ -118,7 +119,7 @@ const DoctorPatientsPage = () => {
 
       <PatientFilters
         search={searchInput}
-        onSearchChange={setSearchInput}
+        onSearchChange={handleSearchChange}
         showDoctorFilter={false}
       />
 
