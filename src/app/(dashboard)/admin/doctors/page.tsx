@@ -18,6 +18,7 @@ import {
   useDeleteDoctorMutation,
 } from "@/features/doctor/doctorApi"
 import type { Doctor, DoctorStatus } from "@/features/doctor/types"
+import { useClampPageToTotal } from "@/hooks/useClampPageToTotal"
 
 type ConfirmAction = { type: "deactivate"; doctor: Doctor } | { type: "delete"; doctor: Doctor }
 
@@ -42,6 +43,8 @@ const DoctorsPage = () => {
     perPage,
   })
 
+  useClampPageToTotal(page, data?.meta.totalPages, setPage)
+
   const [updateDoctorStatus, { isLoading: isStatusUpdating }] = useUpdateDoctorStatusMutation()
   const [deleteDoctor, { isLoading: isDeleting }] = useDeleteDoctorMutation()
 
@@ -54,7 +57,6 @@ const DoctorsPage = () => {
     try {
       await updateDoctorStatus({ id: doctor.id, status: "active" }).unwrap()
     } catch {
-      // TODO: surface via toast once a toast/snackbar system exists
     } finally {
       setPendingDoctorId(null)
     }

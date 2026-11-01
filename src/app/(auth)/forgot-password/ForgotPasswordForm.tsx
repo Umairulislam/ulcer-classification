@@ -2,16 +2,15 @@
 
 import { ForgotPasswordFormValues, forgotPasswordSchema } from "@/features/auth/auth.schema"
 import { useForgotPasswordMutation } from "@/features/auth/authApi"
-import { getErrorMessage } from "@/utils/getErrorMessage"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Alert, Box, Button, Paper, Stack, TextField, Typography } from "@mui/material"
+import { Box, Button, Paper, Stack, TextField, Typography } from "@mui/material"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 
 const ForgotPasswordForm = () => {
   const router = useRouter()
-  const [forgotPassword, { isLoading, isError, error }] = useForgotPasswordMutation()
+  const [forgotPassword, { isLoading }] = useForgotPasswordMutation()
 
   const {
     register,
@@ -54,12 +53,6 @@ const ForgotPasswordForm = () => {
         </Stack>
 
         <Stack spacing={2.5}>
-          {isError && (
-            <Alert severity="error">
-              {getErrorMessage(error, "Couldn't send the OTP. Please try again.")}
-            </Alert>
-          )}
-
           <TextField
             label="Email"
             type="email"

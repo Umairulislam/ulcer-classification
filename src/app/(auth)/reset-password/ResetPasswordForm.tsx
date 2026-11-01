@@ -2,9 +2,8 @@
 
 import { ResetPasswordFormValues, resetPasswordSchema } from "@/features/auth/auth.schema"
 import { useResetPasswordMutation } from "@/features/auth/authApi"
-import { getErrorMessage } from "@/utils/getErrorMessage"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Alert, Box, Button, Paper, Stack, TextField, Typography } from "@mui/material"
+import { Box, Button, Paper, Stack, TextField, Typography } from "@mui/material"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
@@ -14,7 +13,7 @@ const ResetPasswordForm = () => {
   const searchParams = useSearchParams()
   const emailFromQuery = searchParams.get("email") ?? ""
 
-  const [resetPassword, { isLoading, isError, error }] = useResetPasswordMutation()
+  const [resetPassword, { isLoading }] = useResetPasswordMutation()
 
   const {
     register,
@@ -58,12 +57,6 @@ const ResetPasswordForm = () => {
         </Stack>
 
         <Stack spacing={2.5}>
-          {isError && (
-            <Alert severity="error">
-              {getErrorMessage(error, "Couldn't reset your password. Please try again.")}
-            </Alert>
-          )}
-
           <TextField
             label="Email"
             type="email"

@@ -17,7 +17,6 @@ import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined"
 import CloseIcon from "@mui/icons-material/Close"
 import IconButton from "@mui/material/IconButton"
 import { useGetPatientByIdQuery, useClassifyPatientMutation } from "@/features/patient/patientApi"
-import { getErrorMessage } from "@/utils/getErrorMessage"
 
 interface ClassifyFormProps {
   patientId: string
@@ -47,7 +46,7 @@ const ClassifyForm = ({ patientId }: ClassifyFormProps) => {
     isError: isLoadPatientError,
   } = useGetPatientByIdQuery(patientId)
 
-  const [classifyPatient, { isLoading: isUploading, isError, error }] = useClassifyPatientMutation()
+  const [classifyPatient, { isLoading: isUploading }] = useClassifyPatientMutation()
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -165,11 +164,6 @@ const ClassifyForm = ({ patientId }: ClassifyFormProps) => {
           Upload ulcer image
         </Typography>
 
-        {isError && (
-          <Alert severity="error" sx={{ mb: 2.5 }}>
-            {getErrorMessage(error, "Couldn't upload the image. Please try again.")}
-          </Alert>
-        )}
         {fileError && (
           <Alert severity="error" sx={{ mb: 2.5 }}>
             {fileError}

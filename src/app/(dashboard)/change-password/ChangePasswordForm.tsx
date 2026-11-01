@@ -5,10 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Paper, Grid, TextField, Button, Stack, Alert } from "@mui/material"
 import { changePasswordSchema, type ChangePasswordFormValues } from "@/features/auth/auth.schema"
 import { useChangePasswordMutation } from "@/features/auth/authApi"
-import { getErrorMessage } from "@/utils/getErrorMessage"
 
 const ChangePasswordForm = () => {
-  const [changePassword, { isLoading, isError, error, isSuccess }] = useChangePasswordMutation()
+  const [changePassword, { isLoading }] = useChangePasswordMutation()
 
   const {
     register,
@@ -41,13 +40,6 @@ const ChangePasswordForm = () => {
       sx={{ p: 3, maxWidth: 480 }}
     >
       <Stack spacing={2.5}>
-        {isError && (
-          <Alert severity="error">
-            {getErrorMessage(error, "Couldn't change your password. Please try again.")}
-          </Alert>
-        )}
-        {isSuccess && <Alert severity="success">Password changed successfully.</Alert>}
-
         <Grid container spacing={2.5}>
           <Grid size={12}>
             <TextField

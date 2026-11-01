@@ -91,6 +91,7 @@ export const authApi = api.injectEndpoints({
         url: "auth/logout",
         method: "POST",
       }),
+      extraOptions: { silent: true },
 
       onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
         try {

@@ -10,49 +10,40 @@ import PageHeader from "@/components/ui/PageHeader"
 import DataTable, { type DataTableColumn } from "@/components/ui/DataTable"
 import PatientFilters from "@/components/patients/PatientFilters"
 import { useDebouncedValue } from "@/hooks/useDebouncedValue"
-import { getErrorMessage } from "@/utils/getErrorMessage"
 import {
   useGetAllPatientsQuery,
   useDownloadPatientReportsMutation,
 } from "@/features/patient/patientApi"
 import type { Patient } from "@/features/patient/types"
+import { useClampPageToTotal } from "@/hooks/useClampPageToTotal"
 
 const DoctorPatientsPage = () => {
   const [searchInput, setSearchInput] = useState("")
   const [page, setPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
-  const [infoMessage, setInfoMessage] = useState<string | null>(null)
-
   const debouncedSearch = useDebouncedValue(searchInput, 400)
 
   useEffect(() => {
     setPage(1)
   }, [debouncedSearch])
 
-  // No doctor_id passed — the backend already scopes this to only the
-  // logged-in doctor's own patients.
   const { data, isFetching, isError } = useGetAllPatientsQuery({
     search: debouncedSearch,
     page,
     perPage,
   })
 
+  useClampPageToTotal(page, data?.meta.totalPages, setPage)
+
   const [downloadReports, { isLoading: isDownloading }] = useDownloadPatientReportsMutation()
 
   const handleDownloadReports = async (patient: Patient) => {
     try {
-      const { message, reports } = await downloadReports(patient.id).unwrap()
-      // Always surface the backend's own message (it already
-      // distinguishes "found" vs "none found" wording), then separately
-      // open the first report if one exists — matching the old app's
-      // behavior exactly rather than only doing one or the other.
-      setInfoMessage(message)
+      const { reports } = await downloadReports(patient.id).unwrap()
       if (reports.length > 0 && reports[0]?.report_url) {
         window.open(reports[0].report_url, "_blank")
       }
-    } catch (err) {
-      setInfoMessage(getErrorMessage(err, "Couldn't fetch reports. Please try again."))
-    }
+    } catch (err) {}
   }
 
   const patientColumns: DataTableColumn<Patient>[] = [
@@ -153,13 +144,6 @@ const DoctorPatientsPage = () => {
             setPage(1)
           },
         }}
-      />
-
-      <Snackbar
-        open={!!infoMessage}
-        autoHideDuration={4000}
-        onClose={() => setInfoMessage(null)}
-        message={infoMessage}
       />
     </Box>
   )

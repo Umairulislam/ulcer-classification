@@ -14,6 +14,7 @@ import PatientFilters from "@/components/patients/PatientFilters"
 import { useDebouncedValue } from "@/hooks/useDebouncedValue"
 import { useGetAllPatientsQuery, useDeletePatientMutation } from "@/features/patient/patientApi"
 import type { Patient } from "@/features/patient/types"
+import { useClampPageToTotal } from "@/hooks/useClampPageToTotal"
 
 const PatientsPage = () => {
   const [searchInput, setSearchInput] = useState("")
@@ -25,10 +26,6 @@ const PatientsPage = () => {
 
   const debouncedSearch = useDebouncedValue(searchInput, 400)
 
-  // Same reasoning as the doctors list — any change to search or the
-  // doctor filter changes the whole result set, so it resets to page 1
-  // rather than leaving the user stranded on a page that may not exist
-  // in the new filtered results.
   useEffect(() => {
     setPage(1)
   }, [debouncedSearch, doctorId])
@@ -40,6 +37,8 @@ const PatientsPage = () => {
     perPage,
   })
 
+  useClampPageToTotal(page, data?.meta.totalPages, setPage)
+
   const [deletePatient, { isLoading: isDeleting }] = useDeletePatientMutation()
 
   const handleDeleteConfirm = async () => {
@@ -47,7 +46,6 @@ const PatientsPage = () => {
     try {
       await deletePatient(patientToDelete.id).unwrap()
     } catch {
-      // TODO: surface via toast once a toast/snackbar system exists
     } finally {
       setPatientToDelete(null)
     }

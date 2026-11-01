@@ -8,6 +8,7 @@ import { Box, CircularProgress, CssBaseline, ThemeProvider } from "@mui/material
 import { Provider } from "react-redux"
 import { store } from "@/store/store"
 import theme from "@/theme/theme"
+import Toaster from "@/components/ui/Toaster"
 
 function AuthGate({ children }: { children: ReactNode }) {
   const status = useAppSelector(selectAuthStatus)
@@ -38,6 +39,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AuthGate>{children}</AuthGate>
+        <Toaster />
       </ThemeProvider>
     </Provider>
   )

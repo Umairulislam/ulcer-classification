@@ -8,7 +8,6 @@ import { getDoctorSchema, type DoctorFormValues } from "@/features/doctor/doctor
 import { useUpdateDoctorMutation } from "@/features/doctor/doctorApi"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
 import { selectCurrentUser, setUser } from "@/features/auth/authSlice"
-import { getErrorMessage } from "@/utils/getErrorMessage"
 
 const GENDER_OPTIONS = [
   { value: "male", label: "Male" },
@@ -20,8 +19,7 @@ const ProfileForm = () => {
   const dispatch = useAppDispatch()
   const currentUser = useAppSelector(selectCurrentUser)
 
-  const [updateDoctor, { isLoading: isSaving, isError, error, isSuccess }] =
-    useUpdateDoctorMutation()
+  const [updateDoctor, { isLoading: isSaving }] = useUpdateDoctorMutation()
 
   const {
     register,
@@ -76,13 +74,6 @@ const ProfileForm = () => {
       sx={{ p: 3, maxWidth: 640 }}
     >
       <Stack spacing={2.5}>
-        {isError && (
-          <Alert severity="error">
-            {getErrorMessage(error, "Couldn't save changes. Please try again.")}
-          </Alert>
-        )}
-        {isSuccess && <Alert severity="success">Profile updated successfully.</Alert>}
-
         <Grid container spacing={2.5}>
           <Grid size={{ xs: 12, sm: 6 }}>
             <TextField

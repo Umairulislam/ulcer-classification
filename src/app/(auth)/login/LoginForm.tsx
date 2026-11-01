@@ -4,16 +4,15 @@ import { LoginFormValues, loginSchema } from "@/features/auth/auth.schema"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useLoginMutation } from "@/features/auth/authApi"
-import { Alert, Box, Button, Paper, Stack, TextField, Typography } from "@mui/material"
+import { Box, Button, Paper, Stack, TextField, Typography } from "@mui/material"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { getErrorMessage } from "@/utils/getErrorMessage"
 import { DASHBOARD_BY_ROLE } from "@/constants/roles"
 
 const LoginForm = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [login, { isLoading, isError, error }] = useLoginMutation()
+  const [login, { isLoading }] = useLoginMutation()
 
   const {
     register,
@@ -62,12 +61,6 @@ const LoginForm = () => {
         </Stack>
 
         <Stack spacing={3}>
-          {isError && (
-            <Alert severity="error">
-              {getErrorMessage(error, "Invalid email or password. Please try again.")}
-            </Alert>
-          )}
-
           <TextField
             label="Email"
             type="email"

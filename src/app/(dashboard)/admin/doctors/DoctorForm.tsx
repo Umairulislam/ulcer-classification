@@ -15,7 +15,6 @@ import {
   useCreateDoctorMutation,
   useUpdateDoctorMutation,
 } from "@/features/doctor/doctorApi"
-import { getErrorMessage } from "@/utils/getErrorMessage"
 
 interface DoctorFormProps {
   mode: DoctorFormMode
@@ -37,16 +36,11 @@ const DoctorForm = ({ mode, doctorId }: DoctorFormProps) => {
     isLoading: isLoadingDoctor,
     isError: isLoadDoctorError,
   } = useGetDoctorByIdQuery(doctorId ?? "", { skip: !isEdit || !doctorId })
-  console.log("🚀 ~ DoctorForm ~ existingDoctor:", existingDoctor)
 
-  const [createDoctor, { isLoading: isCreating, isError: isCreateError, error: createError }] =
-    useCreateDoctorMutation()
-  const [updateDoctor, { isLoading: isUpdating, isError: isUpdateError, error: updateError }] =
-    useUpdateDoctorMutation()
+  const [createDoctor, { isLoading: isCreating }] = useCreateDoctorMutation()
+  const [updateDoctor, { isLoading: isUpdating }] = useUpdateDoctorMutation()
 
   const isSubmitting = isCreating || isUpdating
-  const isMutationError = isCreateError || isUpdateError
-  const mutationError = createError ?? updateError
 
   const {
     register,
@@ -119,17 +113,6 @@ const DoctorForm = ({ mode, doctorId }: DoctorFormProps) => {
   return (
     <Paper component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ p: 3 }}>
       <Stack spacing={2.5}>
-        {isMutationError && (
-          <Alert severity="error">
-            {getErrorMessage(
-              mutationError,
-              isEdit
-                ? "Couldn't save changes. Please try again."
-                : "Couldn't create doctor. Please try again."
-            )}
-          </Alert>
-        )}
-
         <Grid container spacing={2.5}>
           <Grid size={{ xs: 12, sm: 6 }}>
             <TextField

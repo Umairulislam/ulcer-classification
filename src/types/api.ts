@@ -8,6 +8,10 @@ export interface PaginationMeta {
   access_token?: string
 }
 
+export interface MessageResult {
+  message: string
+}
+
 // Login specific response
 export interface AuthExtra {
   access_token: string
@@ -80,8 +84,4 @@ export interface PatientReport {
 
 export interface ClassificationResult {
   prediction: string
-}
-
-export interface MessageResult {
-  message: string
 }
