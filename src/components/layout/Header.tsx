@@ -74,6 +74,7 @@ const Header = ({ sidebarWidth, collapsed, onMenuClick, onCollapseClick }: Heade
       >
         {/* Mobile — opens the overlay drawer */}
         <IconButton
+          aria-label="Open navigation menu"
           onClick={onMenuClick}
           sx={{ display: { xs: "inline-flex", md: "none" }, mr: 1 }}
         >
@@ -82,6 +83,7 @@ const Header = ({ sidebarWidth, collapsed, onMenuClick, onCollapseClick }: Heade
 
         {/* Desktop — collapses/expands the permanent drawer */}
         <IconButton
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           onClick={onCollapseClick}
           sx={{ display: { xs: "none", md: "inline-flex" }, mr: 1 }}
         >
@@ -92,7 +94,13 @@ const Header = ({ sidebarWidth, collapsed, onMenuClick, onCollapseClick }: Heade
 
         {user && (
           <>
-            <IconButton onClick={handleAvatarClick} sx={{ p: 0.5 }}>
+            <IconButton
+              aria-label="Open account menu"
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
+              onClick={handleAvatarClick}
+              sx={{ p: 0.5 }}
+            >
               <Avatar sx={{ width: 36, height: 36, p: 2.5 }}>{initials}</Avatar>
             </IconButton>
 

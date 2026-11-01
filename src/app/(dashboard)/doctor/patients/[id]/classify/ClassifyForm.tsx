@@ -198,6 +198,7 @@ const ClassifyForm = ({ patientId }: ClassifyFormProps) => {
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
               <IconButton
+                aria-label="Remove selected image"
                 size="small"
                 onClick={handleClearFile}
                 sx={{

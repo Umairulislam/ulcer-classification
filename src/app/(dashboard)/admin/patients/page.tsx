@@ -97,6 +97,7 @@ const PatientsPage = () => {
           <IconButton
             component={Link}
             href={`/admin/patients/${patient.id}/edit`}
+            aria-label={`Edit ${patient.name}`}
             size="small"
             sx={(theme) => ({
               bgcolor: alpha(theme.palette.primary.main, 0.1),
@@ -108,6 +109,7 @@ const PatientsPage = () => {
           </IconButton>
           <IconButton
             size="small"
+            aria-label={`Delete ${patient.name}`}
             onClick={() => setPatientToDelete(patient)}
             sx={(theme) => ({
               bgcolor: alpha(theme.palette.error.main, 0.1),

@@ -129,6 +129,11 @@ const DoctorsPage = () => {
               checked={isActive}
               disabled={pendingDoctorId === doctor.id}
               onChange={(e) => handleToggleStatus(doctor, e.target.checked)}
+              slotProps={{
+                input: {
+                  "aria-label": `Set ${doctor.first_name} ${doctor.last_name} ${isActive ? "inactive" : "active"}`,
+                },
+              }}
             />
             <Typography variant="body2" color={isActive ? "success.main" : "text.secondary"}>
               {isActive ? "Active" : "Inactive"}
@@ -146,6 +151,7 @@ const DoctorsPage = () => {
           <IconButton
             component={Link}
             href={`/admin/doctors/${doctor.id}/edit`}
+            aria-label={`Edit ${doctor.first_name} ${doctor.last_name}`}
             size="small"
             sx={(theme) => ({
               bgcolor: alpha(theme.palette.primary.main, 0.1),
@@ -158,6 +164,7 @@ const DoctorsPage = () => {
           </IconButton>
           <IconButton
             size="small"
+            aria-label={`Delete ${doctor.first_name} ${doctor.last_name}`}
             onClick={() => handleDeleteClick(doctor)}
             sx={(theme) => ({
               bgcolor: alpha(theme.palette.error.main, 0.1),
