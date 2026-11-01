@@ -1,10 +1,9 @@
 import { api, type ApiEnvelope } from "@/services/api"
+import type { MessageResult, PaginationMeta } from "@/types/api"
 import type {
   CreateDoctorRequest,
   Doctor,
   GetDoctorsParams,
-  MessageResult,
-  PaginationMeta,
   UpdateDoctorPayload,
   UpdateDoctorStatusRequest,
 } from "./types"
